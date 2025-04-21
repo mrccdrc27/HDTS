@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import authenticate
 from .serializers import EmployeeSerializer
 from .models import Employee
 
@@ -30,3 +31,16 @@ def employee_login(request):
         return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response({'message': 'Login successful', 'employee_id': employee.id})
+
+
+@api_view(['POST'])
+def admin_login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    user = authenticate(username=email, password=password)
+
+    if user is not None and user.is_superuser:
+        return Response({'message': 'Login successful', 'username': user.username})
+    
+    return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

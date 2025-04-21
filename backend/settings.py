@@ -139,4 +139,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "sethpelagio20@gmail.com"
 EMAIL_HOST_PASSWORD = "wibleoywhclqjsmm"
 
+AUTHENTICATION_BACKENDS = [
+    'core.backends.EmailBackend',
+]
+
+
 
