@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 function CreateAccount() {
   const [formData, setFormData] = useState({
@@ -263,6 +264,10 @@ function CreateAccount() {
             <label>I agree to the Terms and Conditions</label>
           </div>
           <button type="submit">Sign Up</button>
+          
+          <div class="login-link">
+          Already have an account? <Link to="/login/employee">Log In</Link>
+          </div>
         </form>
       </div>
     </>

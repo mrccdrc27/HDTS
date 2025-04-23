@@ -1,32 +1,25 @@
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function LogInPortal() {
-    const navigate = useNavigate();
+const LoginPortal = () => {
+  const navigate = useNavigate();
 
-    return (
-        <>
-            <div>
-                {/* lalagyan dito for logo */}
-                <h1>SmartSupport</h1>
-                <p>AI-powered Helpdesk Ticketing System</p>
-            </div>
-
-            <div>
-                <button>Image</button>{/* Lalagay dito 'yung image */}
-            </div>
-
-            <div>
-                <h1>Smart Ticketing</h1>
-                <h2>for Better Support</h2>
-                <p>"From submission to resolution, we've got your workflow covered!"</p>
-            </div>
-
-            <div>
-                <button onClick={() => navigate("/user-login")}>Employee</button>
-                <button onClick={() => navigate("/admin-login")}>Admin</button>
-            </div>
-        </>
-    )
+  const handleRoleSelection = (role) => {
+    if (role === 'employee') {
+      navigate('/login/employee'); // or '/employee/login'
+    } else if (role === 'admin') {
+      navigate('/login/admin'); // or '/admin/login'
     }
+  };
 
-export default LogInPortal;
+  return (
+    <div className="login-portal">
+      <h1>Welcome to the Ticketing System</h1>
+      <p>Please select your role to log in</p>
+      <button onClick={() => handleRoleSelection('employee')}>Employee</button>
+      <button onClick={() => handleRoleSelection('admin')}>Admin</button>
+    </div>
+  );
+};
+
+export default LoginPortal;

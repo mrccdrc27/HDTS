@@ -1,0 +1,151 @@
+{
+    "userProfile": {
+      "userId": "12345",
+      "username": "John Doe",
+      "email": "john.doe@example.com",
+      "role": "Support Agent",
+      "department": "IT",
+      "createdAt": "2022-05-10"
+    },
+    "activeTickets": {
+      "allTickets": [
+        {
+          "number": "TX0001",
+          "subject": "Printer not working",
+          "department": "IT Department",
+          "category": "Hardware",
+          "subCategory": "Printer Issues",
+          "status": "Pending",
+          "dateCreated": "2025-04-05 08:30 AM",
+          "lastUpdated": "2025-04-05 09:15 AM"
+        },
+        {
+          "number": "TX0301",
+          "subject": "Unable to connect to Wi-Fi",
+          "department": "Operations",
+          "category": "Network",
+          "subCategory": "Wi-Fi",
+          "status": "Open",
+          "dateCreated": "2025-04-05 09:00 AM",
+          "lastUpdated": "2025-04-05 09:45 AM"
+        },
+        {
+          "number": "TX0011",
+          "subject": "Request for additional RAM",
+          "department": "Finance & Budgeting",
+          "category": "Hardware Upgrade",
+          "subCategory": "Memory",
+          "status": "On Process",
+          "dateCreated": "2025-04-03 10:20 AM",
+          "lastUpdated": "2025-04-04 08:00 AM"
+        },
+        {
+          "number": "TX0215",
+          "subject": "Incorrect budget report in system",
+          "department": "Finance & Budgeting",
+          "category": "Software",
+          "subCategory": "Reporting",
+          "status": "On Hold",
+          "dateCreated": "2025-04-04 02:30 PM",
+          "lastUpdated": "2025-04-04 03:00 PM"
+        }
+      ],
+      "onHold": [
+        {
+          "number": "TX0215",
+          "subject": "Incorrect budget report in system",
+          "department": "Finance & Budgeting",
+          "category": "Software",
+          "subCategory": "Reporting",
+          "status": "On Hold",
+          "dateCreated": "2025-04-04 02:30 PM",
+          "lastUpdated": "2025-04-04 03:00 PM"
+        }
+      ],
+      "onProgress": [
+        {
+          "number": "TX0011",
+          "subject": "Request for additional RAM",
+          "department": "Finance & Budgeting",
+          "category": "Hardware Upgrade",
+          "subCategory": "Memory",
+          "status": "On Process",
+          "dateCreated": "2025-04-03 10:20 AM",
+          "lastUpdated": "2025-04-04 08:00 AM"
+        }
+      ],
+      "open": [
+        {
+          "number": "TX0301",
+          "subject": "Unable to connect to Wi-Fi",
+          "department": "Operations",
+          "category": "Network",
+          "subCategory": "Wi-Fi",
+          "status": "Open",
+          "dateCreated": "2025-04-05 09:00 AM",
+          "lastUpdated": "2025-04-05 09:45 AM"
+        }
+      ],
+      "pending": [
+        {
+          "number": "TX0001",
+          "subject": "Printer not working",
+          "department": "IT Department",
+          "category": "Hardware",
+          "subCategory": "Printer Issues",
+          "status": "Pending",
+          "dateCreated": "2025-04-05 08:30 AM",
+          "lastUpdated": "2025-04-05 09:15 AM"
+        }
+      ]
+    },
+    "ticketRecords": {
+      "allRecords": [
+        {
+          "number": "TX0012",
+          "subject": "System update issue",
+          "department": "Operations",
+          "category": "Software",
+          "subCategory": "Updates",
+          "status": "Closed",
+          "dateCreated": "2025-03-28 09:00 AM",
+          "lastUpdated": "2025-04-01 12:30 PM"
+        },
+        {
+          "number": "TX0302",
+          "subject": "Budget request rejected",
+          "department": "Finance & Budgeting",
+          "category": "Budgeting",
+          "subCategory": "Requests",
+          "status": "Rejected",
+          "dateCreated": "2025-03-25 10:15 AM",
+          "lastUpdated": "2025-03-26 04:00 PM"
+        }
+      ],
+      "closedRecords": [
+        {
+          "number": "TX0012",
+          "subject": "System update issue",
+          "department": "Operations",
+          "category": "Software",
+          "subCategory": "Updates",
+          "status": "Closed",
+          "dateCreated": "2025-03-28 09:00 AM",
+          "lastUpdated": "2025-04-01 12:30 PM"
+        }
+      ],
+      "rejectedRecords": [
+        {
+          "number": "TX0302",
+          "subject": "Budget request rejected",
+          "department": "Finance & Budgeting",
+          "category": "Budgeting",
+          "subCategory": "Requests",
+          "status": "Rejected",
+          "dateCreated": "2025-03-25 10:15 AM",
+          "lastUpdated": "2025-03-26 04:00 PM"
+        }
+      ]
+    }
+  }
+  

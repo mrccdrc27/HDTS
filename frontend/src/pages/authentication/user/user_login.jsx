@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Logo from "../../../assets/smartsupport-logo.svg";
 
 const UserLogin = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const UserLogin = () => {
     try {
       const res = await axios.post("http://127.0.0.1:8000/api/employees/login/", formData);
       console.log(res.data);
-      navigate("/home");  // redirect on success
+      navigate("/user/home");  // redirect on success
     } catch (err) {
       console.error(err);
       if (err.response && err.response.data && err.response.data.detail) {
@@ -42,6 +43,7 @@ const UserLogin = () => {
   return (
     <>
       <div className="container">
+      <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
         <h1>SmartSupport</h1>
         <p>AI-powered Helpdesk and Ticketing System</p>
       </div>

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import Logo from "../../../assets/smartsupport-logo.svg";
 
 const AdminLogin = () => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const AdminLogin = () => {
             });
 
             if (response.data.message === "Login successful") {
-                navigate("/admin-dashboard");
+                navigate("/admin/dashboard");
             }
         } catch (error) {
             setMessage("Invalid credentials.");
@@ -27,9 +28,8 @@ const AdminLogin = () => {
 
     return (
         <>
-            {/* lalagyan ng component dito */}
             <div className="container">
-                {/* lalagyan ng logo */}
+                <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
                 <h1>SmartSupport</h1>
                 <p>AI-powered Helpdesk and Ticketing System</p>
             </div>
@@ -59,7 +59,6 @@ const AdminLogin = () => {
                             required
                         />
                     </div>
-                    {/* dapat ilalagay to sa form!!! */}
                     <button type="submit" onClick={handleLogin}>Log In</button>
                 </form>
 
