@@ -4,7 +4,7 @@ from .models import Employee
 
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ("first_name", "last_name", "email", "company_id", "department", "status", "notified")
+    list_display = ("first_name", "last_name", "email", "company_id", "department", "userrole", "status", "notified")
 
     def save_model(self, request, obj, form, change):
         # ✅ Always run this after saving

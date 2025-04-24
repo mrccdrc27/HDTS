@@ -42,6 +42,23 @@ STATUS_CHOICES = [
     ("rejected", "Rejected"),
 ]
 
+ROLE_CHOICES = [
+    ("IT Department", "IT Department"),
+    ("Asset Management", "Asset Management"),
+    ("Document Control", "Document Control"),
+    ("Finance & Budgeting", "Finance & Budgeting"),
+    ("Operations", "Operations"),
+    ("Facilities & Maintenance", "Facilities & Maintenance"),
+    ("Human Resources", "Human Resources"),
+    ("Administration", "Administration"),
+]
+
+USERROLE_CHOICES = [
+    ("Employee", "Employee"),
+    ("Ticket Agent", "Ticket Agent"),
+    ("System Admin", "System Admin"),
+]
+
 class Employee(models.Model):
 
     # 📋 Status (default: pending)
@@ -110,6 +127,13 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+    userrole = models.CharField(
+        max_length=20,
+        choices=USERROLE_CHOICES,
+        default="Employee",  # new signups default to Employee
+        help_text="Defines the role of the user"
+    )
 
     class Meta:
         constraints = [
@@ -119,3 +143,10 @@ class Employee(models.Model):
             )
         ]
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(userrole__in=["Employee", "Ticket Agent", "System Admin"]),
+                name="valid_userrole_constraint"
+            )
+        ]
