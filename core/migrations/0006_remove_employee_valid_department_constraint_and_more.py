@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='employee',
             name='suffix',
-            field=models.CharField(blank=True, help_text='Optional. Must be Jr, Sr, or Roman numeral suffix like II–X', max_length=20, null=True, validators=[core.models.validate_roman_suffix]),
+            field=models.CharField(blank=True, help_text='Optional. Must be Jr, Sr, or Roman numeral suffix like III–X', max_length=20, null=True, validators=[core.models.validate_roman_suffix]),
         ),
         migrations.AddConstraint(
             model_name='employee',

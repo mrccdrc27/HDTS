@@ -14,7 +14,7 @@ def validate_image_extension(image):
     ext = os.path.splitext(image.name)[1].lower()
     valid_extensions = ['.jpg', '.jpeg', '.png']
     if ext not in valid_extensions:
-        raise ValidationError("Image must be a .jpg, .jpeg, or .png file.")
+        raise ValidationError("Image must be a .jpg, .jpeg, or .png file only.")
 
 # ✉️ Gmail Email Validator
 def validate_gmail_email(value):
@@ -22,8 +22,8 @@ def validate_gmail_email(value):
         raise ValidationError("Only Gmail addresses are allowed.")
     
 def validate_roman_suffix(value):
-    if value and not re.match(r"^(Jr|Sr|II|III|IV|V|VI|VII|VIII|IX|X)$", value):
-        raise ValidationError("Invalid suffix. Only Jr, Sr, or Roman numerals (II–X) are allowed.")
+    if value and not re.match(r"^(Jr|Sr|III|IV|V|VI|VII|VIII|IX|X)$", value):
+        raise ValidationError("Invalid suffix. Only Jr, Sr, or Roman numerals (III–X) are allowed.")
 
 DEPARTMENT_CHOICES = [
     ("IT Department", "IT Department"),
@@ -81,7 +81,7 @@ class Employee(models.Model):
         blank=True,
         null=True,
         validators=[validate_roman_suffix],
-        help_text="Optional. Must be Jr, Sr, or Roman numeral suffix like II–X"
+        help_text="Optional. Must be Jr, Sr, or Roman numeral suffix like III–X"
     )
 
     # 🆔 Company ID (e.g., MA0001 to MA9999)

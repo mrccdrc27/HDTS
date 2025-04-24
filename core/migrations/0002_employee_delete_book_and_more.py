@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='Employee',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('suffix', models.CharField(blank=True, help_text='Suffix like Jr, Sr, II, or custom (optional)', max_length=20, null=True)),
+                ('suffix', models.CharField(blank=True, help_text='Suffix like Jr, Sr, or custom (optional)', max_length=20, null=True)),
                 ('company_id', models.CharField(help_text='Format: MA0001 to MA9999', max_length=6, unique=True, validators=[django.core.validators.RegexValidator(message='Company ID must be in the format MA0001 to MA9999', regex='^MA[0-9]{4}$')])),
                 ('department', models.CharField(choices=[('IT Department', 'IT Department'), ('Asset Management', 'Asset Management'), ('Document Control', 'Document Control'), ('Finance & Budgeting', 'Finance & Budgeting'), ('Operations', 'Operations'), ('Facilities & Maintenance', 'Facilities & Maintenance'), ('Human Resources', 'Human Resources'), ('Administration', 'Administration')], help_text='Select a department from the predefined list.', max_length=50)),
                 ('last_name', models.CharField(max_length=50)),
