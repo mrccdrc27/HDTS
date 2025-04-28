@@ -1,0 +1,113 @@
+/* admin_login.css */
+
+/* Apply Poppins font globally */
+* {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Wrapper for both image and form */
+.login-wrapper {
+    display: flex;
+    flex-direction: row; /* Align items horizontally */
+    height: 100vh; /* Full viewport height */
+    background-color: white !important; /* Force white background */
+    overflow: hidden; /* Prevent any scrolling */
+}
+
+/* Left side - Image container */
+.login-image-wrapper {
+    flex: 1; /* Take up half space */
+    display: flex;
+    justify-content: flex-start; /* Align image to the left */
+    align-items: center;
+    background-color: white;
+    padding: 0; /* No padding for the image wrapper */
+}
+
+/* Image styling */
+.login-image {
+    width: 100%; /* Ensures the image takes full width of its container */
+    height: 100%; /* Make the image height fill the container */
+    object-fit: cover; /* Ensures the image fills the container without distortion */
+}
+
+/* Right side - Header and form container */
+.login-right-side {
+    flex: 1; /* Take up half space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Center align the form vertically and horizontally */
+    padding: 2rem;
+    background-color: white;
+}
+
+/* Form container */
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    margin-left: 2rem; /* Slight margin left */
+    padding: 2rem;
+    background-color: var(--neutral-light-gray); /* #E3E3E3 */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    /* Ensure it's aligned better by balancing left and right margins */
+    margin-right: auto;
+    margin-left: auto; /* Ensure the form is centered properly */
+}
+
+/* Form input groups */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+/* Button styling */
+button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #1e40af;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #1e3a8a;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+    .login-wrapper {
+        flex-direction: column; /* Stack image and form on smaller screens */
+    }
+
+    .login-image-wrapper,
+    .login-right-side {
+        width: 100%; /* Ensure both take full width */
+        flex: none;
+    }
+
+    .login-container {
+        margin: 1rem;
+    }
+}

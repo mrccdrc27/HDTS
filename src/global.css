@@ -38,6 +38,8 @@ html, body {
   background-color: #FCFCFC;
   color: #0C0C0C;
   line-height: 1.6;
+  margin: 0;
+  padding: 0;
 }
 
 /* Typography - Based on Figma specs */

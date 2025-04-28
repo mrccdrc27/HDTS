@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search } from 'lucide-react'; 
+import { Search } from 'lucide-react';
 import CreateTicketButton from '../../../components/buttons/create-ticket';
+import '../../../styles/components/pages/user/user_alltickets.css'; // Import the shared CSS
 
 const onHoldTickets = [
   {
@@ -17,7 +18,7 @@ const onHoldTickets = [
 ];
 
 const statusStyles = {
-  'On Hold': 'bg-gray-300 text-gray-800',
+  'On Hold': 'status-hold', // Reuse earlier CSS class for status
 };
 
 const OnHoldTickets = () => {
@@ -43,104 +44,119 @@ const OnHoldTickets = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">On Hold Tickets</h1>
+    <div className="tickets-page"> {/* Reused the main container class */}
+      <h1>On Hold Tickets</h1>
 
-        <div className="flex flex-wrap gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="border rounded-md px-3 py-2 w-60"
-          />
+      <div className="controls-section"> {/* Reused controls-section */}
+        <div className="top-controls">
+          <div className="search-bar-container">
+            <input
+              type="text"
+              placeholder="Search"
+              className="search-bar"
+            />
+            <Search className="search-icon" size={16} />
+          </div>
           <CreateTicketButton />
         </div>
 
-        <span>Filter by</span>
-        <select className="border rounded-md px-3 py-2">
-          <option>Category</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Sub Category</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Department</option>
-        </select>
-
-        <span>Sort by</span>
-        <select className="border rounded-md px-3 py-2">
-          <option>Sort Order</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Date</option>
-        </select>
+        <div className="filter-sort-controls">
+          <span>Filter by:</span>
+          <select className="filter-select">
+            <option>Category</option>
+          </select>
+          <select className="filter-select">
+            <option>Sub Category</option>
+          </select>
+          <select className="filter-select">
+            <option>Department</option>
+          </select>
+          <span>Sort by:</span>
+          <select className="sort-select">
+            <option>Sort Order</option>
+          </select>
+          <select className="sort-select">
+            <option>Date</option>
+          </select>
+        </div>
       </div>
 
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-gray-700 text-white">
-            <th className="px-4 py-2">Ticket Number</th>
-            <th className="px-4 py-2">Subject</th>
-            <th className="px-4 py-2">Department</th>
-            <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Sub Category</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Date Created</th>
-            <th className="px-4 py-2">Last Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentTickets.map((ticket, idx) => (
-            <tr key={idx} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{ticket.number}</td>
-              <td className="px-4 py-2">{ticket.subject}</td>
-              <td className="px-4 py-2">{ticket.department}</td>
-              <td className="px-4 py-2">{ticket.category}</td>
-              <td className="px-4 py-2">{ticket.subCategory}</td>
-              <td className="px-4 py-2">
-                <span className={`px-2 py-1 rounded-full text-sm font-medium ${statusStyles[ticket.status]}`}>
-                  {ticket.status}
-                </span>
-              </td>
-              <td className="px-4 py-2">{ticket.dateCreated}</td>
-              <td className="px-4 py-2">{ticket.lastUpdated}</td>
+      <div className="tickets-table-container">
+        <table className="tickets-table">
+          <thead>
+            <tr>
+              <th>Ticket Number</th>
+              <th>Subject</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Status</th>
+              <th>Date Created</th>
+              <th>Last Updated</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentTickets.map((ticket, idx) => (
+              <tr key={idx}>
+                <td>{ticket.number}</td>
+                <td>{ticket.subject}</td>
+                <td>{ticket.department}</td>
+                <td>{ticket.category}</td>
+                <td>{ticket.subCategory}</td>
+                <td>
+                  <span className={`status-badge ${statusStyles[ticket.status]}`}>
+                    {ticket.status}
+                  </span>
+                </td>
+                <td>{ticket.dateCreated}</td>
+                <td>{ticket.lastUpdated}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex items-center gap-2"></div>
+      <div className="pagination-container">
+        {/* Reuse the pagination structure */}
+        <div className="pagination-items-display">
+          <span>Show</span>
+          <select className="pagination-items-select">
+            <option>20</option>
+          </select>
+          <span>items per page</span>
+        </div>
 
-        <div className="flex items-center gap-2 text-sm">
+        <div className="pagination-controls">
           <button
-            className={`text-gray-600 ${currentPage === 1 ? 'cursor-not-allowed' : ''}`}
             onClick={goToPreviousPage}
             disabled={currentPage === 1}
+            className="pagination-nav-button"
           >
-            &larr; Previous
+            ← Previous
           </button>
+
           <button
-            className={`w-8 h-8 rounded-full bg-gray-700 text-white ${currentPage === 1 ? 'bg-gray-500' : ''}`}
             onClick={() => goToPage(1)}
+            className={`pagination-page-button ${currentPage === 1 ? 'active' : ''}`}
           >
             1
           </button>
-          {currentPage > 2 && <span>...</span>}
-          {currentPage < totalPages && (
-            <button
-              className="text-gray-700"
-              onClick={() => goToPage(totalPages)}
-            >
-              {totalPages}
-            </button>
-          )}
+
+          <span className="pagination-ellipsis">...</span>
+
           <button
-            className={`text-gray-700 ${currentPage === totalPages ? 'cursor-not-allowed' : ''}`}
+            onClick={() => goToPage(totalPages)}
+            className={`pagination-page-button ${currentPage === totalPages ? 'active' : ''}`}
+          >
+            {totalPages}
+          </button>
+
+          <button
             onClick={goToNextPage}
             disabled={currentPage === totalPages}
+            className="pagination-nav-button"
           >
-            Next &rarr;
+            Next →
           </button>
         </div>
       </div>

@@ -1,54 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
 import { ChevronDown, Bell } from 'lucide-react';
 import DefaultAvatar from '/src/frontend/assets/employee-profile.svg';
-
-import NotificationPopup from '../popups/user/user_notification';
+import '../../styles/components/headers/user_navbar.css';
 
 const UserNavbar = () => {
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [showProfilePopup, setShowProfilePopup] = useState(false);
-  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [notifications] = useState([
+  const navigate = useNavigate();
+  const [userActiveDropdown, userSetActiveDropdown] = useState(null);
+  const [userCurrentTime, userSetCurrentTime] = useState(new Date());
+  const [userShowProfilePopup, userSetShowProfilePopup] = useState(false);
+  const [userShowNotificationPopup, userSetShowNotificationPopup] = useState(false);
+  const [userNotifications, userSetNotifications] = useState([
     'Your ticket #TX0123 has been updated.',
     'Reminder: Pending ticket needs your action.',
     'System maintenance tomorrow at 10 AM.',
   ]);
 
-  const toggleDropdown = (menu) => {
-    setActiveDropdown(activeDropdown === menu ? null : menu);
+  const userToggleDropdown = (menu) => {
+    userSetActiveDropdown(userActiveDropdown === menu ? null : menu);
   };
 
-  const toggleProfilePopup = () => {
-    setShowProfilePopup(!showProfilePopup);
+  const userToggleProfilePopup = () => {
+    userSetShowProfilePopup((prev) => !prev);
   };
 
-  const toggleNotificationPopup = () => {
-    setShowNotificationPopup(!showNotificationPopup);
+  const userToggleNotificationPopup = () => {
+    userSetShowNotificationPopup((prev) => !prev);
+  };
+
+  const userClearNotification = (index) => {
+    const updatedNotifications = userNotifications.filter((_, i) => i !== index);
+    userSetNotifications(updatedNotifications);
   };
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatDateTime = (date) => {
-    const options = {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
+    const userHandleClickOutside = (event) => {
+      if (userActiveDropdown && !event.target.closest('.userNavbar-menu-dropdown')) {
+        userSetActiveDropdown(null);
+      }
+      if (userShowProfilePopup && !event.target.closest('.profile-popup')) {
+        userSetShowProfilePopup(false);
+      }
+      if (userShowNotificationPopup && !event.target.closest('.profile-popup')) {
+        userSetShowNotificationPopup(false);
+      }
     };
 
+    document.addEventListener('mousedown', userHandleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', userHandleClickOutside);
+    };
+  }, [userActiveDropdown, userShowProfilePopup, userShowNotificationPopup]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      userSetCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const userFormatDateTime = (date) => {
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
     const time = date.toLocaleTimeString('en-US', options);
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const year = date.getFullYear();
-
     return `${month}/${day}/${year} | ${time}`;
   };
 
@@ -57,22 +74,20 @@ const UserNavbar = () => {
       <div className="userNavbar-left">
         <NavLink to="/user/request-ticket" className="userNavbar-left-item">
           <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
-          <h2>Smart Support</h2>
+          <h2>Smart<span>Support</span></h2>
         </NavLink>
       </div>
 
       <div className="userNavbar-menu">
-        <div>
-          <NavLink to="/user/home" className="userNavbar-menu-item">Home</NavLink>
-        </div>
+        <NavLink to="/user/home" className="userNavbar-menu-item">Home</NavLink>
 
         {/* Active Tickets Dropdown */}
         <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => toggleDropdown('active-tickets')}>
+          <div className="userNavbar-menu-trigger" onClick={() => userToggleDropdown('active-tickets')}>
             <NavLink to="/user/all-tickets" className="userNavbar-menu-item">Active Tickets</NavLink>
             <ChevronDown size={18} />
           </div>
-          {activeDropdown === 'active-tickets' && (
+          {userActiveDropdown === 'active-tickets' && (
             <div className="dropdown-content">
               <NavLink to="/user/all-tickets">All Tickets</NavLink>
               <NavLink to="/user/open-tickets">Open Tickets</NavLink>
@@ -85,11 +100,11 @@ const UserNavbar = () => {
 
         {/* Ticket Records Dropdown */}
         <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => toggleDropdown('ticket-records')}>
+          <div className="userNavbar-menu-trigger" onClick={() => userToggleDropdown('ticket-records')}>
             <NavLink to="/user/all-records" className="userNavbar-menu-item">Ticket Records</NavLink>
             <ChevronDown size={18} />
           </div>
-          {activeDropdown === 'ticket-records' && (
+          {userActiveDropdown === 'ticket-records' && (
             <div className="dropdown-content">
               <NavLink to="/user/all-records">All Records</NavLink>
               <NavLink to="/user/closed-tickets">Closed Tickets</NavLink>
@@ -98,47 +113,58 @@ const UserNavbar = () => {
           )}
         </div>
 
-        {/* Notification Bell */}
-        <div className="relative">
-          <Bell
-            size={18}
-            className="userNavbar-menu-item cursor-pointer"
-            onClick={toggleNotificationPopup}
-          />
-          {showNotificationPopup && (
-            <NotificationPopup
-              notifications={notifications}
-              onClose={() => setShowNotificationPopup(false)}
+        <div className="userNavbar-right">
+          {/* Notification Bell */}
+          <div className="relative notification-container">
+            <Bell
+              size={18}
+              className="cursor-pointer notification-bell"
+              onClick={userToggleNotificationPopup}
             />
-          )}
-        </div>
+            {userNotifications.length > 0 && (
+              <span className="notification-badge">{userNotifications.length}</span>
+            )}
+            {userShowNotificationPopup && (
+              <div className="profile-popup">
+                <p className="profile-name">Notifications</p>
+                {userNotifications.map((notification, index) => (
+                  <div key={index} className="notification-item">
+                    {notification}
+                    <button onClick={() => userClearNotification(index)} className="clear-notification-btn">
+                      Clear
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-        <div>
-          <span>Name</span>
-          <br />
-          <span>{formatDateTime(currentTime)}</span>
-        </div>
+          {/* User Info */}
+          <div className="userNavbar-info">
+            <span>Name</span><br />
+            <span>{userFormatDateTime(userCurrentTime)}</span>
+          </div>
 
-        {/* Profile Avatar + Popup */}
-        <div className="relative">
-          <img
-            src={DefaultAvatar}
-            alt="Employee Profile"
-            className="userNavbar-menu-item cursor-pointer"
-            onClick={toggleProfilePopup}
-          />
-          {showProfilePopup && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg p-4 z-50">
-              <p className="font-semibold mb-2">John Doe</p>
-              <p className="text-sm text-gray-600 mb-4">System Manager</p>
-              {/* Logout Button */}
-              <Link to="/">
-                <button className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
-                  Logout
-                </button>
-              </Link>
-            </div>
-          )}
+          {/* Profile Avatar */}
+          <div className="relative">
+            <img
+              src={DefaultAvatar}
+              alt="Employee Profile"
+              className="userNavbar-menu-item cursor-pointer"
+              onClick={userToggleProfilePopup}
+            />
+            {userShowProfilePopup && (
+              <div className="profile-popup">
+                <p className="profile-name">John Doe</p>
+                <p className="profile-role">System Manager</p>
+                <Link to="/">
+                  <button className="user-logout-button">
+                    Logout
+                  </button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -4,10 +4,18 @@ import Logo from '/src/frontend/assets/smartsupport-logo.svg';
 import { ChevronDown, Bell } from 'lucide-react';
 import DefaultAvatar from '/src/frontend/assets/employee-profile.svg';
 
+import '../../styles/components/headers/admin_navbar.css';
+
 const AdminNavbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notifications] = useState([
+    'New ticket #TX0456 has been created.',
+    'Agent John assigned to ticket #TX0123.',
+    'SLA breach warning for ticket #TX0789.',
+  ]);
 
   const toggleDropdown = (menu) => {
     setActiveDropdown(activeDropdown === menu ? null : menu);
@@ -17,12 +25,36 @@ const AdminNavbar = () => {
     setShowProfilePopup(!showProfilePopup);
   };
 
+  const toggleNotificationPopup = () => {
+    setShowNotificationPopup(!showNotificationPopup);
+  };
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Handle clicking outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (activeDropdown && !event.target.closest('.adminNavbar-menu-dropdown')) {
+        setActiveDropdown(null);
+      }
+      if (showProfilePopup && !event.target.closest('.profile-container')) {
+        setShowProfilePopup(false);
+      }
+      if (showNotificationPopup && !event.target.closest('.notification-container')) {
+        setShowNotificationPopup(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeDropdown, showProfilePopup, showNotificationPopup]);
 
   const formatDateTime = (date) => {
     const options = {
@@ -41,23 +73,23 @@ const AdminNavbar = () => {
   };
 
   return (
-    <div className="userNavbar">
-      <div className="userNavbar-left">
-        <NavLink to="/admin/dashboard" className="userNavbar-left-item">
-          <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
-          <h2>Smart Support</h2>
+    <div className="adminNavbar">
+      <div className="adminNavbar-left">
+        <NavLink to="/admin/dashboard" className="adminNavbar-left-item">
+          <img src={Logo} alt="Smart Support Logo" className="adminNavbar-logo" />
+          <h2>Smart<span>Support</span></h2>
         </NavLink>
       </div>
 
-      <div className="userNavbar-menu">
+      <div className="adminNavbar-menu">
         <div>
-          <NavLink to="/admin/dashboard" className="userNavbar-menu-item">Dashboard</NavLink>
+          <NavLink to="/admin/dashboard" className="adminNavbar-menu-item">Dashboard</NavLink>
         </div>
 
         {/* Dropdown for Ticket Management */}
-        <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => toggleDropdown('ticket-management')}>
-            <NavLink to="/admin/ticket-management-all-tickets" className="userNavbar-menu-item">Ticket Management</NavLink>
+        <div className="adminNavbar-menu-dropdown">
+          <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('ticket-management')}>
+            <NavLink to="/admin/ticket-management-all-tickets" className="adminNavbar-menu-item">Ticket Management</NavLink>
             <ChevronDown size={18} />
           </div>
           {activeDropdown === 'ticket-management' && (
@@ -73,9 +105,9 @@ const AdminNavbar = () => {
         </div>
 
         {/* Dropdown for User Access */}
-        <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => toggleDropdown('user-access')}>
-            <NavLink to="/admin/user-access-all-users" className="userNavbar-menu-item">User Access</NavLink>
+        <div className="adminNavbar-menu-dropdown">
+          <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('user-access')}>
+            <NavLink to="/admin/user-access-all-users" className="adminNavbar-menu-item">User Access</NavLink>
             <ChevronDown size={18} />
           </div>
           {activeDropdown === 'user-access' && (
@@ -89,9 +121,9 @@ const AdminNavbar = () => {
         </div>
 
         {/* Dropdown for Reports */}
-        <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => toggleDropdown('reports')}>
-            <NavLink to="/admin/reports-agent-performance-report" className="userNavbar-menu-item">Reports</NavLink>
+        <div className="adminNavbar-menu-dropdown">
+          <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('reports')}>
+            <NavLink to="/admin/reports-agent-performance-report" className="adminNavbar-menu-item">Reports</NavLink>
             <ChevronDown size={18} />
           </div>
           {activeDropdown === 'reports' && (
@@ -102,32 +134,55 @@ const AdminNavbar = () => {
             </div>
           )}
         </div>
+      </div>
 
-        <div>
-          <Bell size={18} className="userNavbar-menu-item" />
+      <div className="adminNavbar-right">
+        {/* Notification Bell */}
+        <div className="notification-container relative">
+          <Bell
+            size={18}
+            className="notification-bell"
+            onClick={toggleNotificationPopup}
+          />
+          {notifications.length > 0 && (
+            <span className="notification-badge">{notifications.length}</span>
+          )}
+          {showNotificationPopup && (
+            <div className="profile-popup">
+              <p className="profile-name">Notifications</p>
+              {notifications.map((notification, index) => (
+                <div key={index} className="notification-item">
+                  {notification}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div>
-          <span>Name</span>
+        <div className="user-info">
+          <span>Admin User</span>
           <br />
           <span>{formatDateTime(currentTime)}</span>
         </div>
-        
+
         {/* Profile Avatar + Popup */}
-        <div className="relative">
+        <div className="profile-container relative">
           <img
             src={DefaultAvatar}
-            alt="Employee Profile"
-            className="userNavbar-menu-item cursor-pointer"
+            alt="Admin Profile"
+            className="profile-avatar"
             onClick={toggleProfilePopup}
           />
           {showProfilePopup && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg p-4 z-50">
-              <p className="font-semibold mb-2">John Doe</p>
-              <p className="text-sm text-gray-600 mb-4">System Manager</p>
-              <button className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">
-              <Link to="/">Logout</Link>
-              </button>
+            <div className="profile-popup">
+              <p className="profile-name">John Doe</p>
+              <p className="profile-role">System Administrator</p>
+              {/* Logout Button */}
+              <Link to="/">
+                <button className="admin-logout-button">
+                  Logout
+                </button>
+              </Link>
             </div>
           )}
         </div>

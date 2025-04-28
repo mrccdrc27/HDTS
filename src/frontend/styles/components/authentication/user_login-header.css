@@ -1,0 +1,50 @@
+/* Header Component CSS - For user_login-header.css */
+.login-header {
+    display: flex;
+    align-items: left;
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .login-header > div:first-child {
+    margin-right: 15px;
+  }
+  
+  .user-navbar-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #e5e5e5;
+    object-fit: cover;
+  }
+  
+  .login-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--primary-color);
+  }
+  
+  .login-header h2 span {
+    color: var(--secondary-color);
+  }
+  
+  .login-header p {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    color: #666;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .login-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .login-header > div:first-child {
+      margin: 0 0 10px 0;
+    }
+  }
+  

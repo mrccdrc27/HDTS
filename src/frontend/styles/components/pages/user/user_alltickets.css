@@ -1,0 +1,208 @@
+.tickets-page {
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .tickets-page h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  
+  .controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .search-bar-container {
+    position: relative;
+    width: 300px;
+  }
+  
+  .search-bar {
+    width: 100%;
+    padding: 8px 32px 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+  }
+  
+  .create-ticket-btn {
+    background-color: #003366;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .create-ticket-btn:hover {
+    background-color: #002244;
+  }
+  
+  .create-ticket-btn span {
+    font-size: 18px;
+    margin-top: -2px;
+  }
+  
+  .filter-sort-controls {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .filter-group, .sort-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .filter-label, .sort-label {
+    font-weight: 600;
+  }
+  
+  .filter-select, .sort-select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 14px;
+  }
+  
+  .tickets-table-container {
+    overflow-x: auto;
+  }
+  
+  .tickets-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .tickets-table th {
+    background-color: #b30000;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  .tickets-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+  
+  .tickets-table tbody tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .status-pending {
+    background-color: #ffe0b2;
+    color: #e65100;
+  }
+  
+  .status-open {
+    background-color: #c5cae9;
+    color: #1a237e;
+  }
+  
+  .status-process {
+    background-color: #fff9c4;
+    color: #f57f17;
+  }
+  
+  .status-hold {
+    background-color: #e0e0e0;
+    color: #424242;
+  }
+  
+  .pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .pagination-items-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+  }
+  
+  .pagination-items-select {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .pagination-nav-button,
+  .pagination-page-button {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #b30000;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .pagination-page-button:hover,
+  .pagination-nav-button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .pagination-page-button.active {
+    background-color: #b30000;
+    color: white;
+  }
+  
+  .pagination-ellipsis {
+    font-size: 18px;
+    padding: 0 6px;
+  }
+  

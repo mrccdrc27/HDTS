@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../../../styles/components/pages/user/user_all-records.css'; // Import the CSS for AllRecords page
 
 const allRecords = [
   {
@@ -41,12 +42,11 @@ const allRecords = [
     dateCreated: '2025-04-04 02:30 PM',
     lastUpdated: '2025-04-05 08:30 AM',
   },
-  // Add more "Finished" records as needed
 ];
 
 const statusStyles = {
-  Closed: 'bg-green-200 text-green-800',
-  Rejected: 'bg-red-200 text-red-800',
+  Closed: 'status-closed',
+  Rejected: 'status-rejected',
 };
 
 const AllRecords = () => {
@@ -72,108 +72,89 @@ const AllRecords = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">All Records</h1>
-
-        <div className="flex flex-wrap gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="border rounded-md px-3 py-2 w-60"
-          />
+    <div className="all-records-page">
+      <div className="top-controls">
+        <h1>All Records</h1>
+        <div className="search-bar-container">
+          <input type="text" placeholder="Search" className="search-bar" />
         </div>
 
-        <span>Filter by</span>
-        <select className="border rounded-md px-3 py-2">
-          <option>Category</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Sub Category</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Department</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Status</option>
-        </select>
+        <div className="filter-sort-controls">
+          <div className="filter-group">
+            <label>Filter by</label>
+            <select className="filter-select">
+              <option>Category</option>
+            </select>
+            <select className="filter-select">
+              <option>Sub Category</option>
+            </select>
+            <select className="filter-select">
+              <option>Department</option>
+            </select>
+            <select className="filter-select">
+              <option>Status</option>
+            </select>
+          </div>
 
-        <span>Sort by</span>
-        <select className="border rounded-md px-3 py-2">
-          <option>Sort Order</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Date</option>
-        </select>
+          <div className="sort-group">
+            <label>Sort by</label>
+            <select className="sort-select">
+              <option>Sort Order</option>
+            </select>
+            <select className="sort-select">
+              <option>Date</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-gray-700 text-white">
-            <th className="px-4 py-2">Ticket Number</th>
-            <th className="px-4 py-2">Subject</th>
-            <th className="px-4 py-2">Department</th>
-            <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Sub Category</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Date Created</th>
-            <th className="px-4 py-2">Last Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentRecords.map((ticket, idx) => (
-            <tr key={idx} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{ticket.number}</td>
-              <td className="px-4 py-2">{ticket.subject}</td>
-              <td className="px-4 py-2">{ticket.department}</td>
-              <td className="px-4 py-2">{ticket.category}</td>
-              <td className="px-4 py-2">{ticket.subCategory}</td>
-              <td className="px-4 py-2">
-                <span className={`px-2 py-1 rounded-full text-sm font-medium ${statusStyles[ticket.status]}`}>
-                  {ticket.status}
-                </span>
-              </td>
-              <td className="px-4 py-2">{ticket.dateCreated}</td>
-              <td className="px-4 py-2">{ticket.lastUpdated}</td>
+      <div className="records-table-container">
+        <table className="records-table">
+          <thead>
+            <tr>
+              <th>Ticket Number</th>
+              <th>Subject</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Status</th>
+              <th>Date Created</th>
+              <th>Last Updated</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {currentRecords.map((ticket, idx) => (
+              <tr key={idx}>
+                <td>{ticket.number}</td>
+                <td>{ticket.subject}</td>
+                <td>{ticket.department}</td>
+                <td>{ticket.category}</td>
+                <td>{ticket.subCategory}</td>
+                <td>
+                  <span className={`status-badge ${statusStyles[ticket.status]}`}>
+                    {ticket.status}
+                  </span>
+                </td>
+                <td>{ticket.dateCreated}</td>
+                <td>{ticket.lastUpdated}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex items-center gap-2"></div>
-
-        <div className="flex items-center gap-2 text-sm">
-          <button
-            className={`text-gray-600 ${currentPage === 1 ? 'cursor-not-allowed' : ''}`}
-            onClick={goToPreviousPage}
-            disabled={currentPage === 1}
-          >
-            &larr; Previous
-          </button>
-          <button
-            className={`w-8 h-8 rounded-full bg-gray-700 text-white ${currentPage === 1 ? 'bg-gray-500' : ''}`}
-            onClick={() => goToPage(1)}
-          >
-            1
-          </button>
+      <div className="pagination-container">
+        <button onClick={goToPreviousPage} disabled={currentPage === 1}>
+          &larr; Previous
+        </button>
+        <div className="pagination-items-display">
+          <button onClick={() => goToPage(1)}>1</button>
           {currentPage > 2 && <span>...</span>}
-          {currentPage < totalPages && (
-            <button
-              className="text-gray-700"
-              onClick={() => goToPage(totalPages)}
-            >
-              {totalPages}
-            </button>
-          )}
-          <button
-            className={`text-gray-700 ${currentPage === totalPages ? 'cursor-not-allowed' : ''}`}
-            onClick={goToNextPage}
-            disabled={currentPage === totalPages}
-          >
-            Next &rarr;
-          </button>
+          <button onClick={() => goToPage(totalPages)}>{totalPages}</button>
         </div>
+        <button onClick={goToNextPage} disabled={currentPage === totalPages}>
+          Next &rarr;
+        </button>
       </div>
     </div>
   );

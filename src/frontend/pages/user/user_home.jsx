@@ -1,97 +1,122 @@
 import React, { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import SupportChatModal from './user_chatbot.jsx'; // <-- Correct import
+import '../../styles/components/pages/user/user_home.css'; // Adjust path if needed
 
 const UserHome = () => {
   const navigate = useNavigate();
-  
-  // State to manage button expansion
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showModal, setShowModal] = useState(false); // <-- Manage modal visibility
 
   const handleToggle = () => {
-    setIsExpanded(!isExpanded); // Toggle the expanded state
+    setIsExpanded(!isExpanded);
+  };
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">
-        Welcome, <span className="text-gray-700">User Name</span>
-      </h1>
+    <div className="container">
+      <header className="header">
+        <h1 className="welcome">
+          Welcome, <span className="username">User Name</span>
+        </h1>
+      </header>
 
-      <div className="flex gap-4">
+      <div className="action-buttons">
         <Link to="/user/request-ticket">
-          <button className="bg-blue-800 text-white px-4 py-2 rounded-full font-medium flex items-center gap-2">
+          <button className="button submit-button">
             <Plus size={18} /> Submit a Ticket
           </button>
         </Link>
 
         <Link to="/user/all-records">
-          <button className="bg-green-700 text-white px-4 py-2 rounded-full font-medium flex items-center gap-2">
+          <button className="button view-button">
             <Search size={18} /> View Tickets
           </button>
         </Link>
       </div>
 
-      <hr />
+      <hr className="divider" />
 
-      <div>
-        <h2 className="text-lg font-semibold">NOTICE</h2>
-        <p className="mt-2">
-          Our support team operates during <strong>8:00 AM - 5:00 PM</strong>.
+      <section className="notice">
+        <h2 className="notice-title">NOTICE</h2>
+        <p className="notice-content">
+          Our support team operates during <strong className="highlight">8:00 AM - 5:00 PM</strong>.
         </p>
-        <ul className="list-disc pl-5 text-sm text-gray-700 mt-2">
-          <li>Tickets submitted outside working hours will be placed in the <strong>Pending</strong> queue.</li>
-          <li>Once working hours resume, these tickets will be moved to <strong>Open</strong> or <strong>In Progress</strong> based on priority.</li>
+        <ul className="notice-list">
+          <li>Tickets submitted outside working hours will be placed in the <span className="pending">Pending</span> queue.</li>
+          <li>Once working hours resume, tickets will move to <strong>Open</strong> or <strong>In Progress</strong> based on priority.</li>
         </ul>
-        <p className="mt-2">Thank you for your patience!</p>
-      </div>
+        <p className="notice-content">Thank you for your patience!</p>
+      </section>
 
-      <hr />
+      <hr className="divider" />
 
-      <div>
-        <h2 className="text-lg font-semibold">Ticket Status</h2>
-        <div className="grid grid-cols-2 gap-y-2 mt-2">
-          <p><strong>Ticket Number:</strong> TX0123</p>
-          <p><strong>Subject:</strong> Laptop Requesting</p>
-          <p><strong>Status:</strong> In Progress</p>
-          <p><strong>Assigned to:</strong> John Doe</p>
-          <br />
-          <p><strong>Last Update:</strong> 2025-04-20</p>
-          <p><strong>Submitted date:</strong> 2025-04-19</p>
+      <section>
+        <h2 className="section-title">Ticket Status</h2>
+
+        <div className="ticket-card">
+          <div className="ticket-header">
+            <div>
+              <div className="ticket-number">Ticket Number: TX0123</div>
+              <div className="ticket-title">Subject: Laptop Requesting</div>
+              <div className="ticket-assigned">Assigned to: John Doe</div>
+            </div>
+
+            <div className="ticket-status-container">
+              <span className="ticket-status">In Progress</span>
+            </div>
+          </div>
+
+          <div className="ticket-info">
+            <p className="ticket-message">Status update: Working on procurement process.</p>
+
+            <div className="ticket-dates">
+              <span>Last Update: 2025-04-20</span>
+              <span>Submitted Date: 2025-04-19</span>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Floating Button (Expandable) */}
-      <div className="fixed bottom-6 right-6 z-50 space-y-3 flex flex-col items-center">
-        {/* Toggle Button */}
-        <button
-          className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-blue-700 transition"
-          onClick={handleToggle}
-        >
-          <span className="text-xl">+</span> {/* Change to any icon you prefer */}
+      {/* Floating Button Menu */}
+      <div className="floating-menu">
+        {/* Main Expand Button */}
+        <button className="float-button main-button" onClick={handleToggle}>
+          +
         </button>
 
-        {/* Expandable Buttons */}
+        {/* Expanded Options */}
         {isExpanded && (
           <>
-            {/* Messaging Button */}
+            {/* 💬 opens Modal now */}
             <button
-              className="bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-blue-700 transition"
-              onClick={() => alert('Open Messaging Modal or Chat!')}
+              className="float-button message-button"
+              onClick={openModal}
             >
-              <span className="text-xl">💬</span>
+              💬
             </button>
 
-            {/* Navigate Button */}
+            {/* ❓ still navigates */}
             <button
-              className="bg-green-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-green-700 transition"
-              onClick={() => navigate('/user/frequently-asked-questions')} // Change to the desired navigation link
+              className="float-button help-button"
+              onClick={() => navigate('/user/frequently-asked-questions')}
             >
-              <span className="text-xl">➡️</span>
+              ❓
             </button>
           </>
         )}
       </div>
+
+      {/* Show the Chat Modal */}
+      {showModal && <SupportChatModal closeModal={closeModal} />}
     </div>
   );
 };

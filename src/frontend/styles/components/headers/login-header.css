@@ -1,0 +1,84 @@
+/* Base styles for the login header */
+.login-header {
+    width: 100%;
+    padding: 1.5rem 3rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.login-header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers logo and text horizontally */
+    gap: 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.login-header-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    padding: 0.5rem;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.login-header-title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #c41e3a; /* Red color for "Smart" */
+    line-height: 1.2;
+}
+
+.login-header-title span {
+    color: #0052a5; /* Blue color for "Support" */
+}
+
+.login-header-subtitle {
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* Responsive header styles */
+@media (max-width: 768px) {
+    .login-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .login-header-brand {
+        gap: 1rem;
+    }
+    
+    .login-header-logo {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .login-header-title {
+        font-size: 1.5rem;
+    }
+    
+    .login-header-subtitle {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-header {
+        padding: 1rem;
+    }
+    
+    .login-header-logo {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .login-header-title {
+        font-size: 1.3rem;
+    }
+}

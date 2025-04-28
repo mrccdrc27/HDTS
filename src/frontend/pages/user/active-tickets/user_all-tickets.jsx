@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Search } from 'lucide-react'; 
-  
-import CreateTicketButton from '../../../components/buttons/create-ticket';
+import { useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
+import '../../../styles/components/pages/user/user_alltickets.css'; // Adjust the path as necessary
 
 const tickets = [
   {
@@ -47,23 +47,25 @@ const tickets = [
   // Add more tickets as needed
 ];
 
-const statusStyles = {
-  Pending: 'bg-yellow-200 text-yellow-800',
-  Open: 'bg-blue-200 text-blue-800',
-  'On Process': 'bg-yellow-300 text-yellow-900',
-  'On Hold': 'bg-gray-300 text-gray-800',
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'Pending': return 'status-pending';
+    case 'Open': return 'status-open';
+    case 'On Process': return 'status-process';
+    case 'On Hold': return 'status-hold';
+    default: return '';
+  }
 };
 
 const AllTickets = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20; // Fixed to 20 items per page
+  const itemsPerPage = 20;
+  const navigate = useNavigate(); // Using the hook
 
-  // Calculate the range of tickets to display for the current page
   const indexOfLastTicket = currentPage * itemsPerPage;
   const indexOfFirstTicket = indexOfLastTicket - itemsPerPage;
   const currentTickets = tickets.slice(indexOfFirstTicket, indexOfLastTicket);
 
-  // Handle pagination logic
   const totalPages = Math.ceil(tickets.length / itemsPerPage);
 
   const goToNextPage = () => {
@@ -78,112 +80,168 @@ const AllTickets = () => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
+  const handleCreateTicket = () => {
+    navigate('/request-ticket'); // Navigate to the request-ticket route
+  };
+
+  // Function to handle click on any row to navigate to ticket details
+  const handleTicketClick = (ticketNumber) => {
+    navigate(`/ticket-details/${ticketNumber}`); // Adjust based on your routing setup
+  };
+
   return (
-    <div className="p-6">
+    <div className="tickets-page">
+      <h1>All Tickets</h1>
 
-      <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-bold">All Tickets</h1>
+      <div className="controls-section">
+        <div className="top-controls">
+          <div className="search-bar-container">
+            <input
+              type="text"
+              placeholder="Search"
+              className="search-bar"
+            />
+            <Search className="search-icon" size={16} />
+          </div>
 
-      <div className="flex flex-wrap gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Search"
-          className="border rounded-md px-3 py-2 w-60"
-        />
-      
-        <CreateTicketButton />
-      </div>
-
-      <span>Filter by</span>
-        <select className="border rounded-md px-3 py-2">
-          <option>Category</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Sub Category</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Department</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Status</option>
-        </select>
-
-      <span>Sort by</span>
-        <select className="border rounded-md px-3 py-2">
-          <option>Sort Order</option>
-        </select>
-        <select className="border rounded-md px-3 py-2">
-          <option>Date</option>
-        </select>
-      </div>
-
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-red-700 text-white">
-            <th className="px-4 py-2">Ticket Number</th>
-            <th className="px-4 py-2">Subject</th>
-            <th className="px-4 py-2">Department</th>
-            <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Sub Category</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Date Created</th>
-            <th className="px-4 py-2">Last Updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentTickets.map((ticket, idx) => (
-            <tr key={idx} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-2">{ticket.number}</td>
-              <td className="px-4 py-2">{ticket.subject}</td>
-              <td className="px-4 py-2">{ticket.department}</td>
-              <td className="px-4 py-2">{ticket.category}</td>
-              <td className="px-4 py-2">{ticket.subCategory}</td>
-              <td className="px-4 py-2">
-                <span className={`px-2 py-1 rounded-full text-sm font-medium ${statusStyles[ticket.status]}`}>
-                  {ticket.status}
-                </span>
-              </td>
-              <td className="px-4 py-2">{ticket.dateCreated}</td>
-              <td className="px-4 py-2">{ticket.lastUpdated}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex items-center gap-2">
-          {/* Removed the "items per page" display */}
+          <button className="create-ticket-btn" onClick={handleCreateTicket}>
+            <span>+</span> Create Ticket
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 text-sm">
+        <div className="filter-sort-controls">
+          <div className="filter-group">
+            <span className="filter-label">Filter by:</span>
+            <select className="filter-select">
+              <option>Category</option>
+            </select>
+            <select className="filter-select">
+              <option>Sub Category</option>
+            </select>
+            <select className="filter-select">
+              <option>Department</option>
+            </select>
+            <select className="filter-select">
+              <option>Status</option>
+            </select>
+          </div>
+
+          <div className="sort-group">
+            <span className="sort-label">Sort by:</span>
+            <select className="sort-select">
+              <option>Sort Order</option>
+            </select>
+            <select className="sort-select">
+              <option>Date</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="tickets-table-container">
+        <table className="tickets-table">
+          <thead>
+            <tr>
+              <th>Ticket Number</th>
+              <th>Subject</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Status</th>
+              <th>Date Created</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentTickets.length > 0 ? (
+              currentTickets.map((ticket, idx) => (
+                <tr key={idx} onClick={() => handleTicketClick(ticket.number)}>
+                  <td>{ticket.number}</td>
+                  <td>{ticket.subject}</td>
+                  <td>{ticket.department}</td>
+                  <td>{ticket.category}</td>
+                  <td>{ticket.subCategory}</td>
+                  <td>
+                    <span className={`status-badge ${getStatusClass(ticket.status)}`}>
+                      {ticket.status}
+                    </span>
+                  </td>
+                  <td>{ticket.dateCreated}</td>
+                  <td>{ticket.lastUpdated}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>
+                  No tickets found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="pagination-container">
+        <div className="pagination-items-display">
+          <span>Show</span>
+          <select className="pagination-items-select">
+            <option>20</option>
+          </select>
+          <span>items per page</span>
+        </div>
+
+        <div className="pagination-controls">
           <button
-            className={`text-red-500 ${currentPage === 1 ? 'cursor-not-allowed' : ''}`}
             onClick={goToPreviousPage}
             disabled={currentPage === 1}
+            className="pagination-nav-button"
           >
-            &larr; Previous
+            ← Previous
           </button>
+
           <button
-            className={`w-8 h-8 rounded-full bg-red-700 text-white ${currentPage === 1 ? 'bg-red-500' : ''}`}
             onClick={() => goToPage(1)}
+            className={`pagination-page-button ${currentPage === 1 ? 'active' : ''}`}
           >
             1
           </button>
-          {currentPage > 2 && <span>...</span>}
-          {currentPage < totalPages && (
-            <button
-              className="text-red-700"
-              onClick={() => goToPage(totalPages)}
-            >
-              {totalPages}
-            </button>
-          )}
+
           <button
-            className={`text-red-700 ${currentPage === totalPages ? 'cursor-not-allowed' : ''}`}
+            onClick={() => goToPage(2)}
+            className={`pagination-page-button ${currentPage === 2 ? 'active' : ''}`}
+          >
+            2
+          </button>
+
+          <button
+            onClick={() => goToPage(3)}
+            className={`pagination-page-button ${currentPage === 3 ? 'active' : ''}`}
+          >
+            3
+          </button>
+
+          <span className="pagination-ellipsis">...</span>
+
+          <button
+            onClick={() => goToPage(67)}
+            className={`pagination-page-button ${currentPage === 67 ? 'active' : ''}`}
+          >
+            67
+          </button>
+
+          <button
+            onClick={() => goToPage(68)}
+            className={`pagination-page-button ${currentPage === 68 ? 'active' : ''}`}
+          >
+            68
+          </button>
+
+          <button
             onClick={goToNextPage}
             disabled={currentPage === totalPages}
+            className="pagination-nav-button"
           >
-            Next &rarr;
+            Next →
           </button>
         </div>
       </div>

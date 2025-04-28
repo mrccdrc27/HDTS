@@ -1,0 +1,39 @@
+/* user_login-header.css */
+.login-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 3rem;
+    background-color: #ffffff;
+}
+
+.userNavbar-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+}
+
+.login-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #c41e3a; /* Red color for "Smart" */
+}
+
+.login-header h2 span {
+    color: #0052a5; /* Blue color for "Support" */
+}
+
+.login-header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Responsive header styles */
+@media (max-width: 768px) {
+    .login-header {
+        padding: 1.5rem 2rem;
+    }
+}

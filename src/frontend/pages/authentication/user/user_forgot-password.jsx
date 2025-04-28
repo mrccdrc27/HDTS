@@ -1,3 +1,5 @@
+import CreateAccountForgotPasswordHeader from "../../../components/headers/user_create-account-forgot-password-header";
+
 function ForgotPassword() {
     const handleSubmit = (e) => {
       e.preventDefault();
@@ -7,10 +9,11 @@ function ForgotPassword() {
   
     return (
       <>
-        {/* lalagyan ng component dito */}
+        <CreateAccountForgotPasswordHeader />
   
         <div className="form-container">
           <h2>Forgot Password</h2>
+          <hr /> <br /> 
           <p>Enter your email address to receive a password reset link.</p>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
