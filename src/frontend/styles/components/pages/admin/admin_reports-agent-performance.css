@@ -1,0 +1,257 @@
+/* TicketReports.css */
+
+/* Main container */
+.reports-container {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    background-color: #f9fafb;
+    min-height: 100vh;
+    overflow-y: auto; /* <-- Add this */
+}
+
+body {
+    height: 100%;
+    overflow-y: auto;
+}
+
+  
+  /* Header section with title and print button */
+  .reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Page title */
+  .page-title {
+    font-size: 1.875rem;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  /* Print button */
+  .print-button {
+    background-color: #1d4ed8; /* Blue-700 */
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  
+  .print-button:hover {
+    background-color: #1e40af; /* Blue-800 */
+  }
+  
+  /* Search and Filter section */
+  .search-filter-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .search-container {
+    position: relative;
+    display: flex;
+    margin-bottom: 1rem;
+    max-width: 400px;
+  }
+  
+  .search-input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .filters-sort-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .filters-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .filter-label, .sort-label {
+    margin-right: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  
+  .select-container {
+    position: relative;
+    margin-right: 0.5rem;
+  }
+  
+  .filter-select, .sort-select {
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    appearance: none;
+    background-color: white;
+  }
+  
+  .select-arrow {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  
+  .sort-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  /* Main content area */
+  .reports-content {
+    flex: 1;
+    min-height: 400px; /* Give some space for content */
+    margin-bottom: 1rem;
+  }
+  
+  /* Progress bar */
+  .progress-container {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .progress-bar {
+    height: 0.5rem;
+    width: 100%;
+    background-color: #e5e7eb; /* Gray-200 */
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    width: 20%;
+    background-color: #2563eb; /* Blue-600 */
+    border-radius: 9999px;
+  }
+  
+  /* Pagination */
+  .pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .items-per-page {
+    display: flex;
+    align-items: center;
+  }
+  
+  .items-per-page span {
+    margin: 0 0.5rem;
+  }
+  
+  .per-page-select {
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.75rem;
+  }
+  
+  .pagination-controls {
+    display: flex;
+    align-items: center;
+  }
+  
+  .prev-button, .next-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .prev-button {
+    color: #f97316; /* Orange-500 - to match the arrow color in the image */
+    margin-right: 1rem;
+  }
+  
+  .next-button {
+    color: #f97316; /* Orange-500 - to match the arrow color in the image */
+    margin-left: 1rem;
+  }
+  
+  .page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .page-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .page-number:hover:not(.active) {
+    background-color: #e5e7eb; /* Gray-200 */
+  }
+  
+  .page-number.active {
+    background-color: #be123c; /* Red-700 */
+    color: white;
+  }
+  
+  .ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Icons */
+  .icon {
+    height: 1rem;
+    width: 1rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .reports-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .filters-sort-container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .sort-container {
+      margin-top: 0.75rem;
+    }
+    
+    .pagination-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }

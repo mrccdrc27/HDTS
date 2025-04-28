@@ -81,7 +81,7 @@ const AllTickets = () => {
   };
 
   const handleCreateTicket = () => {
-    navigate('/request-ticket'); // Navigate to the request-ticket route
+    navigate('/user/request-ticket'); // Navigate to the request-ticket route
   };
 
   // Function to handle click on any row to navigate to ticket details

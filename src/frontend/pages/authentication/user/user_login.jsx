@@ -53,7 +53,7 @@ const UserLogin = () => {
                                 name="email" 
                                 value={formData.email}
                                 onChange={handleChange}
-                                placeholder="Enter your email password"
+                                placeholder="Enter your email address"
                                 required
                             />
                         </div>

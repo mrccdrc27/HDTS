@@ -1,39 +1,82 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';// Import the CSS
 
-const ModalTicketSuccessful = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;  // If the modal is not open, return null
+const ModalTicketSuccessful = ({ isOpen, onClose, ticketData }) => {
+  if (!isOpen) return null;
+  
+  // Format the date as "April 09, 2025"
+  const formattedDate = ticketData?.date 
+    ? ticketData.date.toLocaleDateString('en-US', {
+        month: 'long',
+        day: '2-digit',
+        year: 'numeric'
+      })
+    : new Date().toLocaleDateString('en-US', {
+        month: 'long',
+        day: '2-digit',
+        year: 'numeric'
+      });
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded shadow-lg">
-        <h2>Ticket successfully created!</h2>
-        <hr />
-        <h3>Ticket Number</h3>
-        <h2>Number</h2>
-        <hr />
-        <p>Date</p>
-        <p>Subject</p>
-        <p>Category</p>
-        <p>Sub-category</p>
-        <p>Attached File</p>
+    <div className="modal-overlay">
+      <div className="modal-container">
+        {/* Header */}
+        <div className="modal-header">
+          <p className="success-message">Ticket successfully created!</p>
+        </div>
         
-        <Link to="/user/home">
-            <button>Close</button>
-        </Link>
-
-        {/* View Ticket Link */}
-        <Link to="/user/ticket-details" className="block mt-4">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded mt-2">
-            View Ticket
-          </button>
-        </Link>
-
-        <p>Submit another request? 
-          <Link to="/user/request-ticket" className="text-blue-600">
-            Click here
+        {/* Ticket Number */}
+        <div className="ticket-number-section">
+          <p className="ticket-number-label">Ticket Number</p>
+          <h2 className="ticket-number">{ticketData?.ticketNumber || "TX0405"}</h2>
+        </div>
+        
+        {/* Date - right aligned */}
+        <p className="ticket-date">{formattedDate}</p>
+        
+        {/* Ticket Details */}
+        <div className="ticket-details">
+          <div className="ticket-detail-row">
+            <span className="detail-label">Subject:</span>
+            <span className="detail-value">{ticketData?.subject || "Request for personal app installation"}</span>
+          </div>
+          
+          <div className="ticket-detail-row">
+            <span className="detail-label">Category:</span>
+            <span className="detail-value">{ticketData?.category || "Software"}</span>
+          </div>
+          
+          <div className="ticket-detail-row">
+            <span className="detail-label">Sub Category:</span>
+            <span className="detail-value">{ticketData?.subCategory || "Unauthorized Apps"}</span>
+          </div>
+          
+          <div className="ticket-detail-row">
+            <span className="detail-label">Attached File:</span>
+            <span className="detail-value">{ticketData?.attachedFile || "Not Applicable"}</span>
+          </div>
+        </div>
+        
+        {/* Footer with buttons */}
+        <div className="modal-footer">
+          <Link to="/user/home">
+            <button className="close-button" onClick={onClose}>
+              CLOSE
+            </button>
           </Link>
-        </p>
+          
+          <Link to={`/user/ticket-details/${ticketData?.ticketNumber || "TX0405"}`}>
+            <button className="view-ticket-button">
+              VIEW TICKET
+            </button>
+          </Link>
+        </div>
+        
+        {/* Submit another link */}
+        <div className="submit-another">
+          Submit another request? 
+          <Link to="/user/request-ticket" className="submit-link"> Click here</Link>
+        </div>
       </div>
     </div>
   );
