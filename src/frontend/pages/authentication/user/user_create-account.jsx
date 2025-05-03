@@ -112,43 +112,42 @@ function CreateAccount() {
           </div>
 
           <div className="create-account-form-group">
-          <label htmlFor="department">Department</label>
-          <div className="select-wrapper">
-            <select
-              id="department"
-              name="department"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              className="suffix-select"
-              style={{
-                color: department === '' ? '#7e7e7e' : '#0C0C0C',
-              }}
-            >
-              <option value="" disabled hidden>Department</option>
-              <option value="IT">IT Department</option>
-              <option value="HR">Human Resource</option>
-              <option value="Finance">Finance</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Operations">Operations</option>
-            </select>
+            <label htmlFor="department">Department</label>
+            <div className="select-wrapper">
+              <select
+                id="department"
+                name="department"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="suffix-select"
+                style={{
+                  color: department === '' ? '#7e7e7e' : '#0C0C0C',
+                }}
+              >
+                <option value="" disabled hidden>Department</option>
+                <option value="IT">IT Department</option>
+                <option value="HR">Human Resource</option>
+                <option value="Finance">Finance</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Operations">Operations</option>
+              </select>
 
-            {/* Separator */}
-            <div className="select-separator"></div>
+              {/* Separator */}
+              <div className="select-separator"></div>
 
-            {/* Chevron */}
-            <div className="select-chevron">
-              <ChevronDown size={18} />
-            </div>
-
-            {/* Clear button */}
-            {department && (
-              <div className="clear-suffix" onClick={() => setDepartment('')}>
-                <X size={14} />
+              {/* Chevron */}
+              <div className="select-chevron">
+                <ChevronDown size={18} />
               </div>
-            )}
-          </div>
-        </div>
 
+              {/* Clear button */}
+              {department && (
+                <div className="clear-department" onClick={() => setDepartment('')}>
+                  <X size={14} />
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Upload image */}
           <div className="create-account-form-group">

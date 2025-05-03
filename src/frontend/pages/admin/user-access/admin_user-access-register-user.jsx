@@ -1,18 +1,21 @@
 import { useState } from "react";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
-import "../../../styles/components/pages/admin/admin_user-access-register-user.css"; // Renamed CSS file
-import { Eye, EyeOff, Upload, X } from "lucide-react";
+import "../../../styles/components/pages/admin/admin_user-access-register-user.css";
+import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
 function RegisterUser() {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profileImageName, setProfileImageName] = useState("");
   const [showProfileImageModal, setShowProfileImageModal] = useState(false);
   const [department, setDepartment] = useState('');
   const [suffix, setSuffix] = useState('');
   const [role, setRole] = useState('');
- 
+
+  const [passwordTooltip, setPasswordTooltip] = useState('');
+  const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState('');
+
   const handleProfileImageSelection = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -45,28 +48,100 @@ function RegisterUser() {
           <label htmlFor="middle-name">Middle Name</label>
           <input type="text" id="middle-name" name="middle_name" placeholder="Middle Name" />
         </div>
-        ;
+        
         <div className="register-user-form-group">
           <label htmlFor="suffix">Suffix</label>
-          <select
-            id="suffix"
-            name="suffix"
-            value={suffix}
-            onChange={(e) => setSuffix(e.target.value)}
-            style={{
-              color: suffix === '' ? '#7e7e7e' : '#0C0C0C'
-            }}
-          >
-            <option value="">Suffix</option>
-            <option value="Jr.">Jr.</option>
-            <option value="Sr.">Sr.</option>
-            <option value="II">II</option>
-            <option value="III">III</option>
-            <option value="IV">IV</option>
-            <option value="None">None</option>
-          </select>
+          <div className="register-user-select-wrapper">
+            <select
+              id="suffix"
+              name="suffix"
+              value={suffix}
+              onChange={(e) => setSuffix(e.target.value)}
+              className="register-user-suffix-select"
+              style={{
+                color: suffix === '' ? '#7e7e7e' : '#0C0C0C',
+              }}
+            >
+              <option value="" disabled hidden>Suffix</option>
+              <option value="Jr.">Jr.</option>
+              <option value="Sr.">Sr.</option>
+              <option value="II">II</option>
+              <option value="III">III</option>
+              <option value="IV">IV</option>
+              <option value="V">V</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <div className="register-user-select-separator"></div>
+
+            <div className="register-user-select-chevron">
+              <ChevronDown size={18} />
+            </div>
+
+            {suffix && (
+              <div
+                className="register-user-clear-suffix"
+                onClick={() => setSuffix('')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setSuffix('');
+                  }
+                }}
+              >
+                <X size={14} />
+              </div>
+            )}
+          </div>
         </div>
 
+        <div className="register-user-form-group">
+          <label htmlFor="department">Department</label>
+          <div className="register-user-select-wrapper">
+            <select
+              id="department"
+              name="department"
+              required
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className="suffix-select"
+              style={{
+                color: department === '' ? '#7e7e7e' : '#0C0C0C',
+              }}
+            >
+              <option value="" disabled hidden>Department</option>
+              <option value="IT Department">IT Department</option>
+              <option value="Human Resources">Human Resources</option>
+              <option value="Finance">Finance</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+            </select>
+
+            <div className="register-user-select-separator"></div>
+
+            <div className="register-user-select-chevron">
+              <ChevronDown size={18} />
+            </div>
+
+            {department && (
+              <div
+                className="register-user-clear-department"
+                onClick={() => setDepartment('')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setDepartment('');
+                  }
+                }}
+              >
+                <X size={14} />
+              </div>
+            )}
+          </div>
+        </div>
+        
         <div className="register-user-form-group">
           <label htmlFor="company-id">Company ID</label>
           <input
@@ -82,117 +157,120 @@ function RegisterUser() {
         </div>
 
         <div className="register-user-form-group">
-          <label htmlFor="department">Department</label>
-          <select
-            id="department"
-            name="department"
-            required
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            style={{
-              color: department === '' ? '#7e7e7e' : '#0C0C0C'
-            }}
-          >
-            <option value="">Department</option>
-            <option value="IT">IT</option>
-            <option value="HR">HR</option>
-            <option value="Finance">Finance</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Operations">Operations</option>
-          </select>
-        </div>
-
-        {/* Role Dropdown */}
-        <div className="register-user-form-group">
           <label htmlFor="role-selection">User Role</label>
-          <select
-            id="role-selection"
-            name="role_selection"
-            required
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            style={{
-              color: role === '' ? '#7e7e7e' : '#0C0C0C'
-            }}
-          >
-            <option value="">User Role</option>
-            <option value="Employee">Employee</option>
-            <option value="Ticket Admin">Ticket Admin</option>
-            <option value="System Admin">System Admin</option>
-          </select>
+          <div className="register-user-select-wrapper">
+            <select
+              id="role-selection"
+              name="role_selection"
+              required
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="register-user-suffix-select"
+              style={{
+                color: role === '' ? '#7e7e7e' : '#0C0C0C',
+              }}
+            >
+              <option value="" disabled hidden>User Role</option>
+              <option value="Employee">Employee</option>
+              <option value="Ticket Agent">Ticket Agent</option>
+              <option value="System Admin">System Admin</option>
+            </select>
+
+            <div className="register-user-select-separator"></div>
+
+            <div className="register-user-select-chevron">
+              <ChevronDown size={18} />
+            </div>
+
+            {role && (
+              <div
+                className="register-user-clear-role"
+                onClick={() => setRole('')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setRole('');
+                  }
+                }}
+              >
+                <X size={14} />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Image Upload */}
         <div className="register-user-form-group">
-  <label htmlFor="image-upload">Upload Profile Picture</label>
-  <div className="register-user-file-upload-container">
-    <label
-      htmlFor="image"
-      className={`register-user-file-upload-btn full-clickable ${profileImagePreview ? "disabled" : ""}`}
-      style={profileImagePreview ? { cursor: "not-allowed", opacity: 0.6 } : {}}
-    >
-      <Upload size={18} className="upload-icon" />
-      <input
-        type="file"
-        id="image"
-        name="image"
-        accept="image/*"
-        required
-        onChange={handleProfileImageSelection}
-        style={{ display: "none" }}
-        disabled={!!profileImagePreview}
-      />
-    </label>
+          <label htmlFor="image-upload">Upload Profile Picture</label>
+          <div className="register-user-file-upload-container">
+            <label
+              htmlFor="image"
+              className={`register-user-file-upload-btn full-clickable ${profileImagePreview ? "disabled" : ""}`}
+              style={profileImagePreview ? { cursor: "not-allowed", opacity: 0.6 } : {}}
+            >
+              <Upload size={18} className="upload-icon" />
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                required
+                onChange={handleProfileImageSelection}
+                style={{ display: "none" }}
+                disabled={!!profileImagePreview}
+              />
+            </label>
 
-    <span
-      className="register-user-file-name"
-      style={{ color: '#7e7e7e' }}
-      onClick={() => {
-        if (profileImagePreview) {
-          setShowProfileImageModal(true);
-        } else {
-          const fileInput = document.getElementById("image");
-          if (fileInput) fileInput.click();
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          if (profileImagePreview) {
-            setShowProfileImageModal(true);
-          } else {
-            const fileInput = document.getElementById("image");
-            if (fileInput) fileInput.click();
-          }
-        }
-      }}
-    >
-      {profileImageName || "Attach Image"}
+            <span
+              className="register-user-file-name"
+              style={{ color: '#7e7e7e' }}
+              onClick={() => {
+                if (profileImagePreview) {
+                  setShowProfileImageModal(true);
+                } else {
+                  const fileInput = document.getElementById("image");
+                  if (fileInput) fileInput.click();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  if (profileImagePreview) {
+                    setShowProfileImageModal(true);
+                  } else {
+                    const fileInput = document.getElementById("image");
+                    if (fileInput) fileInput.click();
+                  }
+                }
+              }}
+            >
+              {profileImageName || "Upload Profile Picture"}
 
-      {profileImageName && (
-        <span
-          onClick={(e) => {
-            e.stopPropagation();
-            setProfileImagePreview(null);
-            setProfileImageName("");
-          }}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.stopPropagation();
-              setProfileImagePreview(null);
-              setProfileImageName("");
-            }
-          }}
-        >
-          <X size={18} />
-        </span>
-      )}
-    </span>
-  </div>
-</div>
+              {profileImageName && (
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setProfileImagePreview(null);
+                    setProfileImageName("");
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.stopPropagation();
+                      setProfileImagePreview(null);
+                      setProfileImageName("");
+                    }
+                  }}
+                >
+                  <X size={18} />
+                </span>
+              )}
+            </span>
+          </div>
+        </div>
 
         <UploadedImagePreview
           showModal={showProfileImageModal}
@@ -200,63 +278,66 @@ function RegisterUser() {
           closeModal={() => setShowProfileImageModal(false)}
         />
 
-        {/* Email and Password Fields */}
         <div className="register-user-form-group">
           <label htmlFor="email">Email Address</label>
           <input type="email" id="email" name="email" required placeholder="Email Address" />
         </div>
 
         <div className="register-user-form-group">
-          <label htmlFor="password">Password</label>
-          <div className="register-user-password-container">
-            <input
-              type={passwordVisible ? "text" : "password"}
-              id="password"
-              name="password"
-              required
-              placeholder="Password"
-            />
-            <span
-              className="password-icon"
-              onClick={() => setPasswordVisible(!passwordVisible)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") setPasswordVisible(!passwordVisible);
-              }}
-            >
-              {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-            </span>
-          </div>
+  <label htmlFor="password">Password</label>
+  <div className="register-user-form-input-wrapper">
+    <input
+      type={showPassword ? "text" : "password"}
+      id="password"
+      name="password"
+      required
+      placeholder="Password"
+    />
+    <span
+      className="register-user-password-icon"
+      data-tooltip={showPassword ? "Hide Password" : "Show Password"}
+      onClick={() => setShowPassword(!showPassword)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") setShowPassword(!showPassword);
+      }}
+    >
+      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </span>
+  </div>
+</div>
+
+<div className="register-user-form-group">
+  <label htmlFor="confirm-password">Confirm Password</label>
+  <div className="register-user-form-input-wrapper">
+    <input
+      type={showConfirmPassword ? "text" : "password"}
+      id="confirm-password"
+      name="confirm_password"
+      placeholder="Confirm Password"
+      required
+    />
+    <span
+      className="register-user-password-icon"
+      data-tooltip={showConfirmPassword ? "Hide Password" : "Show Password"}
+      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") setShowConfirmPassword(!showConfirmPassword);
+      }}
+    >
+      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+    </span>
+  </div>
+</div>
+
+        <div class="register-user-button-group">
+          <button class="btn-cancel-register-user">Cancel</button>
+          <button class="btn-register-user">Register</button>
         </div>
 
-        <div className="register-user-form-group">
-          <label htmlFor="confirm-password">Confirm Password</label>
-          <div className="password-container">
-            <input
-              type={confirmPasswordVisible ? "text" : "password"}
-              id="confirm-password"
-              name="confirm_password"
-              placeholder="Confirm Password"
-              required
-            />
-            <span
-              className="password-icon"
-              onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") setConfirmPasswordVisible(!confirmPasswordVisible);
-              }}
-            >
-              {confirmPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-            </span>
-          </div>
-        </div>
-
-        <button type="submit" className="btn-register-user">
-          Register User
-        </button>
       </form>
     </div>
   );

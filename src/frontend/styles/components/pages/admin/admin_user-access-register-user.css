@@ -1,27 +1,27 @@
 :root {
     --red-logo: #AE131B;
     --red-dark: #8B0F16;
-    --blue-logo: #0F4C8A; /* blue set as the default */
+    --blue-logo: #0F4C8A; /* default blue */
+    --blue-dark: #052E6A;
     --neutral-light-gray: #E3E3E3;
+    --neutral-gray: #B0B0B0;
     --bg-dark: #0C0C0C;
     --neutral-dim-gray: #7E7E7E;
 }
 
 * {
     box-sizing: border-box;
-    font-family: 'Poppins';
+    font-family: 'Poppins', sans-serif;
     border-color: var(--blue-logo);
 }
 
 .register-user-form-container {
     max-width: 90%;
-    width: 90%;
     margin: 3rem auto;
     padding: 2rem;
     background: var(--neutral-light-gray);
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Poppins', sans-serif;
     display: flex;
     flex-direction: column;
 }
@@ -51,29 +51,18 @@ form {
     margin-bottom: 0.5rem;
 }
 
-.register-user-form-group:nth-child(1),
-.register-user-form-group:nth-child(2),
-.register-user-form-group:nth-child(3),
-.register-user-form-group:nth-child(4) {
-    grid-column: span 1;
-}
-
 .register-user-form-group:nth-child(5),
-.register-user-form-group:nth-child(6),
-.register-user-form-group:nth-child(7) {
+.register-user-checkbox-group {
     grid-column: span 2;
 }
 
 .register-user-form-group:nth-child(8),
 .register-user-form-group:nth-child(9),
-.register-user-form-group:nth-child(10) {
+.register-user-form-group:nth-child(10),
+.register-user-form-group:nth-child(11) {
     grid-column: 1 / -1;
     display: flex;
     flex-direction: column;
-}
-
-.register-user-checkbox-group {
-    grid-column: span 2;
 }
 
 .register-user-form-group label {
@@ -84,8 +73,8 @@ form {
     font-size: 0.9rem;
 }
 
-.register-user-form-group label[for="last-name"]::after,
-.register-user-form-group label[for="first-name"]::after,
+/* Required field asterisks */
+.register-user-form-group label[for$="name"]::after,
 .register-user-form-group label[for="company-id"]::after,
 .register-user-form-group label[for="department"]::after,
 .register-user-form-group label[for="role-selection"]::after,
@@ -97,40 +86,31 @@ form {
     color: var(--red-logo);
 }
 
-.register-user-form-group input[type="text"],
-.register-user-form-group input[type="email"],
-.register-user-form-group input[type="password"] {
+/* Inputs, selects, textarea, file upload */
+.register-user-form-group input,
+.register-user-form-group select,
+.register-user-form-group textarea,
+.register-user-file-upload-container {
     width: 100%;
     padding: 0.6rem;
     font-size: 0.95rem;
     border-radius: 6px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--bg-dark);
     background: #fff;
+    height: calc(2.5rem + 2px);
     transition: border-color 0.3s, box-shadow 0.3s;
-    line-height: 1.4;
-    height: calc(2.5rem + 2px); /* standardize */
 }
 
 .register-user-form-group select {
-    width: 100%;
-    padding: 0.6rem;
-    font-size: 0.95rem;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    background: #fff;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+    padding-right: 2rem;
     appearance: none;
-    line-height: 1.4;
-    height: calc(2.5rem + 2px); /* match input height */
-    padding-right: 2rem; /* room for arrow */
-    background: #fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 12px center;
-    background-size: 16px;
-    box-sizing: border-box;
-    cursor: pointer;
 }
 
+.register-user-form-group select::-ms-expand {
+    display: none;
+}
+
+/* File input */
 .register-user-form-group input[type="file"] {
     position: absolute;
     width: 0.1px;
@@ -142,154 +122,226 @@ form {
 
 .register-user-file-upload-container {
     position: relative;
-    min-height: calc(2.5rem + 2px);
-    padding: 0 0.6rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    max-width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #fff;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    box-sizing: border-box;
 }
 
-.register-user-file-upload-container:hover {
+.register-user-file-upload-container:hover,
+.register-user-form-group input:hover,
+.register-user-form-group select:hover,
+.register-user-form-group textarea:hover,
+.register-user-form-group input:focus,
+.register-user-form-group select:focus,
+.register-user-form-group textarea:focus,
+.register-user-file-upload-container:focus-within {
     border-color: var(--blue-logo);
-    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.15);
+    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2);
 }
 
+/* File upload button & filename */
 .file-upload-text {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: 100%;  /* Take up full height */
-    padding: 0;    /* No extra vertical padding */
-}
-
-.file-upload-text::before {
-    content: "No file selected";  /* Or your default text */
-    color: var(--neutral-dim-gray);
-    font-size: 0.95rem;
-}
-
-.file-upload-text input[type="file"] {
-    display: none;
+    height: 100%;
+    padding: 0;
 }
 
 .register-user-file-upload-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     font-size: 0.95rem;
     color: #666;
     cursor: pointer;
-    height: 100%;
-    padding-left: 2rem;  /* Add padding to the left to give space for the icon */
+    padding-left: 2rem;
+    position: relative;
 }
 
 .register-user-file-upload-btn svg {
-    position: absolute;  /* Position the icon absolutely inside the button */
-    left: 10px;  /* Move the icon slightly from the left edge */
-    top: 50%;  /* Vertically center the icon */
-    transform: translateY(-54%);
-    width: 1.2rem;  /* Icon size */
-    height: 1.2rem;
-    flex-shrink: 0;
-}
-
-.upload-note {
-    font-size: 0.75rem;
-    color: var(--neutral-dim-gray);
-    margin-top: 0.35rem;
-}
-
-.register-user-file-upload-container input[type="file"] {
     position: absolute;
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    z-index: -1;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-45%);
+    width: 1.2rem;
+    height: 1.2rem;
 }
 
 .register-user-file-name {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.95rem;  /* Match input text */
+    font-size: 0.95rem;
     color: #333;
-    max-width: 100%;     /* Ensures the container respects width */
-    overflow: hidden;    /* Hide overflowed content */
-    text-overflow: ellipsis;  /* Apply ellipsis for overflowing text */
-    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     cursor: pointer;
     position: relative;
-    height: 100%;
-    width: calc(100% - 30px);  /* Ensure there's enough space for the close button (X) */
+    width: calc(100% - 30px);
 }
 
 .register-user-file-name span {
-    position: absolute;   /* Position 'X' button absolutely */
-    right: 10px;          /* Adjust to place the 'X' button in the right position */
-    top: 50%;             /* Vertically center 'X' button */
+    position: absolute;
+    right: 10px;
+    top: 50%;
     transform: translateY(-50%);
     font-size: 1.2rem;
     color: #999;
     cursor: pointer;
+}
+
+/* Select wrapper */
+.register-user-select-wrapper {
+    position: relative;
+}
+
+.register-user-select-chevron {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-85%);
+    pointer-events: none;
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 100%;
+    font-size: 1rem;
+    color: #666;
 }
 
-.register-user-form-group input[type="text"],
-.register-user-form-group input[type="email"],
-.register-user-form-group input[type="password"],
-.register-user-form-group input[type="file"],
-.register-user-form-group select,
-.register-user-form-group textarea,
-.register-user-file-upload-container,
-.btn-register,
-hr {
+.register-user-clear-suffix,
+.register-user-clear-department,
+.register-user-clear-role {
+    position: absolute;
+    top: 50%;
+    right: 45px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #7e7e7e;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.register-user-clear-suffix:hover,
+.register-user-clear-department:hover,
+.register-user-clear-role:hover {
+    color: #000;
+}
+
+/* Password + Confirm Password */
+.register-user-password-container,
+.register-user-confirm-password-container {
+    position: relative;
+}
+
+.register-user-password-requirements,
+.register-user-confirm-password-requirements {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.2rem;
+}
+
+.register-user-password-container input,
+.register-user-confirm-password-container input {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
     border: 1px solid var(--bg-dark);
+    background: #fff;
+    height: calc(2.5rem + 2px);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.register-user-form-group input:focus,
-.register-user-form-group select:focus,
-.register-user-form-group textarea:focus,
-.register-user-file-upload-container:focus-within {
-    outline: none;
-    border-color: var(--blue-logo); /* blue color for focus */
-    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2); /* blue shadow */
-}
-
-.register-user-form-group input:hover,
-.register-user-form-group select:hover,
-.register-user-form-group textarea:hover,
-.register-user-file-upload-container:hover {
-    border-color: var(--blue-logo); /* blue hover */
+.register-user-password-container input:hover,
+.register-user-password-container input:focus,
+.register-user-confirm-password-container input:hover,
+.register-user-confirm-password-container input:focus {
+    border-color: var(--blue-logo);
     box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2);
 }
 
-/* Final submit button */
-.btn-register-user {
+/* Password icon & tooltip */
+.register-user-form-input-wrapper {
+    position: relative;
     width: 100%;
-    padding: 1rem;
-    background-color: var(--blue-logo);
-    color: white;
-    font-size: 1.1rem;
-    font-weight: bold;
+}
+
+.register-user-form-input-wrapper input {
+    padding-right: 40px; /* space for eye icon */
+}
+
+.register-user-password-icon {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-40%);
+    cursor: pointer;
+    color: #7e7e7e;
+}
+
+.register-user-password-icon:hover {
+    color: #333;
+}
+
+/* Tooltip */
+.register-user-password-icon::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 100;
+}
+
+.register-user-password-icon:hover::after {
+    opacity: 1;
+}
+
+/* Button group */
+.register-user-button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    grid-column: 1 / -1;
+}
+
+.btn-register-user,
+.btn-cancel-register-user {
+    width: 25%;
+    padding: 0.75rem;
+    color: #fff;
     border: none;
     border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
+.btn-register-user {
+    background: var(--blue-logo);
+}
+
 .btn-register-user:hover {
-    background-color: var(--blue-logo);
+    background: var(--blue-dark);
+}
+
+.btn-cancel-register-user {
+    background: var(--neutral-gray);
+}
+
+.btn-cancel-register-user:hover {
+    background: var(--red-logo);
 }

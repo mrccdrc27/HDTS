@@ -339,9 +339,9 @@ hr {
   box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.15); /* blue hover shadow */
 }
 
-.password-container { position: relative; }
 .password-requirements { font-size: 0.75rem; color: #666; margin-top: 0.2rem; }
-.password-container .password-icon {
+.password-container 
+.password-icon {
   position: absolute; right: 10px; top: 50%; transform: translateY(-40%); cursor: pointer;
 }
 
@@ -430,8 +430,8 @@ input[type="password"]::-webkit-textfield-decoration-button {
 .create-account-form-group input,
 .create-account-form-group select,
 .create-account-form-group textarea,
-.file-upload-container,
-.btn-signup {
+.file-upload-container
+{
   border: 1px solid var(--bg-dark) !important; /* Using !important to override any conflicting styles */
 }
 
