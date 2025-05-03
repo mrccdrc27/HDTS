@@ -4,7 +4,7 @@ import '../../styles/components/authentication/user_create-account-forgot-passwo
 
 const CreateAccountForgotPasswordHeader = () => {
     return (
-        <div className="login-header">
+        <div className="create-account-forgot-password-header">
             <div>
                 <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
             </div>

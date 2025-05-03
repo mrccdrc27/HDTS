@@ -1,0 +1,53 @@
+/* Modal Overlay */
+.uploaded-image-preview-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+/* Modal Content (Floatable) */
+.uploaded-image-preview-modal-content.floatable {
+    position: absolute; /* Changed from relative to absolute for floating */
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px; /* Fixed width for better drag experience */
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: move; /* Show move cursor when hovering */
+    transition: box-shadow 0.2s;
+}
+
+/* Modal Image */
+.modal-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Close Button */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover {
+    color: var(--blue-logo);
+}
+
+.close-button:focus {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+    color: var(--blue-logo);
+}

@@ -15,10 +15,6 @@
   width: 100%;
 }
 
-body {
-  margin-top: 80px; /* Add margin to body to prevent content from being hidden under navbar */
-}
-
 .adminNavbar-left {
   display: flex;
   align-items: center;

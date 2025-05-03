@@ -16,10 +16,6 @@
   height: 64px;
 }
 
-body {
-  margin-top: 80px; /* Match admin navbar body margin */
-}
-
 /* Logo section */
 .userNavbar-left {
   display: flex;

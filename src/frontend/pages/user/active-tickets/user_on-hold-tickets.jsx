@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
-import CreateTicketButton from '../../../components/buttons/create-ticket';
+import CreateTicketButton from '../../../components/buttons/user/create-ticket.jsx';
 import '../../../styles/components/pages/user/user_alltickets.css'; // Import the shared CSS
 
 const onHoldTickets = [
