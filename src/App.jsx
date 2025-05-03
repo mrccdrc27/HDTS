@@ -33,6 +33,7 @@ import UserAccessAllUsers from './frontend/pages/admin/user-access/admin_user-ac
 import UserAccessEmployees from './frontend/pages/admin/user-access/admin_user-access-employees.jsx';
 import UserAccessTicketAgents from './frontend/pages/admin/user-access/admin_user-access-ticket-agents.jsx';
 import UserAccessSystemManagers from './frontend/pages/admin/user-access/admin_user-access-system-managers.jsx';
+import RegisterUser from './frontend/pages/admin/user-access/admin_user-access-register-user.jsx';
 import ReportsAgentPerformanceReport from './frontend/pages/admin/reports/admin_reports-agent-performance.jsx';
 import ReportsDepartmentReport from './frontend/pages/admin/reports/admin_reports-department.jsx';
 import ReportsSLAComplianceReport from './frontend/pages/admin/reports/admin_reports-sla-compliance.jsx';
@@ -88,6 +89,7 @@ const App = () => {
           <Route path="user-access-employees" element={<UserAccessEmployees />} />
           <Route path="user-access-ticket-agents" element={<UserAccessTicketAgents />} />
           <Route path="user-access-system-managers" element={<UserAccessSystemManagers />} />
+          <Route path="user-access-register-user" element={<RegisterUser />} />
 
           <Route path="reports-agent-performance-report" element={<ReportsAgentPerformanceReport />} />
           <Route path="reports-department-report" element={<ReportsDepartmentReport />} />

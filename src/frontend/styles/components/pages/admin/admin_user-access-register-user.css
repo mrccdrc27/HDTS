@@ -1,0 +1,295 @@
+:root {
+    --red-logo: #AE131B;
+    --red-dark: #8B0F16;
+    --blue-logo: #0F4C8A; /* blue set as the default */
+    --neutral-light-gray: #E3E3E3;
+    --bg-dark: #0C0C0C;
+    --neutral-dim-gray: #7E7E7E;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins';
+    border-color: var(--blue-logo);
+}
+
+.register-user-form-container {
+    max-width: 90%;
+    width: 90%;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: var(--neutral-light-gray);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.register-user-form-container h2 {
+    color: var(--red-logo);
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.register-user-form-container hr {
+    border: 0;
+    height: 1px;
+    background: #ccc;
+    margin-bottom: 1rem;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.register-user-form-group {
+    margin-bottom: 0.5rem;
+}
+
+.register-user-form-group:nth-child(1),
+.register-user-form-group:nth-child(2),
+.register-user-form-group:nth-child(3),
+.register-user-form-group:nth-child(4) {
+    grid-column: span 1;
+}
+
+.register-user-form-group:nth-child(5),
+.register-user-form-group:nth-child(6),
+.register-user-form-group:nth-child(7) {
+    grid-column: span 2;
+}
+
+.register-user-form-group:nth-child(8),
+.register-user-form-group:nth-child(9),
+.register-user-form-group:nth-child(10) {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+}
+
+.register-user-checkbox-group {
+    grid-column: span 2;
+}
+
+.register-user-form-group label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 500;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.register-user-form-group label[for="last-name"]::after,
+.register-user-form-group label[for="first-name"]::after,
+.register-user-form-group label[for="company-id"]::after,
+.register-user-form-group label[for="department"]::after,
+.register-user-form-group label[for="role-selection"]::after,
+.register-user-form-group label[for="image-upload"]::after,
+.register-user-form-group label[for="email"]::after,
+.register-user-form-group label[for="password"]::after,
+.register-user-form-group label[for="confirm-password"]::after {
+    content: " *";
+    color: var(--red-logo);
+}
+
+.register-user-form-group input[type="text"],
+.register-user-form-group input[type="email"],
+.register-user-form-group input[type="password"] {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    line-height: 1.4;
+    height: calc(2.5rem + 2px); /* standardize */
+}
+
+.register-user-form-group select {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    line-height: 1.4;
+    height: calc(2.5rem + 2px); /* match input height */
+    padding-right: 2rem; /* room for arrow */
+    background: #fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    background-size: 16px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.register-user-form-group input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.register-user-file-upload-container {
+    position: relative;
+    min-height: calc(2.5rem + 2px);
+    padding: 0 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.register-user-file-upload-container:hover {
+    border-color: var(--blue-logo);
+    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.15);
+}
+
+.file-upload-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;  /* Take up full height */
+    padding: 0;    /* No extra vertical padding */
+}
+
+.file-upload-text::before {
+    content: "No file selected";  /* Or your default text */
+    color: var(--neutral-dim-gray);
+    font-size: 0.95rem;
+}
+
+.file-upload-text input[type="file"] {
+    display: none;
+}
+
+.register-user-file-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: #666;
+    cursor: pointer;
+    height: 100%;
+    padding-left: 2rem;  /* Add padding to the left to give space for the icon */
+}
+
+.register-user-file-upload-btn svg {
+    position: absolute;  /* Position the icon absolutely inside the button */
+    left: 10px;  /* Move the icon slightly from the left edge */
+    top: 50%;  /* Vertically center the icon */
+    transform: translateY(-54%);
+    width: 1.2rem;  /* Icon size */
+    height: 1.2rem;
+    flex-shrink: 0;
+}
+
+.upload-note {
+    font-size: 0.75rem;
+    color: var(--neutral-dim-gray);
+    margin-top: 0.35rem;
+}
+
+.register-user-file-upload-container input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.register-user-file-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;  /* Match input text */
+    color: #333;
+    max-width: 100%;     /* Ensures the container respects width */
+    overflow: hidden;    /* Hide overflowed content */
+    text-overflow: ellipsis;  /* Apply ellipsis for overflowing text */
+    white-space: nowrap; /* Prevent wrapping */
+    cursor: pointer;
+    position: relative;
+    height: 100%;
+    width: calc(100% - 30px);  /* Ensure there's enough space for the close button (X) */
+}
+
+.register-user-file-name span {
+    position: absolute;   /* Position 'X' button absolutely */
+    right: 10px;          /* Adjust to place the 'X' button in the right position */
+    top: 50%;             /* Vertically center 'X' button */
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.register-user-form-group input[type="text"],
+.register-user-form-group input[type="email"],
+.register-user-form-group input[type="password"],
+.register-user-form-group input[type="file"],
+.register-user-form-group select,
+.register-user-form-group textarea,
+.register-user-file-upload-container,
+.btn-register,
+hr {
+    border: 1px solid var(--bg-dark);
+}
+
+.register-user-form-group input:focus,
+.register-user-form-group select:focus,
+.register-user-form-group textarea:focus,
+.register-user-file-upload-container:focus-within {
+    outline: none;
+    border-color: var(--blue-logo); /* blue color for focus */
+    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2); /* blue shadow */
+}
+
+.register-user-form-group input:hover,
+.register-user-form-group select:hover,
+.register-user-form-group textarea:hover,
+.register-user-file-upload-container:hover {
+    border-color: var(--blue-logo); /* blue hover */
+    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2);
+}
+
+/* Final submit button */
+.btn-register-user {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--blue-logo);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-register-user:hover {
+    background-color: var(--blue-logo);
+}

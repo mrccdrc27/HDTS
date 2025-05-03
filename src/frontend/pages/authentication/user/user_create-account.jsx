@@ -4,9 +4,11 @@ import CreateAccountForgotPasswordHeader from "../../../components/headers/user_
 import PrivacyPolicyAndTermsAndConditions from "../../../components/modals/authentication/privacy-policy-and-terms-and-conditions.jsx";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
 import "../../../styles/components/authentication/user_create-account.css";
-import { Eye, EyeOff, Upload, X } from "lucide-react";
+import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
 function CreateAccount() {
+  const [suffix, setSuffix] = useState('');
+  const [department, setDepartment] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -54,23 +56,46 @@ function CreateAccount() {
             <input type="text" id="middle-name" name="middle_name" placeholder="Middle Name" />
           </div>
 
+          {/* Gawing default is None */}
           <div className="create-account-form-group">
             <label htmlFor="suffix">Suffix</label>
-            <select 
-              id="suffix" 
-              name="suffix" 
-              defaultValue="" 
-              style={{ color: '#7e7e7e' }} // Inline CSS for the color
-            >
-              <option value="">Suffix</option>
-              <option value="Jr.">Jr.</option>
-              <option value="Sr.">Sr.</option>
-              <option value="II">II</option>
-              <option value="III">III</option>
-              <option value="IV">IV</option>
-            </select>
-          </div>
+            <div className="select-wrapper">
+              <select
+                id="suffix"
+                name="suffix"
+                value={suffix}
+                onChange={(e) => setSuffix(e.target.value)}
+                className="suffix-select"
+                style={{
+                  color: suffix === '' ? '#7e7e7e' : '#0C0C0C',
+                }}
+              >
+                <option value="" disabled hidden> Suffix </option>
+                <option value="Jr.">Jr.</option>
+                <option value="Sr.">Sr.</option>
+                <option value="II">II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+                <option value="Other">Other</option>
+              </select>
 
+              {/* Separator */}
+              <div className="select-separator"></div>
+
+              {/* Chevron */}
+              <div className="select-chevron">
+                <ChevronDown size={18} />
+              </div>
+
+              {/* Clear button */}
+              {suffix && (
+                <div className="clear-suffix" onClick={() => setSuffix('')}>
+                  <X size={14} />
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="create-account-form-group">
             <label htmlFor="company-id">Company ID</label>
@@ -87,16 +112,43 @@ function CreateAccount() {
           </div>
 
           <div className="create-account-form-group">
-            <label htmlFor="department">Department</label>
-            <select id="department" name="department" required defaultValue="">
-              <option value="">Department</option>
-              <option value="IT">IT</option>
-              <option value="HR">HR</option>
+          <label htmlFor="department">Department</label>
+          <div className="select-wrapper">
+            <select
+              id="department"
+              name="department"
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              className="suffix-select"
+              style={{
+                color: department === '' ? '#7e7e7e' : '#0C0C0C',
+              }}
+            >
+              <option value="" disabled hidden>Department</option>
+              <option value="IT">IT Department</option>
+              <option value="HR">Human Resource</option>
               <option value="Finance">Finance</option>
               <option value="Marketing">Marketing</option>
               <option value="Operations">Operations</option>
             </select>
+
+            {/* Separator */}
+            <div className="select-separator"></div>
+
+            {/* Chevron */}
+            <div className="select-chevron">
+              <ChevronDown size={18} />
+            </div>
+
+            {/* Clear button */}
+            {department && (
+              <div className="clear-suffix" onClick={() => setDepartment('')}>
+                <X size={14} />
+              </div>
+            )}
           </div>
+        </div>
+
 
           {/* Upload image */}
           <div className="create-account-form-group">
@@ -143,7 +195,7 @@ function CreateAccount() {
                   }
                 }}
               >
-                {selectedUploadedImage || "Attach Image"}
+                {selectedUploadedImage || "Upload Image"}
 
                 {selectedUploadedImage && (
                   <span
@@ -203,6 +255,7 @@ function CreateAccount() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </span>
             </div>
+
           </div>
 
           <div className="create-account-form-group">

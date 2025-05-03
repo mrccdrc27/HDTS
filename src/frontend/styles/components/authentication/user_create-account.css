@@ -47,11 +47,12 @@ form {
 }
 
 .create-account-form-group:nth-child(5),
-.create-account-form-group:nth-child(6),
-.create-account-form-group:nth-child(7) { 
+.create-account-form-group:nth-child(6)
+ { 
   grid-column: span 2; 
 }
 
+.create-account-form-group:nth-child(7),
 .create-account-form-group:nth-child(8),
 .create-account-form-group:nth-child(9),
 .create-account-form-group:nth-child(10) {
@@ -68,11 +69,12 @@ form {
 .create-account-form-group label[for="first-name"]::after,
 .create-account-form-group label[for="company-id"]::after,
 .create-account-form-group label[for="department"]::after,
-.create-account-form-group label[for="upload-label"]::after ,
+.create-account-form-group label[for="upload-label"]::after,
 .create-account-form-group label[for="email"]::after,
 .create-account-form-group label[for="password"]::after,
-.create-account-form-group label[for="confirm-password"]::after {
-  content: " *"; 
+.create-account-form-group label[for="confirm-password"]::after,
+.create-account-checkbox-group label[for="checkbox"]::after {
+  content: " *";
   color: var(--red-logo);
 }
 
@@ -85,24 +87,128 @@ form {
     line-height: 1.4; height: calc(2.5rem + 2px); /* standardize */
 }
 
+.select-wrapper {
+  position: relative;
+}
+
+.suffix-select {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  line-height: 1.4;
+  height: calc(2.5rem + 2px); /* match input height */
+  padding-right: 2.5rem; /* space for chevron/clear */
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* Separator between select and chevron */
+.select-separator {
+  position: absolute;
+  top: 0px;
+  right: 36px; /* same as chevron + margin */
+  width: 1px;
+  height: calc(100% - 16px); /* align nicely with padding */
+  background: var(--bg-dark);
+  pointer-events: none;
+}
+
+/* Chevron down icon */
+.select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-85%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  font-size: 1rem; /* adjust if needed */
+  color: #666;
+}
+
+.select-separator {
+  position: absolute;
+  top: 0px;
+  right: 36px; /* same as chevron + margin */
+  width: 1px;
+  height: calc(100% - 16px); /* align nicely with padding */
+  background: var(--bg-dark);
+  pointer-events: none;
+}
+
+/* Clear button */
+.clear-suffix {
+  position: absolute;
+  top: 50%;
+  right: 45px; /* now aligned just before separator */
+  transform: translateY(-100%);
+  cursor: pointer;
+  color: #7e7e7e;
+  display: flex;
+  align-items: center;
+  font-size: 1rem; /* adjust size for balance */
+}
+
+.clear-suffix:hover {
+  color: #000;
+}
+
+.clear-department {
+  position: absolute;
+  top: 50%;
+  right: 45px; /* now aligned just before separator */
+  transform: translateY(-100%);
+  cursor: pointer;
+  color: #7e7e7e;
+  display: flex;
+  align-items: center;
+  font-size: 1rem; /* adjust size for balance */
+}
+
+.clear-department:hover {
+  color: #000;
+}
+
 .create-account-form-group select {
-    width: 100%; padding: 0.6rem; font-size: 0.95rem;
-    border-radius: 6px; border: 1px solid #ddd; background: #fff;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    line-height: 1.4; height: calc(2.5rem + 2px); /* match input height */
-    padding-right: 2rem; /* room for arrow */
-    background: #fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 12px center;
-    background-size: 16px;
-    box-sizing: border-box;
-    cursor: pointer;
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;  /* Ensure white background */
+  transition: border-color 0.3s, box-shadow 0.3s;
+  -webkit-appearance: none;  /* Remove default dropdown on Safari */
+  -moz-appearance: none;     /* Remove default dropdown on Firefox */
+  appearance: none;          /* Remove default dropdown on modern browsers */
+  line-height: 1.4;
+  height: calc(2.5rem + 2px); /* Match input height */
+  padding-right: 2rem;       /* Room for custom arrow */
+  background-image: none;    /* Explicitly remove any default dropdown icon */
+  background-color: #fff;    /* White background */
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* Additional fixes for Internet Explorer */
+.create-account-form-group select::-ms-expand {
+  display: none;  /* Hide default arrow in Internet Explorer */
 }
 
 .create-account-form-group input[type="file"] {
   position: absolute; width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; z-index: -1;
 }
+
+.create-account-form-group select option {
+  color: #333;  /* Text color inside options */
+}
+
 
 .file-upload-container {
   position: relative; /* Add this */
@@ -160,6 +266,7 @@ form {
   width: 1.2rem;  /* Around 19px */
   height: 1.2rem;
   flex-shrink: 0;
+  transform: translateY(0.5rem);
 }
 
 .upload-note {
@@ -235,7 +342,19 @@ hr {
 .password-container { position: relative; }
 .password-requirements { font-size: 0.75rem; color: #666; margin-top: 0.2rem; }
 .password-container .password-icon {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-45%); cursor: pointer;
+  position: absolute; right: 10px; top: 50%; transform: translateY(-40%); cursor: pointer;
+}
+
+/* For Chrome, Edge, and Opera */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-clear-button,
+input[type="password"]::-webkit-inner-spin-button,
+input[type="password"]::-webkit-outer-spin-button,
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-textfield-decoration-button {
+    display: none !important;
 }
 
 .create-account-form-group a { color: var(--blue-logo); text-decoration: none; }
@@ -303,7 +422,6 @@ hr {
 .create-account-form-group select:required:invalid {
   color: var(--neutral-dim-gray); /* placeholder color */
 }
-
 
 .create-account-form-group select option[value=""] {
   color: var(--neutral-dim-gray) !important;
