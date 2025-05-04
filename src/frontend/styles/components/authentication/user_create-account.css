@@ -339,10 +339,78 @@ hr {
   box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.15); /* blue hover shadow */
 }
 
-.password-requirements { font-size: 0.75rem; color: #666; margin-top: 0.2rem; }
-.password-container 
+.password-container,
+.confirm-password-container {
+  position: relative;
+}
+
+.password-requirements,
+.confirm-password-container { 
+  font-size: 0.75rem; color: #666; margin-top: 0.2rem; 
+}
+
+.password-container
+.confirm-password-container input {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid var(--bg-dark);
+  background: #fff;
+  height: calc(2.5rem + 2px);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.password-container input:hover,
+.password-container input:focus,
+.confirm-password-container input:hover,
+.confirm-password-container input:focus {
+    border-color: var(--blue-logo);
+    box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2);
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 40px; /* space for eye icon */
+}
+
 .password-icon {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-40%); cursor: pointer;
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-40%);
+  cursor: pointer;
+  color: #7e7e7e;
+}
+
+.password-icon:hover {
+  color: #333;
+}
+
+.password-icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 100;
+}
+
+.password-icon:hover::after {
+  opacity: 1;
 }
 
 /* For Chrome, Edge, and Opera */

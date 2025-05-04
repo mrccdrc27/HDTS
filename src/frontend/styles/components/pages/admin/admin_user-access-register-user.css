@@ -264,15 +264,15 @@ form {
 }
 
 /* Password icon & tooltip */
-.register-user-form-input-wrapper {
+.register-user-password-wrapper {
     position: relative;
     width: 100%;
 }
 
-.register-user-form-input-wrapper input {
+.register-user-password-wrapper input {
     padding-right: 40px; /* space for eye icon */
 }
-
+    
 .register-user-password-icon {
     position: absolute;
     top: 50%;

@@ -16,6 +16,9 @@ function CreateAccount() {
   const [showPrivacyPolicyModal, setShowPrivacyPolicyModal] = useState(false);
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
 
+  const [passwordTooltip, setPasswordTooltip] = useState(false);
+  const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState(false);
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -234,7 +237,7 @@ function CreateAccount() {
 
           <div className="create-account-form-group">
             <label htmlFor="password">Password</label>
-            <div className="password-container">
+            <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -244,6 +247,7 @@ function CreateAccount() {
               />
               <span
                 className="password-icon"
+                data-tooltip={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword(!showPassword)}
                 role="button"
                 tabIndex={0}
@@ -259,7 +263,7 @@ function CreateAccount() {
 
           <div className="create-account-form-group">
             <label htmlFor="confirm-password">Confirm Password</label>
-            <div className="password-container">
+            <div className="password-wrapper">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirm-password"
@@ -269,6 +273,7 @@ function CreateAccount() {
               />
               <span
                 className="password-icon"
+                data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 role="button"
                 tabIndex={0}

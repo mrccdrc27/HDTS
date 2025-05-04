@@ -13,8 +13,8 @@ function RegisterUser() {
   const [suffix, setSuffix] = useState('');
   const [role, setRole] = useState('');
 
-  const [passwordTooltip, setPasswordTooltip] = useState('');
-  const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState('');
+  const [passwordTooltip, setPasswordTooltip] = useState(false);
+  const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState(false);
 
   const handleProfileImageSelection = (event) => {
     const file = event.target.files[0];
@@ -65,11 +65,9 @@ function RegisterUser() {
               <option value="" disabled hidden>Suffix</option>
               <option value="Jr.">Jr.</option>
               <option value="Sr.">Sr.</option>
-              <option value="II">II</option>
               <option value="III">III</option>
               <option value="IV">IV</option>
               <option value="V">V</option>
-              <option value="Other">Other</option>
             </select>
 
             <div className="register-user-select-separator"></div>
@@ -284,54 +282,54 @@ function RegisterUser() {
         </div>
 
         <div className="register-user-form-group">
-  <label htmlFor="password">Password</label>
-  <div className="register-user-form-input-wrapper">
-    <input
-      type={showPassword ? "text" : "password"}
-      id="password"
-      name="password"
-      required
-      placeholder="Password"
-    />
-    <span
-      className="register-user-password-icon"
-      data-tooltip={showPassword ? "Hide Password" : "Show Password"}
-      onClick={() => setShowPassword(!showPassword)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") setShowPassword(!showPassword);
-      }}
-    >
-      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-    </span>
-  </div>
-</div>
+          <label htmlFor="password">Password</label>
+          <div className="register-user-password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+              placeholder="Password"
+            />
+            <span
+              className="register-user-password-icon"
+              data-tooltip={showPassword ? "Hide Password" : "Show Password"}
+              onClick={() => setShowPassword(!showPassword)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setShowPassword(!showPassword);
+              }}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </span>
+          </div>
+        </div>
 
-<div className="register-user-form-group">
-  <label htmlFor="confirm-password">Confirm Password</label>
-  <div className="register-user-form-input-wrapper">
-    <input
-      type={showConfirmPassword ? "text" : "password"}
-      id="confirm-password"
-      name="confirm_password"
-      placeholder="Confirm Password"
-      required
-    />
-    <span
-      className="register-user-password-icon"
-      data-tooltip={showConfirmPassword ? "Hide Password" : "Show Password"}
-      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") setShowConfirmPassword(!showConfirmPassword);
-      }}
-    >
-      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-    </span>
-  </div>
-</div>
+        <div className="register-user-form-group">
+          <label htmlFor="confirm-password">Confirm Password</label>
+          <div className="register-user-password-wrapper">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirm-password"
+              name="confirm_password"
+              placeholder="Confirm Password"
+              required
+            />
+            <span
+              className="register-user-password-icon"
+              data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setShowConfirmPassword(!showConfirmPassword);
+              }}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </span>
+          </div>
+        </div>
 
         <div class="register-user-button-group">
           <button class="btn-cancel-register-user">Cancel</button>
