@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CreateAccountForgotPasswordHeader from "../../../components/headers/user_create-account-forgot-password-header";
 import PrivacyPolicyAndTermsAndConditions from "../../../components/modals/authentication/privacy-policy-and-terms-and-conditions.jsx";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
@@ -9,14 +9,6 @@ import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 function CreateAccount() {
   const [suffix, setSuffix] = useState('');
   const [department, setDepartment] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [middleName, setMiddleName] = useState('');
-  const [companyId, setCompanyId] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [privacyChecked, setPrivacyChecked] = useState(false);  
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -25,7 +17,6 @@ function CreateAccount() {
   const [showPrivacyPolicyModal, setShowPrivacyPolicyModal] = useState(false);
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
 
-  // ASA CSS
   const [passwordTooltip, setPasswordTooltip] = useState(false);
   const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState(false);
 
@@ -63,8 +54,6 @@ function CreateAccount() {
               name="last_name"
               required
               placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
@@ -76,8 +65,6 @@ function CreateAccount() {
               name="first_name"
               required
               placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
 
@@ -88,8 +75,6 @@ function CreateAccount() {
               id="middle-name"
               name="middle_name"
               placeholder="Middle Name"
-              value={middleName}
-              onChange={(e) => setMiddleName(e.target.value)}
             />
           </div>
 
@@ -100,8 +85,6 @@ function CreateAccount() {
               <select
                 id="suffix"
                 name="suffix"
-                value={suffix}
-                onChange={(e) => setSuffix(e.target.value)}
                 className="suffix-select"
                 style={{
                   color: suffix === '' ? '#7e7e7e' : '#0C0C0C',
@@ -143,8 +126,6 @@ function CreateAccount() {
               maxLength={5}
               pattern="\d*"
               inputMode="numeric"
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
             />
           </div>
 
@@ -154,10 +135,7 @@ function CreateAccount() {
               <select
                 id="department"
                 name="department"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
                 className="suffix-select"
-                required
                 style={{
                   color: department === '' ? '#7e7e7e' : '#0C0C0C',
                 }}
@@ -202,14 +180,11 @@ function CreateAccount() {
                     id="image"
                     name="image"
                     accept="image/*"
-                    required
                     onChange={handleImageUpload}
                     style={{ display: "none" }}
                     disabled={!!uploadedImage}
                   />
               </label>
-
-              <div className="upload-image-separator"></div>
 
               <span
                 className={`file-name ${selectedUploadedImage ? "has-file" : ""}`}
@@ -276,8 +251,6 @@ function CreateAccount() {
               name="email"
               required
               placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -290,8 +263,6 @@ function CreateAccount() {
               name="password"
               required
               placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
             />
               <span
                 className="password-icon"
@@ -318,8 +289,6 @@ function CreateAccount() {
               name="confirm_password"
               placeholder="Confirm Password"
               required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
             />
               <span
                 className="password-icon"
@@ -344,10 +313,8 @@ function CreateAccount() {
               id="privacypolicy_termsandconditions"
               name="privacypolicy_termsandconditions"
               required
-              checked={privacyChecked}
-              onChange={(e) => setPrivacyChecked(e.target.checked)}
             />
-              Read and agree to{" "}
+              I agree to the{" "}
               <span
                 className="privacy-link"
                 onClick={handleLabelClick}
