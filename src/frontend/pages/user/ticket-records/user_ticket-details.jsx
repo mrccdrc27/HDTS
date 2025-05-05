@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '../../../styles/components/pages/user/user_ticket-details.css';
+import '../../../styles/pages/user/user_ticket-details.css';
 
 const TicketDetails = () => {
   const { ticketNumber } = useParams();

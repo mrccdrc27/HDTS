@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../../styles/components/pages/admin/admin_user-access-all-users.css';
+import '../../../styles/pages/admin/admin_user-access-all-users.css';
 
 const UserAccessAllUsers = () => {
   // Sample data matching the image

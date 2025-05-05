@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../../styles/components/pages/admin/admin_reports-agent-performance.css';
+import '../../../styles/pages/admin/admin_reports-agent-performance.css';
 
 const ReportsAgentPerformanceReport = () => {
   // For demonstration of filter dropdowns

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/components/pages/admin/admin_dashboard.css'; // Import the CSS file for styling
+import '../../styles/pages/admin/admin_dashboard.css'; // Import the CSS file for styling
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const AdminDashboard = () => {

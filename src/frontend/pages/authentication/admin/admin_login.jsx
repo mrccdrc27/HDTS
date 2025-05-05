@@ -1,61 +1,74 @@
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import Logo from "../../../assets/smartsupport-logo.svg";
 import { useState } from "react";
+import "../../../styles/components/authentication/admin_login.css";
+import LoginImage from "/src/frontend/assets/login/login-image.png"; // Keep your existing image import
+import LoginHeader from "/src/frontend/components/headers/user_login-header.jsx"; // Import the header component
+import { Eye, EyeOff } from "lucide-react";
 
 const AdminLogin = () => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleLogin = (e) => {
-        e.preventDefault();
-
-        // Skip validation and go straight to the ticket admin page
-        const mockAdmin = {
-            name: "Test Admin",
-            email,
-            role: "ticket-admin"
-        };
-
-        localStorage.setItem("currentUser", JSON.stringify(mockAdmin));
-        navigate("/admin/dashboard");
-    };
+    const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
 
     return (
-        <>
-            <div className="container">
-                <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
-                <h1>SmartSupport</h1>
-                <p>AI-powered Helpdesk and Ticketing System</p>
+        <div className="admin-login-wrapper">
+            {/* Left side - Image */}
+            <div className="admin-login-image-wrapper">
+                <img src={LoginImage} alt="Login" className="login-image" />
             </div>
 
-            <div className="login-container">
-                <h2>Login</h2>
-                <form onSubmit={handleLogin}>
-                    <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
+            {/* Right side - Login form */}
+            <div className="admin-login-right-side">
+                {/* Header component outside the login container */}
+                <LoginHeader />
 
-                    <button type="submit">Log In</button>
-                </form>
+                <div className="admin-login-container">
+                    <form>
+                        <div className="admin-form-group">
+                            <label htmlFor="email">Email Address</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Email address"
+                                required
+                            />
+                        </div>
+
+                        <div className="admin-form-group">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type={showAdminLogInPassword ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                placeholder="Password"
+                                required
+                            />
+                            <span
+                                className="admin-login-password-icon"
+                                data-tooltip={showAdminLogInPassword ? "Hide password" : "Show password"}
+                                onClick={() => setShowAdminLogInPassword(!showAdminLogInPassword)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") setShowAdminLogInPassword(!showAdminLogInPassword);
+                                }}
+                            >
+                                {showAdminLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </span>
+                        </div>
+
+                        {/* ✅ Changed type to button (if you don't want a form submission refresh) */}
+                        <button
+                            type="button"
+                            className="admin-login-button"
+                            onClick={() => navigate("/admin/dashboard")}
+                        >
+                            Log In
+                        </button>
+                    </form>
+                </div>
             </div>
-        </>
+        </div>
     );
 };
 

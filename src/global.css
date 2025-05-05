@@ -1,12 +1,16 @@
 /* Global Reset */
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
+  margin: 0;  
   padding: 0;
 }
 
 /* Color Variables */
 :root {
+
+  /* Background Color */
+  --background-color: #FCFCFC;
+
   /* Primary - Red */
   --red-logo: #AE131B;
   --red-light: #B62B32;
@@ -29,6 +33,10 @@
   --success-dark: #05603A;
   --info-light: #1849A9;
   --info-dark: #194185;
+
+  /* Text Colors */
+  --text-primary: #0C0C0C;
+  --text-secondary: #FCFCFC;
 }
 
 /* Base Styles */
@@ -282,9 +290,3 @@ img {
 /* Additional text color utilities */
 .text-primary-color { color: #0C0C0C; } /* First text color */
 .text-secondary-color { color: #FCFCFC; } /* Second text color */
-
-/* Dark sections */
-.dark-section {
-  background-color: #0C0C0C;
-  color: #FCFCFC;
-}

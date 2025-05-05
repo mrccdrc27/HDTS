@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import '../../../styles/components/pages/user/user_alltickets.css'; // Adjust the path as necessary
+import '../../../styles/pages/user/user_alltickets.css'; // Adjust the path as necessary
 
 const tickets = [
   {

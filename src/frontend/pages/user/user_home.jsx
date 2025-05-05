@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import SupportChatModal from './user_chatbot.jsx'; // <-- Correct import
-import '../../styles/components/pages/user/user_home.css'; // Adjust path if needed
+import '../../styles/pages/user/user_home.css'; // Adjust path if needed
 
 const UserHome = () => {
   const navigate = useNavigate();

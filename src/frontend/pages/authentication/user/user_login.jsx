@@ -1,36 +1,13 @@
-import { useNavigate, Link } from "react-router-dom"; // Combined imports
-import { Eye, EyeOff } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import LoginHeader from "/src/frontend/components/headers/user_login-header.jsx";
-import LoginImage from "/src/frontend/assets/login/login-image.png";
 import "../../../styles/components/authentication/user_login.css";
+import LoginImage from "/src/frontend/assets/login/login-image.png"; // Keep your existing image import
+import LoginHeader from "/src/frontend/components/headers/user_login-header.jsx"; // Import the header component
+import { Eye, EyeOff } from "lucide-react";
 
 const UserLogin = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
-    const [showPassword, setShowPassword] = useState(false);
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (formData.email && formData.password) {
-            // Redirect to home page if the form is valid
-            navigate("/user/home");
-        } else {
-            // Optional: Display an alert or error message
-            alert("Please fill in both fields.");
-        }
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const [showLogInPassword, setShowLogInPassword] = useState(false);
 
     return (
         <div className="login-wrapper">
@@ -41,56 +18,56 @@ const UserLogin = () => {
             
             {/* Right side - Login form */}
             <div className="login-right-side">
-                <LoginHeader />
+                {/* Header component outside the login container */}
+                <LoginHeader />                  
                 
                 <div className="login-container">
-                    <form onSubmit={handleSubmit}>
+                    <form>
                         <div className="form-group">
                             <label htmlFor="email">Email Address</label>
                             <input 
                                 type="email" 
                                 id="email" 
                                 name="email" 
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="Enter your email address"
+                                placeholder="Email address"
                                 required
                             />
                         </div>
                         
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
-                            <div className="password-input-container">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    placeholder="Enter your password"
-                                    required
-                                />
-                                <button
-                                    type="button"
-                                    className="password-toggle"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
-                                >
-                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                </button>
-                            </div>
-                            <div className="forgot-password">
-                                <Link to="/forgot-password">Forgot password?</Link>
-                            </div>
+                            <input
+                                type={showLogInPassword ? "text" : "password"}
+                                id="password"
+                                name="password"
+                                placeholder="Password"
+                                required
+                            />
+                            <span
+                                className="login-password-icon"
+                                data-tooltip={showLogInPassword ? "Hide password" : "Show password"}
+                                onClick={() => setShowLogInPassword(!showLogInPassword)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") setShowLogInPassword(!showLogInPassword);
+                                }}
+                            >
+                                {showLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </span>
+                                <div className="forgot-password">
+                                    <Link to="/forgot-password">Forgot password?</Link>
+                                </div>
                         </div>
-                        
-                        <button type="submit" className="login-button">
+
+                        <button type="submit" className="login-button" onClick={() => navigate("/user/home")}>
                             Log In
                         </button>
                     </form>
                     
                     <div className="create-account">
-                        <p>Don't have an account? <Link to="/create-account">Create Account</Link></p>
+                        <span>Don't have any account? </span>
+                        <Link to="/create-account" className="create-account-link">Create Account</Link>
                     </div>
                 </div>
             </div>

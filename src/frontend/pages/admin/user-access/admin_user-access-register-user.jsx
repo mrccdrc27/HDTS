@@ -1,6 +1,6 @@
 import { useState } from "react";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
-import "../../../styles/components/pages/admin/admin_user-access-register-user.css";
+import "../../../styles/pages/admin/admin_user-access-register-user.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
 function RegisterUser() {

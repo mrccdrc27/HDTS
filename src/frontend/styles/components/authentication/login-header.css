@@ -2,38 +2,46 @@
 .login-header {
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 1.5rem;
+}
+
+.login-header-brand {
+    display: flex;
+    align-items: center;
     gap: 1rem;
-    padding: 1.5rem 3rem;
-    background-color: #ffffff;
 }
 
-.userNavbar-logo {
-    width: 60px;
-    height: 60px;
+.login-header-logo {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background-color: #f0f0f0;
+    background-color: var(--neutral-dim-gray);
 }
 
-.login-header h2 {
+.login-header-title {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 600;
-    color: #c41e3a; /* Red color for "Smart" */
+    color: var(--red-primary); /* Red color for "Smart" */
 }
 
-.login-header h2 span {
-    color: #0052a5; /* Blue color for "Support" */
+.login-header-title span {
+    color: var(--blue-logo); /* Blue color for "Support" */
 }
 
-.login-header p {
+.login-header-subtitle {
     margin: 0;
-    font-size: 0.9rem;
-    color: #555;
+    font-size: 0.8rem;
+    color: var(--neutral-medium-gray);
+    margin-top: 0.1rem;
 }
 
 /* Responsive header styles */
 @media (max-width: 768px) {
     .login-header {
-        padding: 1.5rem 2rem;
+        padding: 0 1rem;
     }
 }

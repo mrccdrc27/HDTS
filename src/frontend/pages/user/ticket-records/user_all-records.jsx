@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../../styles/components/pages/user/user_all-records.css'; // Import the CSS for AllRecords page
+import '../../../styles/pages/user/user_all-records.css'; // Import the CSS for AllRecords page
 
 const allRecords = [
   {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import CreateAccountForgotPasswordHeader from "../../../components/headers/user_create-account-forgot-password-header";
 import PrivacyPolicyAndTermsAndConditions from "../../../components/modals/authentication/privacy-policy-and-terms-and-conditions.jsx";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
@@ -9,6 +9,15 @@ import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 function CreateAccount() {
   const [suffix, setSuffix] = useState('');
   const [department, setDepartment] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [companyId, setCompanyId] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [privacyChecked, setPrivacyChecked] = useState(false);  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -16,6 +25,7 @@ function CreateAccount() {
   const [showPrivacyPolicyModal, setShowPrivacyPolicyModal] = useState(false);
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
 
+  // ASA CSS
   const [passwordTooltip, setPasswordTooltip] = useState(false);
   const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState(false);
 
@@ -35,6 +45,7 @@ function CreateAccount() {
     e.preventDefault();
     setShowPrivacyPolicyModal(true);
   };
+  
 
   return (
     <>
@@ -46,17 +57,40 @@ function CreateAccount() {
           {/* Name fields */}
           <div className="create-account-form-group">
             <label htmlFor="last-name">Last Name</label>
-            <input type="text" id="last-name" name="last_name" required placeholder="Last Name" />
+            <input
+              type="text"
+              id="last-name"
+              name="last_name"
+              required
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
           </div>
 
           <div className="create-account-form-group">
             <label htmlFor="first-name">First Name</label>
-            <input type="text" id="first-name" name="first_name" required placeholder="First Name" />
+            <input
+              type="text"
+              id="first-name"
+              name="first_name"
+              required
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
           </div>
 
           <div className="create-account-form-group">
             <label htmlFor="middle-name">Middle Name</label>
-            <input type="text" id="middle-name" name="middle_name" placeholder="Middle Name" />
+            <input
+              type="text"
+              id="middle-name"
+              name="middle_name"
+              placeholder="Middle Name"
+              value={middleName}
+              onChange={(e) => setMiddleName(e.target.value)}
+            />
           </div>
 
           {/* Gawing default is None */}
@@ -76,11 +110,9 @@ function CreateAccount() {
                 <option value="" disabled hidden> Suffix </option>
                 <option value="Jr.">Jr.</option>
                 <option value="Sr.">Sr.</option>
-                <option value="II">II</option>
                 <option value="III">III</option>
                 <option value="IV">IV</option>
                 <option value="V">V</option>
-                <option value="Other">Other</option>
               </select>
 
               {/* Separator */}
@@ -111,6 +143,8 @@ function CreateAccount() {
               maxLength={5}
               pattern="\d*"
               inputMode="numeric"
+              value={companyId}
+              onChange={(e) => setCompanyId(e.target.value)}
             />
           </div>
 
@@ -123,6 +157,7 @@ function CreateAccount() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 className="suffix-select"
+                required
                 style={{
                   color: department === '' ? '#7e7e7e' : '#0C0C0C',
                 }}
@@ -167,11 +202,14 @@ function CreateAccount() {
                     id="image"
                     name="image"
                     accept="image/*"
+                    required
                     onChange={handleImageUpload}
                     style={{ display: "none" }}
                     disabled={!!uploadedImage}
                   />
               </label>
+
+              <div className="upload-image-separator"></div>
 
               <span
                 className={`file-name ${selectedUploadedImage ? "has-file" : ""}`}
@@ -232,19 +270,29 @@ function CreateAccount() {
           {/* Email and password fields */}
           <div className="create-account-form-group">
             <label htmlFor="email">Email Address</label>
-            <input type="email" id="email" name="email" required placeholder="Email Address" />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className="create-account-form-group">
             <label htmlFor="password">Password</label>
             <div className="password-wrapper">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                required
-                placeholder="Password"
-              />
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
               <span
                 className="password-icon"
                 data-tooltip={showPassword ? "Hide password" : "Show password"}
@@ -264,13 +312,15 @@ function CreateAccount() {
           <div className="create-account-form-group">
             <label htmlFor="confirm-password">Confirm Password</label>
             <div className="password-wrapper">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                id="confirm-password"
-                name="confirm_password"
-                placeholder="Confirm Password"
-                required
-              />
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              id="confirm-password"
+              name="confirm_password"
+              placeholder="Confirm Password"
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
               <span
                 className="password-icon"
                 data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
@@ -289,13 +339,15 @@ function CreateAccount() {
           {/* Checkbox and modal */}
           <div className="create-account-checkbox-group">
             <label htmlFor="checkbox" className="checkbox-label">
-              <input
-                type="checkbox"
-                id="privacypolicy_termsandconditions"
-                name="privacypolicy_termsandconditions"
-                required
-              />
-              I agree to the{" "}
+            <input
+              type="checkbox"
+              id="privacypolicy_termsandconditions"
+              name="privacypolicy_termsandconditions"
+              required
+              checked={privacyChecked}
+              onChange={(e) => setPrivacyChecked(e.target.checked)}
+            />
+              Read and agree to{" "}
               <span
                 className="privacy-link"
                 onClick={handleLabelClick}
