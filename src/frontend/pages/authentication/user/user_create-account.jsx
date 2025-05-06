@@ -26,10 +26,38 @@ function CreateAccount() {
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setSelectedUploadedImage(file.name);
-      setUploadedImage(file); // <-- store actual File object
+    if (!file) return;
+  
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+  
+    if (!validTypes.includes(file.type)) {
+      alert('Only JPG, JPEG, and PNG formats are allowed.');
+      return;
     }
+  
+    if (file.size > maxSize) {
+      alert('Image must not exceed 2MB.');
+      return;
+    }
+  
+    const img = new Image();
+    img.onload = () => {
+      if (img.width !== 1024 || img.height !== 1024) {
+        alert('Image must be exactly 1024x1024 pixels.');
+      } else {
+        setSelectedUploadedImage(file.name);
+        setUploadedImage(file); // store actual File object
+        setFormData((prevData) => ({
+          ...prevData,
+          image: file,
+        }));
+      }
+    };
+    img.onerror = () => {
+      alert('Could not read image. Please upload a valid file.');
+    };
+    img.src = URL.createObjectURL(file);
   };  
 
   const handleLabelClick = (e) => {
@@ -37,13 +65,35 @@ function CreateAccount() {
     setShowPrivacyPolicyModal(true);
   };
 
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+    return (
+      password.length >= minLength &&
+      hasUpper &&
+      hasLower &&
+      hasDigit &&
+      hasSpecial
+    );
+  };  
+
   const validateForm = () => {
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+    if (!validatePassword(password)) {
+      alert(
+        "Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character."
+      );
       return false;
     }
     if (!/^\d{4}$/.test(companyId)) {
-      alert("Company ID must be a 4-digit number (e.g., 0001)");
+      alert("Company ID must be a 4-digit number (0001 to 9999)");
+      return false;
+    }
+    if (!email.endsWith("@gmail.com")) {
+      alert("Only Gmail addresses are allowed.");
       return false;
     }
     return true;
@@ -53,6 +103,11 @@ function CreateAccount() {
     event.preventDefault();
   
     if (!validateForm()) return;
+  
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
   
     const formData = new FormData();
     formData.append("last_name", lastName);
@@ -64,6 +119,7 @@ function CreateAccount() {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("image", uploadedImage);
+    formData.append("confirm_password", confirmPassword);
   
     try {
       const response = await fetch("http://localhost:8000/api/create_employee/", {
@@ -146,7 +202,7 @@ function CreateAccount() {
           <div className="create-account-form-group">
             <label htmlFor="suffix">Suffix</label>
             <div className="select-wrapper">
-              <select
+            <select
                 id="suffix"
                 name="suffix"
                 className="suffix-select"
@@ -162,6 +218,11 @@ function CreateAccount() {
                 <option value="III">III</option>
                 <option value="IV">IV</option>
                 <option value="V">V</option>
+                <option value="VI">VI</option>
+                <option value="VII">VII</option>
+                <option value="VIII">VIII</option>
+                <option value="IX">IX</option>
+                <option value="X">X</option>
               </select>
               <div className="select-separator"></div>
               <div className="select-chevron">
@@ -177,24 +238,32 @@ function CreateAccount() {
 
           <div className="create-account-form-group">
             <label htmlFor="company-id">Company ID</label>
-            <input
-              type="text"
-              id="company-id"
-              name="company_id"
-              required
-              placeholder="Company ID"
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-              maxLength={4}
-              pattern="\d{4}"
-              inputMode="numeric"
-            />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <span style={{ marginRight: "4px" }}>MA</span>
+              <input
+                type="text"
+                id="company-id"
+                name="company_id"
+                required
+                placeholder="0001"
+                value={companyId}
+                onChange={(e) => {
+                  const numeric = e.target.value.replace(/\D/g, "");
+                  if (numeric.length <= 4) {
+                    setCompanyId(numeric);
+                  }
+                }}
+                maxLength={4}
+                inputMode="numeric"
+                pattern="\d{4}"
+              />
+            </div>
           </div>
 
           <div className="create-account-form-group">
             <label htmlFor="department">Department</label>
             <div className="select-wrapper">
-              <select
+            <select
                 id="department"
                 name="department"
                 className="suffix-select"
@@ -205,11 +274,14 @@ function CreateAccount() {
                 <option value="" disabled hidden>
                   Department
                 </option>
-                <option value="IT">IT Department</option>
-                <option value="HR">Human Resource</option>
-                <option value="Finance">Finance</option>
-                <option value="Marketing">Marketing</option>
+                <option value="IT Department">IT Department</option>
+                <option value="Asset Management">Asset Management</option>
+                <option value="Document Control">Document Control</option>
+                <option value="Finance & Budgeting">Finance & Budgeting</option>
                 <option value="Operations">Operations</option>
+                <option value="Facilities & Maintenance">Facilities & Maintenance</option>
+                <option value="Human Resources">Human Resources</option>
+                <option value="Administration">Administration</option>
               </select>
               <div className="select-separator"></div>
               <div className="select-chevron">
@@ -302,14 +374,16 @@ function CreateAccount() {
           <div className="create-account-form-group">
             <label htmlFor="email">Email Address</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                title="Only Gmail addresses are allowed"
+              />
           </div>
 
           <div className="create-account-form-group">

@@ -7,7 +7,43 @@ import { Eye, EyeOff } from "lucide-react";
 
 const AdminLogin = () => {
     const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
+
+    const handleLogin = async () => {
+        try {
+          const response = await fetch("http://localhost:8000/api/token/admin/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password }),
+          });
+    
+          const data = await response.json();
+    
+          if (!response.ok) {
+            alert(data.detail || "Invalid credentials.");
+            return;
+          }
+    
+          const token = data.access;
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const userRole = payload.role;
+    
+          if (userRole === "System Admin" || userRole === "Ticket Agent" || userRole === "Superuser") {
+            localStorage.setItem("token", token);
+            navigate("/admin/dashboard");
+          } else {
+            alert("Access denied. Only admins and ticket agents can log in here.");
+          }          
+    
+        } catch (error) {
+          console.error("Login error:", error);
+          alert("Something went wrong. Try again.");
+        }
+      };
 
     return (
         <div className="admin-login-wrapper">
@@ -31,6 +67,8 @@ const AdminLogin = () => {
                                 name="email"
                                 placeholder="Email address"
                                 required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 
@@ -42,6 +80,8 @@ const AdminLogin = () => {
                                 name="password"
                                 placeholder="Password"
                                 required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                             <span
                                 className="admin-login-password-icon"
@@ -50,7 +90,7 @@ const AdminLogin = () => {
                                 role="button"
                                 tabIndex={0}
                                 onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") setShowAdminLogInPassword(!showAdminLogInPassword);
+                                if (e.key === "Enter" || e.key === " ") setShowAdminLogInPassword(!showAdminLogInPassword);
                                 }}
                             >
                                 {showAdminLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -61,7 +101,7 @@ const AdminLogin = () => {
                         <button
                             type="button"
                             className="admin-login-button"
-                            onClick={() => navigate("/admin/dashboard")}
+                            onClick={handleLogin}
                         >
                             Log In
                         </button>
