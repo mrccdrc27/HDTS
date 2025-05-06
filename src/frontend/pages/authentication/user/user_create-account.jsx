@@ -7,36 +7,95 @@ import "../../../styles/components/authentication/user_create-account.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
 function CreateAccount() {
-  const [suffix, setSuffix] = useState('');
-  const [department, setDepartment] = useState('');
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [suffix, setSuffix] = useState("");
+  const [department, setDepartment] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedUploadedImage, setSelectedUploadedImage] = useState("");
   const [showPrivacyPolicyModal, setShowPrivacyPolicyModal] = useState(false);
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
-
-  const [passwordTooltip, setPasswordTooltip] = useState(false);
-  const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [companyId, setCompanyId] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [middleName, setMiddleName] = useState("");
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       setSelectedUploadedImage(file.name);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setUploadedImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+      setUploadedImage(file); // <-- store actual File object
     }
-  };
-  
+  };  
+
   const handleLabelClick = (e) => {
     e.preventDefault();
     setShowPrivacyPolicyModal(true);
   };
+
+  const validateForm = () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return false;
+    }
+    if (!/^\d{4}$/.test(companyId)) {
+      alert("Company ID must be a 4-digit number (e.g., 0001)");
+      return false;
+    }
+    return true;
+  };  
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
   
+    if (!validateForm()) return;
+  
+    const formData = new FormData();
+    formData.append("last_name", lastName);
+    formData.append("first_name", firstName);
+    formData.append("middle_name", middleName);
+    formData.append("suffix", suffix);
+    formData.append("company_id", `MA${companyId}`);
+    formData.append("department", department);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("image", uploadedImage);
+  
+    try {
+      const response = await fetch("http://localhost:8000/api/create_employee/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      console.log("🔍 Status:", response.status);
+  
+      const contentType = response.headers.get("content-type");
+  
+      if (!response.ok) {
+        if (contentType && contentType.includes("application/json")) {
+          const errorJson = await response.json();
+          console.error("❌ JSON error:", errorJson);
+          alert(`Error: ${JSON.stringify(errorJson)}`);
+        } else {
+          const errorText = await response.text();
+          console.error("❌ Text error:", errorText);
+          alert(`Error: ${errorText}`);
+        }
+        return;
+      }
+  
+      const data = await response.json();
+      console.log("✅ Success:", data);
+      alert("Account created successfully!");
+    } catch (error) {
+      console.error("🚨 Network error:", error);
+      alert("Network error. Please try again.");
+    }
+  };  
 
   return (
     <>
@@ -44,7 +103,7 @@ function CreateAccount() {
       <div className="create-account-form-container">
         <h2>Create Account</h2>
         <hr />
-        <form>
+        <form onSubmit={handleSubmit}>
           {/* Name fields */}
           <div className="create-account-form-group">
             <label htmlFor="last-name">Last Name</label>
@@ -54,6 +113,8 @@ function CreateAccount() {
               name="last_name"
               required
               placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
@@ -65,6 +126,8 @@ function CreateAccount() {
               name="first_name"
               required
               placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
           </div>
 
@@ -75,10 +138,11 @@ function CreateAccount() {
               id="middle-name"
               name="middle_name"
               placeholder="Middle Name"
+              value={middleName}
+              onChange={(e) => setMiddleName(e.target.value)}
             />
           </div>
 
-          {/* Gawing default is None */}
           <div className="create-account-form-group">
             <label htmlFor="suffix">Suffix</label>
             <div className="select-wrapper">
@@ -86,29 +150,25 @@ function CreateAccount() {
                 id="suffix"
                 name="suffix"
                 className="suffix-select"
-                style={{
-                  color: suffix === '' ? '#7e7e7e' : '#0C0C0C',
-                }}
+                value={suffix}
+                onChange={(e) => setSuffix(e.target.value)}
+                style={{ color: suffix === "" ? "#7e7e7e" : "#0C0C0C" }}
               >
-                <option value="" disabled hidden> Suffix </option>
+                <option value="" disabled hidden>
+                  Suffix
+                </option>
                 <option value="Jr.">Jr.</option>
                 <option value="Sr.">Sr.</option>
                 <option value="III">III</option>
                 <option value="IV">IV</option>
                 <option value="V">V</option>
               </select>
-
-              {/* Separator */}
               <div className="select-separator"></div>
-
-              {/* Chevron */}
               <div className="select-chevron">
                 <ChevronDown size={18} />
               </div>
-
-              {/* Clear button */}
               {suffix && (
-                <div className="clear-suffix" onClick={() => setSuffix('')}>
+                <div className="clear-suffix" onClick={() => setSuffix("")}>
                   <X size={14} />
                 </div>
               )}
@@ -123,8 +183,10 @@ function CreateAccount() {
               name="company_id"
               required
               placeholder="Company ID"
-              maxLength={5}
-              pattern="\d*"
+              value={companyId}
+              onChange={(e) => setCompanyId(e.target.value)}
+              maxLength={4}
+              pattern="\d{4}"
               inputMode="numeric"
             />
           </div>
@@ -136,29 +198,25 @@ function CreateAccount() {
                 id="department"
                 name="department"
                 className="suffix-select"
-                style={{
-                  color: department === '' ? '#7e7e7e' : '#0C0C0C',
-                }}
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                style={{ color: department === "" ? "#7e7e7e" : "#0C0C0C" }}
               >
-                <option value="" disabled hidden>Department</option>
+                <option value="" disabled hidden>
+                  Department
+                </option>
                 <option value="IT">IT Department</option>
                 <option value="HR">Human Resource</option>
                 <option value="Finance">Finance</option>
                 <option value="Marketing">Marketing</option>
                 <option value="Operations">Operations</option>
               </select>
-
-              {/* Separator */}
               <div className="select-separator"></div>
-
-              {/* Chevron */}
               <div className="select-chevron">
                 <ChevronDown size={18} />
               </div>
-
-              {/* Clear button */}
               {department && (
-                <div className="clear-department" onClick={() => setDepartment('')}>
+                <div className="clear-department" onClick={() => setDepartment("")}>
                   <X size={14} />
                 </div>
               )}
@@ -176,16 +234,15 @@ function CreateAccount() {
               >
                 <Upload size={18} />
                 <input
-                    type="file"
-                    id="image"
-                    name="image"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    style={{ display: "none" }}
-                    disabled={!!uploadedImage}
-                  />
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                  disabled={!!uploadedImage}
+                />
               </label>
-
               <span
                 className={`file-name ${selectedUploadedImage ? "has-file" : ""}`}
                 style={{ color: "#7e7e7e" }}
@@ -211,7 +268,6 @@ function CreateAccount() {
                 }}
               >
                 {selectedUploadedImage || "Upload Image"}
-
                 {selectedUploadedImage && (
                   <span
                     onClick={(e) => {
@@ -251,19 +307,23 @@ function CreateAccount() {
               name="email"
               required
               placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div className="create-account-form-group">
             <label htmlFor="password">Password</label>
             <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              required
-              placeholder="Password"
-            />
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                required
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
               <span
                 className="password-icon"
                 data-tooltip={showPassword ? "Hide password" : "Show password"}
@@ -277,19 +337,20 @@ function CreateAccount() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </span>
             </div>
-
           </div>
 
           <div className="create-account-form-group">
             <label htmlFor="confirm-password">Confirm Password</label>
             <div className="password-wrapper">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirm-password"
-              name="confirm_password"
-              placeholder="Confirm Password"
-              required
-            />
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirm-password"
+                name="confirm_password"
+                required
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
               <span
                 className="password-icon"
                 data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
@@ -308,12 +369,12 @@ function CreateAccount() {
           {/* Checkbox and modal */}
           <div className="create-account-checkbox-group">
             <label htmlFor="checkbox" className="checkbox-label">
-            <input
-              type="checkbox"
-              id="privacypolicy_termsandconditions"
-              name="privacypolicy_termsandconditions"
-              required
-            />
+              <input
+                type="checkbox"
+                id="privacypolicy_termsandconditions"
+                name="privacypolicy_termsandconditions"
+                required
+              />
               I agree to the{" "}
               <span
                 className="privacy-link"
