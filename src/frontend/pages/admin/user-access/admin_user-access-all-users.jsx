@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 import '../../../styles/pages/admin/admin_user-access-all-users.css';
 
 const UserAccessAllUsers = () => {
+  const navigate = useNavigate();
+  
   // Sample data matching the image
   const [users] = useState([
     { id: 'IT0001', lastName: 'San Jose', firstName: 'Bonjing', middleName: 'Peralta', suffix: 'Jr.', department: 'Finance Department', role: 'Accountant', status: 'active' },
@@ -20,11 +23,9 @@ const UserAccessAllUsers = () => {
         <h1 className="page-title">All Users</h1>
         <button 
           className="add-admin-button"
-          onClick={() => {
-            console.log('Open Add Admin Form');
-          }}
+          onClick={() => navigate('/admin/user-access-register-user')}
         >
-          + Add Admin
+          + Add User
         </button>
       </div>
 
