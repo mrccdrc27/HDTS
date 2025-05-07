@@ -82,45 +82,72 @@ function CreateAccount() {
     setShowPrivacyPolicyModal(true);
   };
 
-  const getPasswordErrors = (password) => {
-    const errors = [];
-    const minLength = 8;
+  const getPasswordErrorMessage = (password) => {
+    const messages = [];
+  
+    const hasMinLength = password.length >= 8;
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasDigit = /[0-9]/.test(password);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   
-    if (password.length < minLength) {
-      errors.push("Password must be at least 8 characters long.");
-    }
-    if (!hasLower) {
-      errors.push("Password must include lowercase.");
-    }
-    if (!hasUpper) {
-      errors.push("Password must include uppercase.");
-    }
-    if (!hasDigit) {
-      errors.push("Password must include number.");
-    }
-    if (!hasSpecial) {
-      errors.push("Password must include special character.");
+    const missing = {
+      upper: !hasUpper,
+      lower: !hasLower,
+      digit: !hasDigit,
+      special: !hasSpecial,
+    };
+  
+    const missingKeys = Object.entries(missing)
+      .filter(([_, isMissing]) => isMissing)
+      .map(([key]) => key);
+  
+    const descriptors = {
+      upper: "uppercase",
+      lower: "lowercase",
+      digit: "number",
+      special: "special character",
+    };
+  
+    const buildList = (items) => {
+      if (items.length === 1) return descriptors[items[0]];
+      if (items.length === 2)
+        return `${descriptors[items[0]]} and ${descriptors[items[1]]}`;
+      return (
+        items
+          .slice(0, -1)
+          .map((key) => descriptors[key])
+          .join(", ") +
+        ", and " +
+        descriptors[items[items.length - 1]]
+      );
+    };
+  
+    if (!hasMinLength && missingKeys.length) {
+      return `Password must be at least 8 characters long and include ${buildList(
+        missingKeys
+      )}.`;
+    } else if (!hasMinLength) {
+      return "Password must be at least 8 characters long.";
+    } else if (missingKeys.length) {
+      return `Password must include ${buildList(missingKeys)}.`;
     }
   
-    return errors;
-  };    
+    return null; // No error
+  };  
 
   const validateForm = () => {
     const newErrors = {};
-    const passwordErrors = getPasswordErrors(password);
   
     if (!uploadedImage) {
       newErrors.image = "Image is required.";
     }
   
-    if (passwordErrors.length > 0) {
-      newErrors.password = passwordErrors.join(" ");
+    const passwordMessage = getPasswordErrorMessage(password);
+    if (passwordMessage) {
+      newErrors.password = passwordMessage;
     }
-  
+
     if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password didn't matched";
     }
