@@ -2,6 +2,8 @@ import re
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
+from django.conf import settings
+from django.utils import timezone
 
 SUFFIX_CHOICES = [
     ('Jr.', 'Jr.'), ('Sr.', 'Sr.'), ('III', 'III'), ('IV', 'IV'), ('V', 'V'),
@@ -81,3 +83,54 @@ class Employee(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+PRIORITY_LEVELS = [
+    ('Critical', 'Critical'),
+    ('High', 'High'),
+    ('Medium', 'Medium'),
+    ('Low', 'Low'),
+]
+
+STATUS_CHOICES = [
+    ('Open', 'Open'),
+    ('On Process', 'On Process'),
+    ('On Hold', 'On Hold'),
+    ('Pending', 'Pending'),
+    ('Resolved', 'Resolved'),
+    ('Rejected', 'Rejected'),
+    ('Closed', 'Closed'),
+]
+
+CATEGORY_CHOICES = [
+    ('Software', 'Software'),
+    ('Hardware', 'Hardware'),
+    ('Network', 'Network'),
+    # Add more as needed
+]
+
+SUBCATEGORY_CHOICES = [
+    ('Unauthorized App', 'Unauthorized App'),
+    ('Application Error', 'Application Error'),
+    # Add more as needed
+]
+
+class Ticket(models.Model):
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tickets")
+    subject = models.CharField(max_length=255)
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+    sub_category = models.CharField(max_length=100, choices=SUBCATEGORY_CHOICES)
+    attachment = models.FileField(upload_to='ticket_attachments/', blank=True, null=True)
+    description = models.TextField()
+    scheduled_date = models.DateField()
+    priority = models.CharField(max_length=20, choices=PRIORITY_LEVELS, blank=True, null=True)
+    department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Open')
+    submit_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_tickets')
+    response_time = models.DurationField(blank=True, null=True)
+    resolution_time = models.DurationField(blank=True, null=True)
+    time_closed = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Ticket #{self.id} - {self.subject}"
