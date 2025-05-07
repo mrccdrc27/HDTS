@@ -513,7 +513,9 @@ input[type="password"]::-webkit-textfield-decoration-button {
 }
 
 .error-message {
-  color: var(--red-logo); font-size: 0.75rem; margin-top: 0.2rem; display: none;
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 4px;
 }
 
 .create-account-form-group input:invalid:focus + .error-message { display: block; }

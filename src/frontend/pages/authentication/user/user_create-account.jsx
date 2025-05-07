@@ -15,6 +15,7 @@ function CreateAccount() {
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
   
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -31,23 +32,36 @@ function CreateAccount() {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     const maxSize = 2 * 1024 * 1024; // 2MB
   
+    // Clear previous image errors
+    setErrors(prev => ({ ...prev, image: null }));
+  
     if (!validTypes.includes(file.type)) {
-      alert('Only JPG, JPEG, and PNG formats are allowed.');
+      setErrors(prev => ({
+        ...prev,
+        image: 'Only JPG, JPEG, and PNG formats are allowed.',
+      }));
       return;
     }
   
     if (file.size > maxSize) {
-      alert('Image must not exceed 2MB.');
+      setErrors(prev => ({
+        ...prev,
+        image: 'Image must not exceed 2MB.',
+      }));
       return;
     }
   
     const img = new Image();
     img.onload = () => {
       if (img.width !== 1024 || img.height !== 1024) {
-        alert('Image must be exactly 1024x1024 pixels.');
+        setErrors(prev => ({
+          ...prev,
+          image: 'Image must be exactly 1024x1024 pixels.',
+        }));
       } else {
+        setErrors(prev => ({ ...prev, image: null }));
         setSelectedUploadedImage(file.name);
-        setUploadedImage(file); // store actual File object
+        setUploadedImage(file);
         setFormData((prevData) => ({
           ...prevData,
           image: file,
@@ -55,7 +69,10 @@ function CreateAccount() {
       }
     };
     img.onerror = () => {
-      alert('Could not read image. Please upload a valid file.');
+      setErrors(prev => ({
+        ...prev,
+        image: 'Could not read image. Please upload a valid file.',
+      }));
     };
     img.src = URL.createObjectURL(file);
   };  
@@ -65,49 +82,65 @@ function CreateAccount() {
     setShowPrivacyPolicyModal(true);
   };
 
-  const validatePassword = (password) => {
+  const getPasswordErrors = (password) => {
+    const errors = [];
     const minLength = 8;
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
     const hasDigit = /[0-9]/.test(password);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   
-    return (
-      password.length >= minLength &&
-      hasUpper &&
-      hasLower &&
-      hasDigit &&
-      hasSpecial
-    );
-  };  
+    if (password.length < minLength) {
+      errors.push("Password must be at least 8 characters long.");
+    }
+    if (!hasLower) {
+      errors.push("Password must include lowercase.");
+    }
+    if (!hasUpper) {
+      errors.push("Password must include uppercase.");
+    }
+    if (!hasDigit) {
+      errors.push("Password must include number.");
+    }
+    if (!hasSpecial) {
+      errors.push("Password must include special character.");
+    }
+  
+    return errors;
+  };    
 
   const validateForm = () => {
-    if (!validatePassword(password)) {
-      alert(
-        "Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character."
-      );
-      return false;
+    const newErrors = {};
+    const passwordErrors = getPasswordErrors(password);
+  
+    if (!uploadedImage) {
+      newErrors.image = "Image is required.";
     }
+  
+    if (passwordErrors.length > 0) {
+      newErrors.password = passwordErrors.join(" ");
+    }
+  
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Password didn't matched";
+    }
+  
     if (!/^\d{4}$/.test(companyId)) {
-      alert("Company ID must be a 4-digit number (0001 to 9999)");
-      return false;
+      newErrors.companyId = "Company ID must be a 4-digit number.";
     }
+  
     if (!email.endsWith("@gmail.com")) {
-      alert("Only Gmail addresses are allowed.");
-      return false;
+      newErrors.email = "Only Gmail addresses are allowed.";
     }
-    return true;
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
   
     if (!validateForm()) return;
-  
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
   
     const formData = new FormData();
     formData.append("last_name", lastName);
@@ -135,14 +168,23 @@ function CreateAccount() {
         if (contentType && contentType.includes("application/json")) {
           const errorJson = await response.json();
           console.error("❌ JSON error:", errorJson);
-          alert(`Error: ${JSON.stringify(errorJson)}`);
+      
+          const formattedErrors = {};
+          if (errorJson.company_id) {
+            formattedErrors.companyId = "Invalid Company ID"; // 👈 custom message
+          }
+          if (errorJson.email) {
+            formattedErrors.email = "Invalid Email"; // 👈 optional customization
+          }
+      
+          setErrors(formattedErrors);
         } else {
           const errorText = await response.text();
           console.error("❌ Text error:", errorText);
           alert(`Error: ${errorText}`);
         }
         return;
-      }
+      }         
   
       const data = await response.json();
       console.log("✅ Success:", data);
@@ -258,6 +300,9 @@ function CreateAccount() {
                 pattern="\d{4}"
               />
             </div>
+
+            {/* ✅ Move error message outside of the flex div */}
+            {errors.companyId && <p className="error-message">{errors.companyId}</p>}
           </div>
 
           <div className="create-account-form-group">
@@ -315,6 +360,7 @@ function CreateAccount() {
                   disabled={!!uploadedImage}
                 />
               </label>
+
               <span
                 className={`file-name ${selectedUploadedImage ? "has-file" : ""}`}
                 style={{ color: "#7e7e7e" }}
@@ -362,13 +408,10 @@ function CreateAccount() {
                 )}
               </span>
             </div>
-          </div>
 
-          <UploadedImagePreview
-            showModal={showImagePreviewModal}
-            imageSrc={uploadedImage}
-            closeModal={() => setShowImagePreviewModal(false)}
-          />
+            {/* ✅ Error message placed correctly here */}
+            {errors.image && <p className="error-message">{errors.image}</p>}
+          </div>
 
           {/* Email and password fields */}
           <div className="create-account-form-group">
@@ -384,6 +427,7 @@ function CreateAccount() {
                 pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
                 title="Only Gmail addresses are allowed"
               />
+              {errors.email && <p className="error-message">{errors.email}</p>}
           </div>
 
           <div className="create-account-form-group">
@@ -398,6 +442,7 @@ function CreateAccount() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {errors.password && <p className="error-message">{errors.password}</p>}
               <span
                 className="password-icon"
                 data-tooltip={showPassword ? "Hide password" : "Show password"}
@@ -425,6 +470,7 @@ function CreateAccount() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
+              {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
               <span
                 className="password-icon"
                 data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
