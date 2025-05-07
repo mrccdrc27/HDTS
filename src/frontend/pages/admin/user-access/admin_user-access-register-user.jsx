@@ -3,28 +3,245 @@ import UploadedImagePreview from "../../../components/modals/authentication/uplo
 import "../../../styles/pages/admin/admin_user-access-register-user.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
-function RegisterUser() {
+function CreateAccount() {
+  // Form field states
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [companyId, setCompanyId] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  
+  // UI states
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
-  const [profileImageName, setProfileImageName] = useState("");
-  const [showProfileImageModal, setShowProfileImageModal] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [selectedUploadedImage, setSelectedUploadedImage] = useState("");
+  const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
   const [department, setDepartment] = useState('');
   const [suffix, setSuffix] = useState('');
   const [role, setRole] = useState('');
+  const [errors, setErrors] = useState({});
 
-  const [passwordTooltip, setPasswordTooltip] = useState(false);
-  const [confirmPasswordTooltip, setConfirmPasswordTooltip] = useState(false);
-
-  const handleProfileImageSelection = (event) => {
+  const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setProfileImageName(file.name);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setProfileImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+  
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+  
+    // Clear previous image errors
+    setErrors(prev => ({ ...prev, image: null }));
+  
+    if (!validTypes.includes(file.type)) {
+      setErrors(prev => ({
+        ...prev,
+        image: 'Only JPG, JPEG, and PNG formats are allowed.',
+      }));
+      return;
+    }
+  
+    if (file.size > maxSize) {
+      setErrors(prev => ({
+        ...prev,
+        image: 'Image must not exceed 2MB.',
+      }));
+      return;
+    }
+  
+    const img = new Image();
+    img.onload = () => {
+      if (img.width !== 1024 || img.height !== 1024) {
+        setErrors(prev => ({
+          ...prev,
+          image: 'Image must be exactly 1024x1024 pixels.',
+        }));
+      } else {
+        setErrors(prev => ({ ...prev, image: null }));
+        setSelectedUploadedImage(file.name);
+        setUploadedImage(file);
+      }
+    };
+    img.onerror = () => {
+      setErrors(prev => ({
+        ...prev,
+        image: 'Could not read image. Please upload a valid file.',
+      }));
+    };
+    img.src = URL.createObjectURL(file);
+  };
+
+  const getPasswordErrorMessage = (password) => {
+    const messages = [];
+  
+    const hasMinLength = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasDigit = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+    const missing = {
+      upper: !hasUpper,
+      lower: !hasLower,
+      digit: !hasDigit,
+      special: !hasSpecial,
+    };
+  
+    const missingKeys = Object.entries(missing)
+      .filter(([_, isMissing]) => isMissing)
+      .map(([key]) => key);
+  
+    const descriptors = {
+      upper: "uppercase",
+      lower: "lowercase",
+      digit: "number",
+      special: "special character",
+    };
+  
+    const buildList = (items) => {
+      if (items.length === 1) return descriptors[items[0]];
+      if (items.length === 2)
+        return `${descriptors[items[0]]} and ${descriptors[items[1]]}`;
+      return (
+        items
+          .slice(0, -1)
+          .map((key) => descriptors[key])
+          .join(", ") +
+        ", and " +
+        descriptors[items[items.length - 1]]
+      );
+    };
+  
+    if (!hasMinLength && missingKeys.length) {
+      return `Password must be at least 8 characters long and include ${buildList(
+        missingKeys
+      )}.`;
+    } else if (!hasMinLength) {
+      return "Password must be at least 8 characters long.";
+    } else if (missingKeys.length) {
+      return `Password must include ${buildList(missingKeys)}.`;
+    }
+  
+    return null; // No error
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+  
+    if (!uploadedImage) {
+      newErrors.image = "Profile image is required.";
+    }
+    
+    if (!firstName) {
+      newErrors.firstName = "First name is required.";
+    }
+    
+    if (!lastName) {
+      newErrors.lastName = "Last name is required.";
+    }
+  
+    const passwordMessage = getPasswordErrorMessage(password);
+    if (passwordMessage) {
+      newErrors.password = passwordMessage;
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Password didn't match";
+    }
+  
+    if (!/^\d{4}$/.test(companyId)) {
+      newErrors.companyId = "Company ID must be a 4-digit number.";
+    }
+  
+    if (!email) {
+      newErrors.email = "Email is required.";
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      newErrors.email = "Invalid email format.";
+    }
+    
+    if (!department) {
+      newErrors.department = "Department is required.";
+    }
+    
+    if (!role) {
+      newErrors.role = "User role is required.";
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    if (!validateForm()) return;
+  
+    const formData = new FormData();
+    formData.append("last_name", lastName);
+    formData.append("first_name", firstName);
+    formData.append("middle_name", middleName);
+    formData.append("suffix", suffix);
+    formData.append("company_id", `MA${companyId}`);
+    formData.append("department", department);
+    formData.append("role", role);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("confirm_password", confirmPassword);
+    formData.append("image", uploadedImage);
+  
+    try {
+      const response = await fetch("http://localhost:8000/api/create_employee/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      console.log("🔍 Status:", response.status);
+  
+      const contentType = response.headers.get("content-type");
+  
+      if (!response.ok) {
+        if (contentType && contentType.includes("application/json")) {
+          const errorJson = await response.json();
+          console.error("❌ JSON error:", errorJson);
+      
+          const formattedErrors = {};
+          if (errorJson.company_id) {
+            formattedErrors.companyId = "Invalid Company ID";
+          }
+          if (errorJson.email) {
+            formattedErrors.email = "Invalid Email";
+          }
+      
+          setErrors(formattedErrors);
+        } else {
+          const errorText = await response.text();
+          console.error("❌ Text error:", errorText);
+          alert(`Error: ${errorText}`);
+        }
+        return;
+      }
+  
+      const data = await response.json();
+      console.log("✅ Success:", data);
+      alert("User registered successfully!");
+      
+      // Reset form after successful submission
+      setFirstName("");
+      setLastName("");
+      setMiddleName("");
+      setSuffix("");
+      setCompanyId("");
+      setDepartment("");
+      setRole("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setUploadedImage(null);
+      setSelectedUploadedImage("");
+    } catch (error) {
+      console.error("🚨 Network error:", error);
+      alert("Network error. Please try again.");
     }
   };
 
@@ -32,21 +249,46 @@ function RegisterUser() {
     <div className="register-user-form-container">
       <h2>Register New User</h2>
       <hr />
-      <form>
+      <form onSubmit={handleSubmit}>
         {/* Name fields */}
         <div className="register-user-form-group">
           <label htmlFor="last-name">Last Name</label>
-          <input type="text" id="last-name" name="last_name" required placeholder="Last Name" />
+          <input 
+            type="text" 
+            id="last-name" 
+            name="last_name" 
+            required 
+            placeholder="Last Name" 
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          {errors.lastName && <p className="error-message">{errors.lastName}</p>}
         </div>
 
         <div className="register-user-form-group">
           <label htmlFor="first-name">First Name</label>
-          <input type="text" id="first-name" name="first_name" required placeholder="First Name" />
+          <input 
+            type="text" 
+            id="first-name" 
+            name="first_name" 
+            required 
+            placeholder="First Name" 
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          {errors.firstName && <p className="error-message">{errors.firstName}</p>}
         </div>
 
         <div className="register-user-form-group">
           <label htmlFor="middle-name">Middle Name</label>
-          <input type="text" id="middle-name" name="middle_name" placeholder="Middle Name" />
+          <input 
+            type="text" 
+            id="middle-name" 
+            name="middle_name" 
+            placeholder="Middle Name" 
+            value={middleName}
+            onChange={(e) => setMiddleName(e.target.value)}
+          />
         </div>
         
         <div className="register-user-form-group">
@@ -66,6 +308,11 @@ function RegisterUser() {
               <option value="III">III</option>
               <option value="IV">IV</option>
               <option value="V">V</option>
+              <option value="VI">VI</option>
+              <option value="VII">VII</option>
+              <option value="VIII">VIII</option>
+              <option value="IX">IX</option>
+              <option value="X">X</option>
             </select>
 
             <div className="register-user-select-separator"></div>
@@ -106,10 +353,13 @@ function RegisterUser() {
             >
               <option value="" disabled hidden>Department</option>
               <option value="IT Department">IT Department</option>
-              <option value="Human Resources">Human Resources</option>
-              <option value="Finance">Finance</option>
-              <option value="Marketing">Marketing</option>
+              <option value="Asset Management">Asset Management</option>
+              <option value="Document Control">Document Control</option>
+              <option value="Finance & Budgeting">Finance & Budgeting</option>
               <option value="Operations">Operations</option>
+              <option value="Facilities & Maintenance">Facilities & Maintenance</option>
+              <option value="Human Resources">Human Resources</option>
+              <option value="Administration">Administration</option>
             </select>
 
             <div className="register-user-select-separator"></div>
@@ -134,20 +384,32 @@ function RegisterUser() {
               </div>
             )}
           </div>
+          {errors.department && <p className="error-message">{errors.department}</p>}
         </div>
         
         <div className="register-user-form-group">
           <label htmlFor="company-id">Company ID</label>
-          <input
-            type="text"
-            id="company-id"
-            name="company_id"
-            required
-            placeholder="Company ID"
-            maxLength={5}
-            pattern="\d*"
-            inputMode="numeric"
-          />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ marginRight: "4px" }}>MA</span>
+            <input
+              type="text"
+              id="company-id"
+              name="company_id"
+              required
+              placeholder="0001"
+              value={companyId}
+              onChange={(e) => {
+                const numeric = e.target.value.replace(/\D/g, "");
+                if (numeric.length <= 4) {
+                  setCompanyId(numeric);
+                }
+              }}
+              maxLength={4}
+              inputMode="numeric"
+              pattern="\d{4}"
+            />
+          </div>
+          {errors.companyId && <p className="error-message">{errors.companyId}</p>}
         </div>
 
         <div className="register-user-form-group">
@@ -155,7 +417,7 @@ function RegisterUser() {
           <div className="register-user-select-wrapper">
             <select
               id="role-selection"
-              name="role_selection"
+              name="role"
               required
               value={role}
               onChange={(e) => setRole(e.target.value)}
@@ -190,6 +452,7 @@ function RegisterUser() {
               </div>
             )}
           </div>
+          {errors.role && <p className="error-message">{errors.role}</p>}
         </div>
 
         {/* Image Upload */}
@@ -198,8 +461,8 @@ function RegisterUser() {
           <div className="register-user-file-upload-container">
             <label
               htmlFor="image"
-              className={`register-user-file-upload-btn full-clickable ${profileImagePreview ? "disabled" : ""}`}
-              style={profileImagePreview ? { cursor: "not-allowed", opacity: 0.6 } : {}}
+              className={`register-user-file-upload-btn full-clickable ${uploadedImage ? "disabled" : ""}`}
+              style={uploadedImage ? { cursor: "not-allowed", opacity: 0.6 } : {}}
             >
               <Upload size={18} className="upload-icon" />
               <input
@@ -208,18 +471,18 @@ function RegisterUser() {
                 name="image"
                 accept="image/*"
                 required
-                onChange={handleProfileImageSelection}
+                onChange={handleImageUpload}
                 style={{ display: "none" }}
-                disabled={!!profileImagePreview}
+                disabled={!!uploadedImage}
               />
             </label>
 
             <span
-              className="register-user-file-name"
+              className={`register-user-file-name ${selectedUploadedImage ? "has-file" : ""}`}
               style={{ color: '#7e7e7e' }}
               onClick={() => {
-                if (profileImagePreview) {
-                  setShowProfileImageModal(true);
+                if (uploadedImage) {
+                  setShowImagePreviewModal(true);
                 } else {
                   const fileInput = document.getElementById("image");
                   if (fileInput) fileInput.click();
@@ -229,8 +492,8 @@ function RegisterUser() {
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                  if (profileImagePreview) {
-                    setShowProfileImageModal(true);
+                  if (uploadedImage) {
+                    setShowImagePreviewModal(true);
                   } else {
                     const fileInput = document.getElementById("image");
                     if (fileInput) fileInput.click();
@@ -238,22 +501,22 @@ function RegisterUser() {
                 }
               }}
             >
-              {profileImageName || "Upload Profile Picture"}
+              {selectedUploadedImage || "Upload Profile Picture"}
 
-              {profileImageName && (
+              {selectedUploadedImage && (
                 <span
                   onClick={(e) => {
                     e.stopPropagation();
-                    setProfileImagePreview(null);
-                    setProfileImageName("");
+                    setUploadedImage(null);
+                    setSelectedUploadedImage("");
                   }}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.stopPropagation();
-                      setProfileImagePreview(null);
-                      setProfileImageName("");
+                      setUploadedImage(null);
+                      setSelectedUploadedImage("");
                     }
                   }}
                 >
@@ -262,17 +525,27 @@ function RegisterUser() {
               )}
             </span>
           </div>
+          {errors.image && <p className="error-message">{errors.image}</p>}
         </div>
 
         <UploadedImagePreview
-          showModal={showProfileImageModal}
-          imageSrc={profileImagePreview}
-          closeModal={() => setShowProfileImageModal(false)}
+          showModal={showImagePreviewModal}
+          imageSrc={uploadedImage ? URL.createObjectURL(uploadedImage) : null}
+          closeModal={() => setShowImagePreviewModal(false)}
         />
 
         <div className="register-user-form-group">
           <label htmlFor="email">Email Address</label>
-          <input type="email" id="email" name="email" required placeholder="Email Address" />
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            required 
+            placeholder="Email Address" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {errors.email && <p className="error-message">{errors.email}</p>}
         </div>
 
         <div className="register-user-form-group">
@@ -284,6 +557,8 @@ function RegisterUser() {
               name="password"
               required
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <span
               className="register-user-password-icon"
@@ -298,6 +573,7 @@ function RegisterUser() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>
           </div>
+          {errors.password && <p className="error-message">{errors.password}</p>}
         </div>
 
         <div className="register-user-form-group">
@@ -309,6 +585,8 @@ function RegisterUser() {
               name="confirm_password"
               placeholder="Confirm Password"
               required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <span
               className="register-user-password-icon"
@@ -323,6 +601,7 @@ function RegisterUser() {
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </span>
           </div>
+          {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
         </div>
 
         <div className="register-user-button-group">
@@ -335,4 +614,4 @@ function RegisterUser() {
   );
 }
 
-export default RegisterUser;
+export default CreateAccount;

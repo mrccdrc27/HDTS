@@ -3,7 +3,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.core.mail import send_mail
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from .models import Employee
+from .models import Employee, Ticket
+from django.utils import timezone
 
 # Custom form for creating users
 class EmployeeCreationForm(forms.ModelForm):
@@ -97,3 +98,67 @@ class EmployeeAdmin(UserAdmin):
                 )
                 obj.notified = True
         super().save_model(request, obj, form, change)
+
+class TicketAdminForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = '__all__'  # Correcting 'all' to '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Limit Employee dropdown to users with role = "Employee"
+        self.fields['employee'].queryset = Employee.objects.filter(role='Employee')
+
+        # Set widget attributes
+        self.fields['scheduled_date'].widget.attrs.update({
+            'type': 'date',
+            'min': timezone.now().date().isoformat()
+        })
+
+        # Make priority, department, response_time, resolution_time, time_closed read-only or disabled
+        for field_name in ['priority', 'department', 'response_time', 'resolution_time', 'time_closed']:
+            self.fields[field_name].widget.attrs['readonly'] = True
+            self.fields[field_name].disabled = True
+
+    def clean_scheduled_date(self):
+        scheduled_date = self.cleaned_data['scheduled_date']
+        if scheduled_date < timezone.now().date():
+            raise forms.ValidationError("Scheduled date cannot be in the past.")
+        return scheduled_date
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.instance.pk:
+            cleaned_data['status'] = 'Open'  # Set default status when created
+        return cleaned_data
+
+@admin.register(Ticket)
+class TicketAdmin(admin.ModelAdmin):
+    form = TicketAdminForm
+
+    list_display = (
+        'id', 'subject', 'employee', 'department', 'priority',
+        'status', 'scheduled_date', 'submit_date', 'assigned_to'
+    )
+    list_filter = ('department', 'priority', 'status')
+    search_fields = (
+        'subject',
+        'employee__first_name', 'employee__last_name',
+        'assigned_to__first_name', 'assigned_to__last_name'
+    )
+    autocomplete_fields = ['employee', 'assigned_to']
+    readonly_fields = ('submit_date', 'update_date')
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                'employee', 'subject', 'category', 'sub_category', 'attachment',
+                'description', 'scheduled_date', 'priority', 'department',
+                'status', 'assigned_to', 'response_time', 'resolution_time', 'time_closed'
+            )
+        }),
+        ('Timestamps', {
+            'fields': ('submit_date', 'update_date'),
+        }),
+    )
