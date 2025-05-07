@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
+import UploadedImagePreview from "../../../components/modals/admin/admin_uploaded-image-preview.jsx";
 import "../../../styles/pages/admin/admin_user-access-register-user.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
@@ -81,17 +81,17 @@ function RegisterUser() {
         {/* Name fields */}
         <div className="register-user-form-group">
           <label htmlFor="last-name">Last Name</label>
-          <input type="text" id="last-name" name="last_name" required placeholder="Last Name" onChange={handleChange} />
+          <input type="text" id="last-name" name="last_name" required placeholder="Last Name" />
         </div>
 
         <div className="register-user-form-group">
           <label htmlFor="first-name">First Name</label>
-          <input type="text" id="first-name" name="first_name" required placeholder="First Name" onChange={handleChange} />
+          <input type="text" id="first-name" name="first_name" required placeholder="First Name" />
         </div>
 
         <div className="register-user-form-group">
           <label htmlFor="middle-name">Middle Name</label>
-          <input type="text" id="middle-name" name="middle_name" placeholder="Middle Name" onChange={handleChange} />
+          <input type="text" id="middle-name" name="middle_name" placeholder="Middle Name" />
         </div>
         
         <div className="register-user-form-group">
@@ -101,7 +101,7 @@ function RegisterUser() {
               id="suffix"
               name="suffix"
               value={suffix}
-              onChange={(e) => { setSuffix(e.target.value); handleChange(e); }}
+              onChange={(e) => { setSuffix(e.target.value); }}
               className="register-user-suffix-select"
               style={{
                 color: suffix === '' ? '#7e7e7e' : '#0C0C0C',
@@ -147,7 +147,7 @@ function RegisterUser() {
               name="department"
               required
               value={department}
-              onChange={(e) => { setDepartment(e.target.value); handleChange(e); }}
+              onChange={(e) => { setDepartment(e.target.value); }}
               className="suffix-select"
               style={{
                 color: department === '' ? '#7e7e7e' : '#0C0C0C',
