@@ -1,268 +1,161 @@
-/* RequestTicket.css */
-
-.request-ticket-container {
-  max-width: 800px;
+/* Main container */
+.request-ticket-form {
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-height: 80vh;
-  overflow-y: auto;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
 }
 
-body {
-  overflow-y: auto;
-}
-
-.request-ticket-section {
+/* Header */
+.request-ticket-form .header {
   margin-bottom: 20px;
+  padding-bottom: 10px;
 }
 
-.request-ticket-form-group {
-  margin-bottom: 20px;
-}
-
-.request-ticket-form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 500;
-  color: #333;
-}
-
-.request-ticket-form-label .required {
-  color: #e53e3e;
-  margin-left: 2px;
-}
-
-.request-ticket-input,
-.request-ticket-select,
-.request-ticket-textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-.request-ticket-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
-}
-
-.request-ticket-input:focus,
-.request-ticket-select:focus,
-.request-ticket-textarea:focus {
-  outline: none;
-  border-color: #3182ce;
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
-}
-
-.request-ticket-textarea {
-  resize: vertical;
-}
-
-.request-ticket-file-upload {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-  cursor: pointer;
-}
-
-.request-ticket-file-icon {
-  margin-right: 10px;
-  color: #666;
-}
-
-.request-ticket-file-text {
-  color: #666;
-}
-
-.request-ticket-file-input {
-  display: none;
-}
-
-.request-ticket-date-select {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.request-ticket-date-icon {
-  margin-right: 10px;
-  color: #666;
-}
-
-.request-ticket-submit {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  background-color: #004696;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.request-ticket-submit:hover {
-  background-color: #003a7a;
-}
-
-.request-ticket-form-row {
-  display: flex;
-  gap: 20px;
-}
-
-.request-ticket-form-col {
-  flex: 1;
-}
-
-/* ModalTicketSuccessful.css */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-container {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  width: 100%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  text-align: center;
-  padding: 20px;
-}
-
-.success-message {
-  color: #22c55e;
-  font-size: 18px;
+.request-ticket-form h2 {
+  font-size: 24px;
+  color: var(--red-logo);
   font-weight: 600;
-  margin: 0;
-}
-
-.ticket-number-section {
-  text-align: center;
-  padding: 10px 20px;
-}
-
-.ticket-number-label {
-  font-size: 14px;
-  color: #666;
   margin-bottom: 5px;
 }
 
-.ticket-number {
-  font-size: 28px;
-  font-weight: 700;
-  color: #e53e3e;
-  margin: 0;
+.request-ticket-form hr {
+  border: none;
+  border-top: 1px solid var(--neutral-light-gray);
 }
 
-.ticket-date {
-  font-size: 14px;
-  color: #666;
-  text-align: right;
-  padding-right: 20px;
-  margin: 10px 0;
-}
-
-.ticket-details {
-  padding: 20px;
-}
-
-.ticket-detail-row {
+/* Form group */
+.request-ticket-form .form-group {
+  margin-bottom: 1.2rem;
   display: flex;
-  margin-bottom: 12px;
+  flex-direction: column;
 }
 
-.detail-label {
-  font-weight: 600;
-  width: 120px;
-  flex-shrink: 0;
-}
-
-.detail-value {
-  flex-grow: 1;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-top: 1px solid #eee;
-}
-
-.close-button {
-  padding: 10px 20px;
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  color: #333;
+.request-ticket-form label {
+  font-size: 16px;
   font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--neutral-dark-gray);
+}
+
+.required {
+  color: var(--red-logo);
+}
+
+/* Form controls */
+.request-ticket-form input[type="text"],
+.request-ticket-form select,
+.request-ticket-form textarea {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
+  background-color: #fff;
+  transition: 0.3s ease;
+}
+
+.request-ticket-form input[type="text"]:focus,
+.request-ticket-form select:focus,
+.request-ticket-form textarea:focus {
+  border-color: var(--blue-light);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(6, 58, 132, 0.1);
+}
+
+/* Make sure file upload and other groups are stacked vertically */
+.file-upload-label {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  background-color: #fff;
+  color: var(--neutral-dim-gray);
+  transition: background-color 0.3s ease;
 }
 
-.close-button:hover {
-  background-color: #e5e5e5;
+.file-upload-label:hover {
+  background-color: #f9f9f9;
+  border-color: var(--neutral-gray);
 }
 
-.view-ticket-button {
-  padding: 10px 20px;
-  background-color: #004696;
+.file-upload-label span:first-child {
+  margin-right: 10px;
+}
+
+.file-upload-label span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.request-ticket-form input[type="file"] {
+  display: none;
+}
+
+/* Date picker */
+.date-picker {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--neutral-light-gray);
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.date-picker:focus-within {
+  border-color: var(--blue-light);
+  box-shadow: 0 0 0 3px rgba(6, 58, 132, 0.1);
+}
+
+.date-picker span {
+  margin-right: 10px;
+}
+
+.date-picker input[type="date"] {
+  border: none;
+  padding: 10px 0;
+  flex: 1;
+  font-size: 16px;
+  background: transparent;
+  color: var(--neutral-dim-gray);
+  outline: none;
+}
+
+/* Submit button */
+.submit-btn {
+  background-color: var(--blue-logo);
+  color: var(--text-secondary);
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
   border: none;
   border-radius: 4px;
-  color: white;
-  font-weight: 500;
+  width: 100%;
+  max-width: 240px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  text-transform: uppercase;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
 }
 
-.view-ticket-button:hover {
-  background-color: #003a7a;
+.submit-btn:hover {
+  background-color: var(--blue-dark);
 }
 
-.submit-another {
-  text-align: center;
-  padding: 15px;
-  font-size: 14px;
-  color: #666;
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .file-upload-label span:last-child {
+    max-width: 100%;
+  }
+
+  .submit-btn {
+    max-width: 100%;
+  }
 }
 
-.submit-link {
-  color: #004696;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.submit-link:hover {
-  text-decoration: underline;
-}

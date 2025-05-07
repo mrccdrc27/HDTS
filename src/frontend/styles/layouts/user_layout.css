@@ -1,0 +1,68 @@
+:root {
+  --user-header-height: 64px;
+  --user-header-bg: var(--blue-logo);
+  --user-content-bg: #f5f7fa;
+  --container-bg: #ffffff;
+  --container-radius: 8px;
+  --container-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --top-margin: 40px; /* Space between navbar and content */
+  --page-padding: 20px; /* Space around the entire page */
+}
+
+/* Main wrapper */
+.user-layout {
+  position: relative;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--user-content-bg);
+  padding: var(--page-padding); /* Adds space around the entire content */
+}
+
+/* Navbar fixed to top */
+.user-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--user-header-height);
+  background-color: var(--user-header-bg);
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Content container */
+.userLayout-content {
+  max-width: 1200px;
+  margin: 5rem auto; /* Pushes the content down by navbar height */
+  background-color: var(--container-bg);
+  border-radius: var(--container-radius);
+  box-shadow: var(--container-shadow);
+  padding: 2rem;
+  box-sizing: border-box;
+  min-height: auto; /* Container will adjust depending on content */
+  width: 100%;
+}
+
+/* Responsive for small screens (max-width: 768px) */
+@media (max-width: 768px) {
+  .userLayout-content {
+      margin-top: 3rem; /* Reduce space at the top for smaller screens */
+      padding: 1rem; /* Reduce padding on small screens */
+  }
+}
+
+/* Responsive for medium screens (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .userLayout-content {
+      margin-top: 4rem; /* Slightly reduced space for tablets */
+      padding: 1.5rem; /* Slightly reduced padding for tablets */
+  }
+}
+
+/* Responsive for large screens (max-width: 1440px) */
+@media (max-width: 1440px) {
+  .userLayout-content {
+      margin-top: 5rem; /* Adjust top margin for large screens */
+      padding: 2rem; /* Keep padding for larger layouts */
+  }
+}
