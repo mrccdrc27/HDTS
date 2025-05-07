@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 import LoginPortal from './frontend/pages/authentication/login-portal.jsx';
 import UserLogin from './frontend/pages/authentication/user/user_login.jsx';
@@ -38,12 +39,23 @@ import ReportsAgentPerformanceReport from './frontend/pages/admin/reports/admin_
 import ReportsDepartmentReport from './frontend/pages/admin/reports/admin_reports-department.jsx';
 import ReportsSLAComplianceReport from './frontend/pages/admin/reports/admin_reports-sla-compliance.jsx';
 
+import NotFound from './frontend/pages/others/404-not-found.jsx';
+
 const App = () => {
+  const location = useLocation();
+    
+  useEffect(() => {
+    console.log('Navigated to:', location.pathname);
+  }, [location]);
+    
   return (
     <>
       <Routes>
         {/* DEFAULT ROUTE — POSSIBLE TO CHANGE */}
         <Route path="/" element={<LoginPortal />} />  
+
+        {/* NOT FOUND PAGE */}
+        <Route path="*" element={<NotFound />} />
 
         {/* AUTHENTICATION ROUTES — EMPLOYEE */}
         <Route path="/login/employee" element={<UserLogin />} />
