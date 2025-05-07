@@ -1,6 +1,5 @@
 import { useState } from "react";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
-import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
 import "../../../styles/pages/admin/admin_user-access-register-user.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
@@ -250,7 +249,7 @@ function CreateAccount() {
     <div className="register-user-form-container">
       <h2>Register New User</h2>
       <hr />
-      <form>
+      <form onSubmit={handleSubmit}>
         {/* Name fields */}
         <div className="register-user-form-group">
           <label htmlFor="last-name">Last Name</label>
@@ -300,9 +299,7 @@ function CreateAccount() {
               name="suffix"
               value={suffix}
               onChange={(e) => setSuffix(e.target.value)}
-              onChange={(e) => setSuffix(e.target.value)}
               className="register-user-suffix-select"
-              style={{ color: suffix === '' ? '#7e7e7e' : '#0C0C0C' }}
               style={{ color: suffix === '' ? '#7e7e7e' : '#0C0C0C' }}
             >
               <option value="" disabled hidden>Suffix</option>
@@ -351,17 +348,18 @@ function CreateAccount() {
               required
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              onChange={(e) => setDepartment(e.target.value)}
               className="suffix-select"
-              style={{ color: department === '' ? '#7e7e7e' : '#0C0C0C' }}
               style={{ color: department === '' ? '#7e7e7e' : '#0C0C0C' }}
             >
               <option value="" disabled hidden>Department</option>
               <option value="IT Department">IT Department</option>
-              <option value="Human Resources">Human Resources</option>
-              <option value="Finance">Finance</option>
-              <option value="Marketing">Marketing</option>
+              <option value="Asset Management">Asset Management</option>
+              <option value="Document Control">Document Control</option>
+              <option value="Finance & Budgeting">Finance & Budgeting</option>
               <option value="Operations">Operations</option>
+              <option value="Facilities & Maintenance">Facilities & Maintenance</option>
+              <option value="Human Resources">Human Resources</option>
+              <option value="Administration">Administration</option>
             </select>
 
             <div className="register-user-select-separator"></div>
@@ -423,9 +421,7 @@ function CreateAccount() {
               required
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              onChange={(e) => setRole(e.target.value)}
               className="register-user-suffix-select"
-              style={{ color: role === '' ? '#7e7e7e' : '#0C0C0C' }}
               style={{ color: role === '' ? '#7e7e7e' : '#0C0C0C' }}
             >
               <option value="" disabled hidden>User Role</option>
@@ -608,9 +604,6 @@ function CreateAccount() {
           {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
         </div>
 
-        <div className="register-user-button-group">
-          <button type="button" className="btn-cancel-register-user">Cancel</button>
-          <button type="submit" className="btn-register-user">Register</button>
         <div className="register-user-button-group">
           <button type="button" className="btn-cancel-register-user">Cancel</button>
           <button type="submit" className="btn-register-user">Register</button>
