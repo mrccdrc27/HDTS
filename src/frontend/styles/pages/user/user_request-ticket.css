@@ -10,15 +10,14 @@
 
 /* Header */
 .request-ticket-form .header {
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .request-ticket-form h2 {
   font-size: 24px;
   color: var(--red-logo);
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .request-ticket-form hr {
@@ -26,25 +25,49 @@
   border-top: 1px solid var(--neutral-light-gray);
 }
 
-/* Form group */
-.request-ticket-form .form-group {
-  margin-bottom: 1.2rem;
-  display: flex;
-  flex-direction: column;
+/* Form grid layout */
+.request-ticket-form form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  align-items: start; /* Ensures form elements align properly */
 }
 
+/* Form group */
+.request-ticket-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+/* Full-width fields */
+.request-ticket-form .form-group:nth-child(1),
+.request-ticket-form .form-group:nth-child(4),
+.request-ticket-form .form-group:nth-child(5),
+.request-ticket-form .form-group:nth-child(6) {
+  grid-column: span 2;
+}
+
+/* Label */
 .request-ticket-form label {
   font-size: 16px;
   font-weight: 500;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: var(--neutral-dark-gray);
+  transition: color 0.3s ease;
 }
 
-.required {
+/* Required asterisk */
+label[for="subject"]::after,
+label[for="category"]::after,
+label[for="subCategory"]::after,
+label[for="description"]::after {
+  content: " *";
   color: var(--red-logo);
+  font-weight: bold;
 }
 
-/* Form controls */
+/* Input and textarea styling */
 .request-ticket-form input[type="text"],
 .request-ticket-form select,
 .request-ticket-form textarea {
@@ -53,77 +76,186 @@
   border: 1px solid var(--neutral-light-gray);
   border-radius: 4px;
   background-color: #fff;
-  transition: 0.3s ease;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Register ticket select wrapper */
+.register-ticket-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Remove the default dropdown icon */
+.register-ticket-select-wrapper select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 3rem; /* Space for separator */
+  width: 100%;
+}
+
+/* Separator inside select field */
+.register-ticket-select-separator {
+  position: absolute;
+  top: 0;
+  right: 2rem; /* Adjust to fit inside select field */
+  width: 1px;
+  height: calc(100% - 16px);
+  background: var(--bg-dark);
+  pointer-events: none;
+}
+
+/* Chevron down icon */
+.register-ticket-select-chevron {
+  position: absolute;
+  right: 0.5rem; /* Adjust for spacing */
+}
+
+/* Clear button (X) for category */
+.register-ticket-clear-category {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* Hover/focus effects */
+.request-ticket-form input[type="text"]:hover,
 .request-ticket-form input[type="text"]:focus,
+.request-ticket-form select:hover,
 .request-ticket-form select:focus,
+.request-ticket-form textarea:hover,
 .request-ticket-form textarea:focus {
   border-color: var(--blue-light);
-  outline: none;
   box-shadow: 0 0 0 3px rgba(6, 58, 132, 0.1);
 }
 
-/* Make sure file upload and other groups are stacked vertically */
-.file-upload-label {
+/* File upload container */
+.register-ticket-file-upload-container {
+  position: relative;
   display: flex;
   align-items: center;
-  padding: 10px 12px;
   border: 1px solid var(--neutral-light-gray);
   border-radius: 4px;
-  cursor: pointer;
+  padding: 12px;
   background-color: #fff;
-  color: var(--neutral-dim-gray);
-  transition: background-color 0.3s ease;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-.file-upload-label:hover {
-  background-color: #f9f9f9;
-  border-color: var(--neutral-gray);
+.register-ticket-file-upload-container:hover,
+.register-ticket-file-upload-container:focus-within {
+  border-color: var(--blue-light);
+  background-color: #f0f8ff;
+  box-shadow: 0 0 0 3px rgba(6, 58, 132, 0.1);
 }
 
-.file-upload-label span:first-child {
+.upload-icon-wrapper {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* Prevent shrinking */
   margin-right: 10px;
 }
 
-.file-upload-label span:last-child {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
+.upload-icon {
+  margin-right: 10px;
 }
 
-.request-ticket-form input[type="file"] {
+.register-ticket-upload-separator {
+  position: absolute;
+  top: 0;
+  left: 2rem; /* Adjust to fit inside select field */
+  width: 1px;
+  height: calc(100%);
+  background: var(--bg-dark);
+  pointer-events: none;
+}
+
+.register-ticket-file-upload-display {
+  flex-grow: 1;
+  overflow-wrap: break-word; /* Allow wrapping of long filenames */
+  word-break: break-word;
+  font-size: 14px;
+  color: var(--neutral-dim-gray);
+  min-width: 0;
+}
+
+/* Remove default file input button on WebKit browsers (Chrome, Safari) */
+input[type="file"]::-webkit-file-upload-button {
   display: none;
 }
 
-/* Date picker */
-.date-picker {
+/* Remove default file input button on Firefox */
+input[type="file"]::file-selector-button {
+  display: none;
+}
+
+/* Optional: hide the entire native input */
+.register-ticket-file-upload-input {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.uploaded-files-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px; /* Optional: limit height */
+  overflow-y: auto;  /* Scroll if too many files */
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f4f4;
+  border-radius: 6px;
+  padding: 8px 12px;
+  transition: background 0.2s ease-in-out;
+  flex-wrap: wrap; /* Allow text to wrap */
+  word-break: break-word;
+}
+
+.file-item:hover {
+  background: #e9e9e9;
+}
+
+.file-details {
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  border: 1px solid var(--neutral-light-gray);
-  border-radius: 4px;
-  background-color: #fff;
+  gap: 8px;
+  cursor: pointer;
 }
 
-.date-picker:focus-within {
-  border-color: var(--blue-light);
-  box-shadow: 0 0 0 3px rgba(6, 58, 132, 0.1);
+.file-icon {
+  font-size: 1.2rem;
 }
 
-.date-picker span {
-  margin-right: 10px;
+.file-name {
+  font-size: 0.95rem;
+  color: #333;
 }
 
-.date-picker input[type="date"] {
+.file-remove-btn {
+  background: none;
   border: none;
-  padding: 10px 0;
-  flex: 1;
-  font-size: 16px;
-  background: transparent;
-  color: var(--neutral-dim-gray);
-  outline: none;
+  color: #d9534f;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-remove-btn:hover {
+  color: #c9302c;
 }
 
 /* Submit button */
@@ -139,23 +271,51 @@
   max-width: 240px;
   cursor: pointer;
   text-transform: uppercase;
-  margin-top: 10px;
+  margin-top: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
+  grid-column: span 2;
 }
 
 .submit-btn:hover {
   background-color: var(--blue-dark);
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .file-upload-label span:last-child {
-    max-width: 100%;
-  }
-
-  .submit-btn {
-    max-width: 100%;
-  }
+/* Error message styling */
+.error-message {
+  color: var(--red-logo);
+  font-size: 14px;
+  margin-top: 6px;
 }
 
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .request-ticket-form form {
+    grid-template-columns: 1fr;
+  }
+
+  .request-ticket-form .form-group,
+  .submit-btn {
+    grid-column: span 1 !important;
+  }
+
+  .register-ticket-file-upload-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .register-ticket-file-upload-display {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .file-remove-btn {
+    align-self: flex-end;
+  }
+}
