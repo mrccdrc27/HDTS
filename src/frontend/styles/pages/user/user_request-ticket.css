@@ -48,6 +48,11 @@
   grid-column: span 2;
 }
 
+.request-ticket-form .form-group:nth-child(2),
+.request-ticket-form .form-group:nth-child(3) {
+  grid-column: span 1;
+}
+
 /* Label */
 .request-ticket-form label {
   font-size: 16px;
@@ -110,6 +115,7 @@ label[for="description"]::after {
 .register-ticket-select-chevron {
   position: absolute;
   right: 0.5rem; /* Adjust for spacing */
+  cursor: pointer;
 }
 
 /* Clear button (X) for category */
@@ -173,12 +179,12 @@ label[for="description"]::after {
 }
 
 .register-ticket-file-upload-display {
-  flex-grow: 1;
-  overflow-wrap: break-word; /* Allow wrapping of long filenames */
-  word-break: break-word;
+  display: inline-block;
   font-size: 14px;
-  color: var(--neutral-dim-gray);
+  color: var(--neutral-dark-gray);
   min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Remove default file input button on WebKit browsers (Chrome, Safari) */
@@ -191,15 +197,8 @@ input[type="file"]::file-selector-button {
   display: none;
 }
 
-/* Optional: hide the entire native input */
 .register-ticket-file-upload-input {
-  opacity: 0;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  cursor: pointer;
+  display: none !important;
 }
 
 .uploaded-files-list {
@@ -300,8 +299,13 @@ input[type="file"]::file-selector-button {
   }
 
   .register-ticket-file-upload-container {
+    position: relative;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .register-ticket-file-upload-container label {
+    cursor: pointer;
   }
 
   .register-ticket-file-upload-display {

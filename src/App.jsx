@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -11,16 +10,20 @@ import ForgotPassword from './frontend/pages/authentication/user/user_forgot-pas
 import UserLayout from './frontend/layouts/user_layout.jsx';
 import UserHome from './frontend/pages/user/user_home.jsx';
 import FrequentlyAskedQuestions from './frontend/pages/user/user_faqs.jsx';
-import AllTickets from './frontend/pages/user/active-tickets/user_all-tickets.jsx';
-import OnHoldTickets from './frontend/pages/user/active-tickets/user_on-hold-tickets.jsx';
-import OpenTickets from './frontend/pages/user/active-tickets/user_open-tickets.jsx';
-import OnProgressTickets from './frontend/pages/user/active-tickets/user_on-progress-tickets.jsx';
-import PendingTickets from './frontend/pages/user/active-tickets/user_pending-tickets.jsx';
+
+import ActiveTicketsLayout from './frontend/layouts/user_active-tickets-layout.jsx';
+import AllTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_all-tickets.jsx';
+import OnHoldTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_on-hold-tickets.jsx';
+import OpenTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_open-tickets.jsx';
+import OnProgressTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_on-progress-tickets.jsx';
+import PendingTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_pending-tickets.jsx';
+
 import AllRecords from './frontend/pages/user/ticket-records/user_all-records.jsx';
 import ClosedTickets from './frontend/pages/user/ticket-records/user_closed-tickets.jsx';
 import RejectedTickets from './frontend/pages/user/ticket-records/user_rejected-tickets.jsx';
 import RequestTicket from './frontend/pages/user/user_request-ticket.jsx';
-import TicketDetails from './frontend/pages/user/ticket-records/user_ticket-details.jsx';
+
+import TicketDetailsLayout from './frontend/layouts/user_ticket-details-layout.jsx';
 
 import AdminLayout from './frontend/layouts/admin_layout.jsx';
 import AdminDashboard from './frontend/pages/admin/admin_dashboard.jsx';
@@ -68,22 +71,23 @@ const App = () => {
         {/* USER LAYOUT ROUTES */}
         <Route path="/user" element={<UserLayout />}>
           <Route path="home" element={<UserHome />} />
-
           <Route path="frequently-asked-questions" element={<FrequentlyAskedQuestions />} />
           <Route path="request-ticket" element={<RequestTicket />} />
-          <Route path="ticket-details" element={<TicketDetails />} />
+          <Route path="ticket-details/:ticketNumber" element={<TicketDetailsLayout />} />
 
-          <Route path="all-tickets" element={<AllTickets />} />
-          <Route path="open-tickets" element={<OpenTickets />} />
-          <Route path="on-progress-tickets" element={<OnProgressTickets />} />
-          <Route path="on-hold-tickets" element={<OnHoldTickets />} />
-          <Route path="pending-tickets" element={<PendingTickets />} />
+          {/* ACTIVE TICKETS GROUP */}
+          <Route path="active-tickets" element={<ActiveTicketsLayout />}>
+            <Route path="all-tickets" element={<AllTickets />} />
+            <Route path="open-tickets" element={<OpenTickets />} />
+            <Route path="on-progress-tickets" element={<OnProgressTickets />} />
+            <Route path="on-hold-tickets" element={<OnHoldTickets />} />
+            <Route path="pending-tickets" element={<PendingTickets />} />
+          </Route>
 
           {/* TICKET RECORDS ROUTES */}
           <Route path="all-records" element={<AllRecords />} />
           <Route path="closed-tickets" element={<ClosedTickets />} />
           <Route path="rejected-tickets" element={<RejectedTickets />} />
-
         </Route>
 
         {/* ADMIN LAYOUT ROUTES */}
@@ -107,7 +111,6 @@ const App = () => {
           <Route path="reports-department-report" element={<ReportsDepartmentReport />} />
           <Route path="reports-sla-compliance-report" element={<ReportsSLAComplianceReport />} />
         </Route>  
-
       </Routes>
     </>
   );

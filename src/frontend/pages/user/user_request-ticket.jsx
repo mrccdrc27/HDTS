@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, X, ChevronDown } from 'lucide-react';
 import { ticketCategories } from '../../../utilities/ticket/categoryAndSubCategory.js';
 import TicketSuccessful from '../../components/modals/user/user_ticket-successful.jsx';
 import FilePreviewModal from '../../components/modals/user/user_request-ticket-uploaded-files.jsx';
 
 import '../../styles/pages/user/user_request-ticket.css';
+
+import { addTicket } from '../../../utilities/ticket-data/ticketData.js';
+import { generateTicketNumber } from '../../../utilities/ticket-data/generateTicketNumber.js';
 
 const RequestTicket = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,7 +101,7 @@ const RequestTicket = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const ticketNumber = 'TICKET-' + Date.now();
+    const ticketNumber = generateTicketNumber();
 
     const fullTicketData = {
       ...formData,
@@ -107,6 +110,9 @@ const RequestTicket = () => {
 
     setSubmittedTicket(fullTicketData);
     setIsModalOpen(true);
+
+    // Use addTicket to save the ticket data to localStorage
+    addTicket(fullTicketData);
 
     setFormData({
       subject: '',
@@ -151,8 +157,7 @@ const RequestTicket = () => {
               className="suffix-select"
               style={{ color: formData.category === '' ? '#7e7e7e' : '#0C0C0C' }}
               value={formData.category}
-              onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
-            >
+              onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}>
               <option value="">Select Category</option>
               {availableCategories.map((cat, index) => (
                 <option key={index} value={cat.name}>
@@ -195,8 +200,7 @@ const RequestTicket = () => {
               className="suffix-select"
               style={{ color: formData.subCategory === '' ? '#7e7e7e' : '#0C0C0C' }}
               value={formData.subCategory}
-              onChange={(e) => setFormData((prev) => ({ ...prev, subCategory: e.target.value }))}
-            >
+              onChange={(e) => setFormData((prev) => ({ ...prev, subCategory: e.target.value }))}>
               <option value="">Select Sub-Category</option>
               {availableSubCategories.map((sub, index) => (
                 <option key={index} value={sub.name}>

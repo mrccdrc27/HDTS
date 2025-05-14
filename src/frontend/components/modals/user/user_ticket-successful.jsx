@@ -1,22 +1,88 @@
-import React from 'react';
-import '../../../styles/components/modals/user/user_ticket-successful.css'; 
+import { useNavigate } from 'react-router-dom';
+import '../../../styles/components/modals/user/user_ticket-successful.css';
+import { loadTickets } from '../../../../utilities/ticket-data/ticketData.js';
 
 const TicketSuccessful = ({ isOpen, onClose, ticketData }) => {
-  if (!isOpen) return null; // Do not render if modal is not open
+  const navigate = useNavigate();
+
+  // Early return if modal is not open or ticketData is missing
+  if (!isOpen || !ticketData) return null;
+
+  // Destructure ticketData for easier access and validation
+  const {
+    ticketNumber,
+    subject,
+    category,
+    subCategory,
+    description,
+    files = [],
+    scheduleDate,
+  } = ticketData;
+
+  // Validate ticketData fields (ensure necessary fields are present)
+  if (!ticketNumber || !subject || !category) {
+    return (
+      <div className="ticket-successful-modal">
+        <div className="modal-content">
+          <h2>Error: Ticket data is incomplete</h2>
+          <p>Please try submitting the ticket again.</p>
+          <button onClick={onClose}>Close</button>
+        </div>
+      </div>
+    );
+  }
+
+  // Function to retrieve ticketData from localStorage after it was added
+  const getTicketFromLocalStorage = (ticketNumber) => {
+    const tickets = loadTickets();
+    return tickets.find(ticket => ticket.number === ticketNumber) || null;
+  };
+
+  // Get the ticket data from localStorage (after the ticket was submitted)
+  const savedTicket = getTicketFromLocalStorage(ticketNumber);
+
+  // Handle navigation for "View Ticket" button
+  const handleViewTicket = () => {
+    if (savedTicket) {
+      navigate(`/user/ticket-details/${savedTicket.number}`);
+    }
+
+    // Close the modal after navigation
+    onClose();
+  };
+
+  // Handle navigation for "Close" button (go to User Home)
+  const handleClose = () => {
+    navigate('/user/home'); // Navigate to user home
+    onClose(); // Close the modal
+  };
 
   return (
     <div className="ticket-successful-modal">
       <div className="modal-content">
         <h2>Ticket Submitted Successfully!</h2>
-        <p><strong>Ticket Number:</strong> {ticketData.ticketNumber || 'N/A'}</p>
-        <p><strong>Subject:</strong> {ticketData.subject}</p>
-        <p><strong>Category:</strong> {ticketData.category}</p>
-        <p><strong>Sub-Category:</strong> {ticketData.subCategory}</p>
-        <p><strong>Description:</strong> {ticketData.description}</p>
-        <p><strong>File:</strong> {ticketData.file ? ticketData.file.name : 'No file attached'}</p>
-        <p><strong>Schedule Date:</strong> {ticketData.scheduleDate}</p>
+        <p><strong>Ticket Number:</strong> {savedTicket ? savedTicket.number : 'N/A'}</p>
+        <p><strong>Subject:</strong> {savedTicket ? savedTicket.subject : 'N/A'}</p>
+        <p><strong>Category:</strong> {savedTicket ? savedTicket.category : 'N/A'}</p>
+        <p><strong>Sub-Category:</strong> {savedTicket ? savedTicket.subCategory : 'N/A'}</p>
+        <p><strong>Description:</strong> {savedTicket ? savedTicket.description : 'N/A'}</p>
 
-        <button onClick={onClose}>Close</button>
+        <p><strong>Files:</strong> 
+          {savedTicket && savedTicket.files && savedTicket.files.length > 0 ? (
+            <ul>
+              {savedTicket.files.map((file, index) => (
+                <li key={index}>{file.name}</li>
+              ))}
+            </ul>
+          ) : 'No files attached'}
+        </p>
+        
+        <p><strong>Schedule Date:</strong> {savedTicket ? savedTicket.scheduleDate : 'N/A'}</p>
+
+        <div className="modal-buttons">
+          <button onClick={handleClose}>Close</button>
+          <button onClick={handleViewTicket}>View Ticket</button>
+        </div>
       </div>
     </div>
   );

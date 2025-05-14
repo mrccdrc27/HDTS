@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
 import { ChevronDown, Bell } from 'lucide-react';
@@ -84,16 +84,16 @@ const UserNavbar = () => {
         {/* Active Tickets Dropdown */}
         <div className="userNavbar-menu-dropdown">
           <div className="userNavbar-menu-trigger" onClick={() => userToggleDropdown('active-tickets')}>
-            <NavLink to="/user/all-tickets" className="userNavbar-menu-item">Active Tickets</NavLink>
+            <NavLink to="/user/active-tickets/all-tickets" className="userNavbar-menu-item">Active Tickets</NavLink>
             <ChevronDown size={18} />
           </div>
           {userActiveDropdown === 'active-tickets' && (
             <div className="dropdown-content">
-              <NavLink to="/user/all-tickets">All Tickets</NavLink>
-              <NavLink to="/user/open-tickets">Open Tickets</NavLink>
-              <NavLink to="/user/on-progress-tickets">On Progress Tickets</NavLink>
-              <NavLink to="/user/on-hold-tickets">On Hold Tickets</NavLink>
-              <NavLink to="/user/pending-tickets">Pending Tickets</NavLink>
+              <NavLink to="/user/active-tickets/all-tickets">All Tickets</NavLink>
+              <NavLink to="/user/active-tickets/open-tickets">Open Tickets</NavLink>
+              <NavLink to="/user/active-tickets/on-progress-tickets">On Progress Tickets</NavLink>
+              <NavLink to="/user/active-tickets/on-hold-tickets">On Hold Tickets</NavLink>
+              <NavLink to="/user/active-tickets/pending-tickets">Pending Tickets</NavLink>
             </div>
           )}
         </div>
