@@ -1,66 +1,52 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useNavigate, Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
-import { ChevronDown, Bell } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import DefaultAvatar from '/src/frontend/assets/employee-profile.svg';
 import '../../styles/components/headers/user_navbar.css';
 
 const UserNavbar = () => {
-  const navigate = useNavigate();
-  const [userActiveDropdown, userSetActiveDropdown] = useState(null);
-  const [userCurrentTime, userSetCurrentTime] = useState(new Date());
-  const [userShowProfilePopup, userSetShowProfilePopup] = useState(false);
-  const [userShowNotificationPopup, userSetShowNotificationPopup] = useState(false);
-  const [userNotifications, userSetNotifications] = useState([
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [notifications, setNotifications] = useState([
     'Your ticket #TX0123 has been updated.',
     'Reminder: Pending ticket needs your action.',
     'System maintenance tomorrow at 10 AM.',
   ]);
 
-  const userToggleDropdown = (menu) => {
-    userSetActiveDropdown(userActiveDropdown === menu ? null : menu);
+  const toggleProfilePopup = () => {
+    setShowProfilePopup((prev) => !prev);
   };
 
-  const userToggleProfilePopup = () => {
-    userSetShowProfilePopup((prev) => !prev);
+  const toggleNotificationPopup = () => {
+    setShowNotificationPopup((prev) => !prev);
   };
 
-  const userToggleNotificationPopup = () => {
-    userSetShowNotificationPopup((prev) => !prev);
-  };
-
-  const userClearNotification = (index) => {
-    const updatedNotifications = userNotifications.filter((_, i) => i !== index);
-    userSetNotifications(updatedNotifications);
+  const clearNotification = (index) => {
+    setNotifications(notifications.filter((_, i) => i !== index));
   };
 
   useEffect(() => {
-    const userHandleClickOutside = (event) => {
-      if (userActiveDropdown && !event.target.closest('.userNavbar-menu-dropdown')) {
-        userSetActiveDropdown(null);
-      }
-      if (userShowProfilePopup && !event.target.closest('.profile-popup')) {
-        userSetShowProfilePopup(false);
-      }
-      if (userShowNotificationPopup && !event.target.closest('.profile-popup')) {
-        userSetShowNotificationPopup(false);
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.profile-popup') && !event.target.closest('.notification-container')) {
+        setShowProfilePopup(false);
+        setShowNotificationPopup(false);
       }
     };
 
-    document.addEventListener('mousedown', userHandleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', userHandleClickOutside);
-    };
-  }, [userActiveDropdown, userShowProfilePopup, userShowNotificationPopup]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      userSetCurrentTime(new Date());
+      setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const userFormatDateTime = (date) => {
+  const formatDateTime = (date) => {
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
     const time = date.toLocaleTimeString('en-US', options);
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -80,57 +66,32 @@ const UserNavbar = () => {
 
       <div className="userNavbar-menu">
         <NavLink to="/user/home" className="userNavbar-menu-item">Home</NavLink>
+        <NavLink to="/user/active-tickets" className="userNavbar-menu-item">Active Tickets</NavLink>
+        <NavLink to="/user/ticket-records" className="userNavbar-menu-item">Ticket Records</NavLink>
+      </div>  
+      
 
-        {/* Active Tickets Dropdown */}
-        <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => userToggleDropdown('active-tickets')}>
-            <NavLink to="/user/active-tickets/all-tickets" className="userNavbar-menu-item">Active Tickets</NavLink>
-            <ChevronDown size={18} />
-          </div>
-          {userActiveDropdown === 'active-tickets' && (
-            <div className="dropdown-content">
-              <NavLink to="/user/active-tickets/all-tickets">All Tickets</NavLink>
-              <NavLink to="/user/active-tickets/open-tickets">Open Tickets</NavLink>
-              <NavLink to="/user/active-tickets/on-progress-tickets">On Progress Tickets</NavLink>
-              <NavLink to="/user/active-tickets/on-hold-tickets">On Hold Tickets</NavLink>
-              <NavLink to="/user/active-tickets/pending-tickets">Pending Tickets</NavLink>
-            </div>
+      <div className="userNavbar-right">
+        {/* Notifications */}
+        <div className="relative notification-container">
+          <Bell
+            size={18}
+            className="cursor-pointer notification-bell"
+            onClick={toggleNotificationPopup}
+          />
+          {notifications.length > 0 && (
+            <span className="notification-badge">{notifications.length}</span>
           )}
-        </div>
-
-        {/* Ticket Records Dropdown */}
-        <div className="userNavbar-menu-dropdown">
-          <div className="userNavbar-menu-trigger" onClick={() => userToggleDropdown('ticket-records')}>
-            <NavLink to="/user/all-records" className="userNavbar-menu-item">Ticket Records</NavLink>
-            <ChevronDown size={18} />
-          </div>
-          {userActiveDropdown === 'ticket-records' && (
-            <div className="dropdown-content">
-              <NavLink to="/user/all-records">All Records</NavLink>
-              <NavLink to="/user/closed-tickets">Closed Tickets</NavLink>
-              <NavLink to="/user/rejected-tickets">Rejected Tickets</NavLink>
-            </div>
-          )}
-        </div>
-
-        <div className="userNavbar-right">
-          {/* Notification Bell */}
-          <div className="relative notification-container">
-            <Bell
-              size={18}
-              className="cursor-pointer notification-bell"
-              onClick={userToggleNotificationPopup}
-            />
-            {userNotifications.length > 0 && (
-              <span className="notification-badge">{userNotifications.length}</span>
-            )}
-            {userShowNotificationPopup && (
-              <div className="profile-popup">
-                <p className="profile-name">Notifications</p>
-                {userNotifications.map((notification, index) => (
-                  <div key={index} className="notification-item">
-                    {notification}
-                    <button onClick={() => userClearNotification(index)} className="clear-notification-btn">
+          {showNotificationPopup && (
+            <div className="profile-popup">
+              <p className="profile-name">Notifications</p>
+              {notifications.map((note, index) => (
+                <div key={index} className="notification-item">
+                    {note}
+                    <button
+                      onClick={() => clearNotification(index)}
+                      className="clear-notification-btn"
+                    >
                       Clear
                     </button>
                   </div>
@@ -142,7 +103,7 @@ const UserNavbar = () => {
           {/* User Info */}
           <div className="userNavbar-info">
             <span>Name</span><br />
-            <span>{userFormatDateTime(userCurrentTime)}</span>
+            <span>{formatDateTime(currentTime)}</span>
           </div>
 
           {/* Profile Avatar */}
@@ -151,23 +112,20 @@ const UserNavbar = () => {
               src={DefaultAvatar}
               alt="Employee Profile"
               className="userNavbar-menu-item cursor-pointer"
-              onClick={userToggleProfilePopup}
+              onClick={toggleProfilePopup}
             />
-            {userShowProfilePopup && (
+            {showProfilePopup && (
               <div className="profile-popup">
                 <p className="profile-name">John Doe</p>
                 <p className="profile-role">System Manager</p>
                 <Link to="/">
-                  <button className="user-logout-button">
-                    Logout
-                  </button>
+                  <button className="user-logout-button">Logout</button>
                 </Link>
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

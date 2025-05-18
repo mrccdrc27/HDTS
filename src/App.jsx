@@ -8,19 +8,13 @@ import CreateAccount from './frontend/pages/authentication/user/user_create-acco
 import ForgotPassword from './frontend/pages/authentication/user/user_forgot-password.jsx';
 
 import UserLayout from './frontend/layouts/user_layout.jsx';
-import UserHome from './frontend/pages/user/user_home.jsx';
+import UserHome from './frontend/pages/user/home/user_home.jsx';
 import FrequentlyAskedQuestions from './frontend/pages/user/user_faqs.jsx';
 
-import ActiveTicketsLayout from './frontend/layouts/user_active-tickets-layout.jsx';
-import AllTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_all-tickets.jsx';
-import OnHoldTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_on-hold-tickets.jsx';
-import OpenTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_open-tickets.jsx';
-import OnProgressTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_on-progress-tickets.jsx';
-import PendingTickets from './frontend/pages/user/active-tickets/active-tickets-tables/user_pending-tickets.jsx';
+import ActiveTickets from './frontend/pages/user/active-tickets/user_active-tickets-main.jsx';
 
-import AllRecords from './frontend/pages/user/ticket-records/user_all-records.jsx';
-import ClosedTickets from './frontend/pages/user/ticket-records/user_closed-tickets.jsx';
-import RejectedTickets from './frontend/pages/user/ticket-records/user_rejected-tickets.jsx';
+import TicketRecords from './frontend/pages/user/ticket-records/user_ticket-records-main.jsx';
+
 import RequestTicket from './frontend/pages/user/user_request-ticket.jsx';
 
 import TicketDetailsLayout from './frontend/layouts/user_ticket-details-layout.jsx';
@@ -76,18 +70,10 @@ const App = () => {
           <Route path="ticket-details/:ticketNumber" element={<TicketDetailsLayout />} />
 
           {/* ACTIVE TICKETS GROUP */}
-          <Route path="active-tickets" element={<ActiveTicketsLayout />}>
-            <Route path="all-tickets" element={<AllTickets />} />
-            <Route path="open-tickets" element={<OpenTickets />} />
-            <Route path="on-progress-tickets" element={<OnProgressTickets />} />
-            <Route path="on-hold-tickets" element={<OnHoldTickets />} />
-            <Route path="pending-tickets" element={<PendingTickets />} />
-          </Route>
-
+          <Route path="active-tickets" element={<ActiveTickets />} />
+            
           {/* TICKET RECORDS ROUTES */}
-          <Route path="all-records" element={<AllRecords />} />
-          <Route path="closed-tickets" element={<ClosedTickets />} />
-          <Route path="rejected-tickets" element={<RejectedTickets />} />
+          <Route path="ticket-records" element={<TicketRecords />} /> 
         </Route>
 
         {/* ADMIN LAYOUT ROUTES */}

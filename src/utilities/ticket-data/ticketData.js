@@ -16,6 +16,7 @@ const TICKET_STATUSES = [
 
 // Mock tickets (1 per status)
 const mockActiveTickets = [
+  // Software Tickets
   {
     number: 'TICKET-20250510-0001',
     subject: 'Email not working',
@@ -29,6 +30,44 @@ const mockActiveTickets = [
     lastUpdated: '2025-05-10T08:00:00Z',
   },
   {
+    number: 'TICKET-20250510-0011',
+    subject: 'Update Software License',
+    category: 'Software',
+    subCategory: 'Licensing',
+    description: 'Renew antivirus license',
+    scheduleDate: '2025-05-15',
+    files: [],
+    status: 'On Progress',
+    dateCreated: '2025-05-01T09:30:00Z',
+    lastUpdated: '2025-05-10T11:30:00Z',
+  },
+  {
+    number: 'TICKET-20250510-0009',
+    subject: 'New Employee Email Setup',
+    category: 'Software',
+    subCategory: 'Email',
+    description: 'Setup email for new employee',
+    scheduleDate: '2025-05-13',
+    files: [],
+    status: 'Approved/Open',
+    dateCreated: '2025-05-02T13:00:00Z',
+    lastUpdated: '2025-05-10T10:10:00Z',
+  },
+  {
+    number: 'TICKET-20250510-0015',
+    subject: 'Outlook Calendar Sync',
+    category: 'Software',
+    subCategory: 'Email',
+    description: 'Issues syncing calendar across devices',
+    scheduleDate: '2025-05-19',
+    files: [],
+    status: 'Submitted',
+    dateCreated: '2025-04-27T09:00:00Z',
+    lastUpdated: '2025-05-10T15:00:00Z',
+  },
+
+  // Hardware Tickets
+  {
     number: 'TICKET-20250510-0002',
     subject: 'Request for Laptop',
     category: 'Hardware',
@@ -41,40 +80,16 @@ const mockActiveTickets = [
     lastUpdated: '2025-05-10T10:00:00Z',
   },
   {
-    number: 'TICKET-20250510-0003',
-    subject: 'Budget Approval Delay',
-    category: 'Finance',
-    subCategory: 'Budget',
-    description: 'Pending approval for Q2 budget',
-    scheduleDate: '2025-05-15',
-    files: [],
-    status: 'Pending',
-    dateCreated: '2025-05-08T11:30:00Z',
-    lastUpdated: '2025-05-09T08:00:00Z',
-  },
-  {
-    number: 'TICKET-20250510-0004',
-    subject: 'Software Installation',
-    category: 'Software',
-    subCategory: 'MS Office',
-    description: 'Installing Microsoft Office 365',
+    number: 'TICKET-20250510-0010',
+    subject: 'Laptop Battery Issue',
+    category: 'Hardware',
+    subCategory: 'Laptop',
+    description: 'Battery draining quickly',
     scheduleDate: '2025-05-14',
     files: [],
-    status: 'On Progress',
-    dateCreated: '2025-05-07T14:00:00Z',
-    lastUpdated: '2025-05-10T10:30:00Z',
-  },
-  {
-    number: 'TICKET-20250510-0005',
-    subject: 'VPN Access Issue',
-    category: 'Network',
-    subCategory: 'VPN',
-    description: 'User unable to connect to VPN',
-    scheduleDate: '2025-05-16',
-    files: [],
-    status: 'On Hold',
-    dateCreated: '2025-05-06T07:00:00Z',
-    lastUpdated: '2025-05-09T16:00:00Z',
+    status: 'Pending',
+    dateCreated: '2025-05-01T15:00:00Z',
+    lastUpdated: '2025-05-10T11:00:00Z',
   },
   {
     number: 'TICKET-20250510-0006',
@@ -89,6 +104,74 @@ const mockActiveTickets = [
     lastUpdated: '2025-05-10T12:00:00Z',
   },
   {
+    number: 'TICKET-20250510-0013',
+    subject: 'Setup New Printer',
+    category: 'Hardware',
+    subCategory: 'Printer',
+    description: 'Install printer for Marketing',
+    scheduleDate: '2025-05-17',
+    files: [],
+    status: 'Resolved',
+    dateCreated: '2025-04-29T10:00:00Z',
+    lastUpdated: '2025-05-10T13:00:00Z',
+  },
+
+  // Finance Tickets
+  {
+    number: 'TICKET-20250510-0003',
+    subject: 'Budget Approval Delay',
+    category: 'Finance',
+    subCategory: 'Budget',
+    description: 'Pending approval for Q2 budget',
+    scheduleDate: '2025-05-15',
+    files: [],
+    status: 'Pending',
+    dateCreated: '2025-05-08T11:30:00Z',
+    lastUpdated: '2025-05-09T08:00:00Z',
+  },
+
+  // Network Tickets
+  {
+    number: 'TICKET-20250510-0005',
+    subject: 'VPN Access Issue',
+    category: 'Network',
+    subCategory: 'VPN',
+    description: 'User unable to connect to VPN',
+    scheduleDate: '2025-05-16',
+    files: [],
+    status: 'On Hold',
+    dateCreated: '2025-05-06T07:00:00Z',
+    lastUpdated: '2025-05-09T16:00:00Z',
+  },
+  {
+    number: 'TICKET-20250510-0008',
+    subject: 'Network Downtime',
+    category: 'Network',
+    subCategory: 'LAN',
+    description: 'LAN not working in Finance department',
+    scheduleDate: '2025-05-12',
+    files: [],
+    status: 'Submitted',
+    dateCreated: '2025-05-03T10:00:00Z',
+    lastUpdated: '2025-05-10T09:00:00Z',
+  },
+
+  // Document Management Tickets
+  {
+    number: 'TICKET-20250510-0012',
+    subject: 'Shared Drive Access',
+    category: 'Document Management',
+    subCategory: 'Access Rights',
+    description: 'Requesting access to team shared drive',
+    scheduleDate: '2025-05-16',
+    files: [],
+    status: 'On Hold',
+    dateCreated: '2025-04-30T12:00:00Z',
+    lastUpdated: '2025-05-10T12:30:00Z',
+  },
+
+  // HR Tickets
+  {
     number: 'TICKET-20250510-0007',
     subject: 'User Offboarding',
     category: 'HR',
@@ -100,7 +183,35 @@ const mockActiveTickets = [
     dateCreated: '2025-05-04T09:00:00Z',
     lastUpdated: '2025-05-10T09:30:00Z',
   },
+  {
+    number: 'TICKET-20250510-0014',
+    subject: 'Exit Clearance',
+    category: 'HR',
+    subCategory: 'Employee Exit',
+    description: 'Clearance for resigned employee',
+    scheduleDate: '2025-05-18',
+    files: [],
+    status: 'Closed',
+    dateCreated: '2025-04-28T14:00:00Z',
+    lastUpdated: '2025-05-10T14:00:00Z',
+  },
+
+  // Additional Software Tickets (to fill count)
+  {
+    number: 'TICKET-20250510-0015',
+    subject: 'Outlook Calendar Sync',
+    category: 'Software',
+    subCategory: 'Email',
+    description: 'Issues syncing calendar across devices',
+    scheduleDate: '2025-05-19',
+    files: [],
+    status: 'Submitted',
+    dateCreated: '2025-04-27T09:00:00Z',
+    lastUpdated: '2025-05-10T15:00:00Z',
+  },
 ];
+
+
 
 // Save tickets to localStorage
 const saveTickets = (tickets = mockActiveTickets) => {
