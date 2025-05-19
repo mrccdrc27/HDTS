@@ -1,42 +1,68 @@
-/* AdminLayout.css */
-
-/* Root and base */
 :root {
-    --admin-header-bg: var(--blue-logo); /* Reuse your existing theme color */
-    --admin-content-bg: #f5f7fa; /* You can also change this to --neutral-light-gray if needed */
-    --admin-text-color: #ffffff;
-  }
-  
-  .admin-layout {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--admin-content-bg);
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  /* Header / Navbar */
-  .admin-navbar {
-    background-color: var(--admin-header-bg);
-    color: var(--admin-text-color);
-    padding: 1rem 1.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  /* Main content container */
+  --admin-header-height: 64px;
+  --admin-header-bg: var(--blue-logo); /* Same as user header */
+  --admin-content-bg: #f5f7fa;
+  --admin-container-bg: #ffffff;
+  --admin-container-radius: 8px;
+  --admin-container-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --admin-top-margin: 40px;
+  --admin-page-padding: 20px;
+}
+
+/* Main wrapper */
+.admin-layout {
+  position: relative;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--admin-content-bg);
+  padding: var(--admin-page-padding);
+}
+
+/* Fixed Navbar */
+.admin-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--admin-header-height);
+  background-color: var(--admin-header-bg);
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Main content container */
+.admin-layout-content {
+  max-width: 1200px;
+  margin: 5rem auto;
+  background-color: var(--admin-container-bg); /* Can be gray if you prefer */
+  border-radius: var(--admin-container-radius);
+  box-shadow: var(--admin-container-shadow);
+  padding: 2rem;
+  box-sizing: border-box;
+  min-height: auto;
+  width: 100%;
+}
+
+/* Responsive for small screens */
+@media (max-width: 768px) {
   .admin-layout-content {
-    flex: 1;
-    padding: 2rem;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    box-sizing: border-box;
-    background-color: var(--neutral-light-gray); /* optional, to match your form backgrounds */
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 3rem;
+    padding: 1rem;
   }
-  
+}
+
+/* Responsive for medium screens */
+@media (max-width: 1024px) {
+  .admin-layout-content {
+    margin-top: 4rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Responsive for large screens */
+@media (max-width: 1440px) {
+  .admin-layout-content {
+    margin-top: 5rem;
+    padding: 2rem;
+  }
+}

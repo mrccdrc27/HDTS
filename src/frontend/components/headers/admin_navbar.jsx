@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
 import { ChevronDown, Bell } from 'lucide-react';
@@ -88,20 +88,9 @@ const AdminNavbar = () => {
 
         {/* Dropdown for Ticket Management */}
         <div className="adminNavbar-menu-dropdown">
-          <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('ticket-management')}>
-            <NavLink to="/admin/ticket-management-all-tickets" className="adminNavbar-menu-item">Ticket Management</NavLink>
-            <ChevronDown size={18} />
+          <div className="adminNavbar-menu-trigger">
+            <NavLink to="/admin/ticket-management" className="adminNavbar-menu-item">Ticket Management</NavLink>
           </div>
-          {activeDropdown === 'ticket-management' && (
-            <div className="dropdown-content">
-              <NavLink to="/admin/ticket-management-all-tickets">All Tickets</NavLink>
-              <NavLink to="/admin/ticket-management-open-tickets">Open Tickets</NavLink>
-              <NavLink to="/admin/ticket-management-approved-tickets">Approved Tickets</NavLink>
-              <NavLink to="/admin/ticket-management-on-progress-tickets">On Progress Tickets</NavLink>
-              <NavLink to="/admin/ticket-management-on-hold-tickets">On hold Tickets</NavLink>
-              <NavLink to="/admin/ticket-management-pending-tickets">Pending Tickets</NavLink>
-            </div>
-          )}
         </div>
 
         {/* Dropdown for User Access */}
