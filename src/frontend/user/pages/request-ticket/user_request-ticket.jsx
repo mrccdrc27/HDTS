@@ -4,7 +4,7 @@ import { ticketCategories } from '../../../../utilities/ticket/categoryAndSubCat
 import TicketSuccessful from './modals/user_ticket-successful.jsx';
 import FilePreviewModal from './modals/user_request-ticket-uploaded-files.jsx';
 
-// import '../../styles/pages/user/user_request-ticket.css';
+import './user_request-ticket.css';
 
 import { addTicket } from '../../../../utilities/ticket-data/ticketData.js';
 import { generateTicketNumber } from '../../../../utilities/ticket-data/generateTicketNumber.js';

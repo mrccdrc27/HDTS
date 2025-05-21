@@ -9,13 +9,22 @@
   --admin-page-padding: 20px;
 }
 
-/* Main wrapper */
-.admin-layout {
-  position: relative;
-  min-height: 100vh;
+/* Base layout styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
   font-family: 'Poppins', sans-serif;
   background-color: var(--admin-content-bg);
-  padding: var(--admin-page-padding);
+  overflow: hidden; /* Prevent double scrollbar */
+}
+
+/* Make layout fill the screen and scrollable */
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* Fixed Navbar */
@@ -30,39 +39,44 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Main content container */
+/* Scrollable content below navbar */
 .admin-layout-content {
+  margin-top: var(--admin-header-height);
+  padding: var(--admin-page-padding);
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* Container inside the scrollable area */
+.admin-layout-inner {
   max-width: 1200px;
-  margin: 5rem auto;
-  background-color: var(--admin-container-bg); /* Can be gray if you prefer */
+  margin: 0 auto;
+  background-color: var(--admin-container-bg);
   border-radius: var(--admin-container-radius);
   box-shadow: var(--admin-container-shadow);
   padding: 2rem;
   box-sizing: border-box;
-  min-height: auto;
+  min-height: 100%;
   width: 100%;
 }
 
 /* Responsive for small screens */
 @media (max-width: 768px) {
-  .admin-layout-content {
-    margin-top: 3rem;
+  .admin-layout-inner {
     padding: 1rem;
   }
 }
 
-/* Responsive for medium screens */
+/* Medium screens */
 @media (max-width: 1024px) {
-  .admin-layout-content {
-    margin-top: 4rem;
+  .admin-layout-inner {
     padding: 1.5rem;
   }
 }
 
-/* Responsive for large screens */
+/* Large screens */
 @media (max-width: 1440px) {
-  .admin-layout-content {
-    margin-top: 5rem;
+  .admin-layout-inner {
     padding: 2rem;
   }
 }

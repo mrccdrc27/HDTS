@@ -1,26 +1,6 @@
-const UserChangePassword = ({ onClose }) => (
-  <div
-    onClick={onClose}
-    style={{
-      position: 'fixed',
-      inset: 0,
-      background: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1100,
-    }}
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        background: '#fff',
-        padding: 24,
-        borderRadius: 8,
-        width: 360,
-        maxWidth: '90%',
-      }}
-    >
+const UserChangePassword = ({ onClose, onBack }) => {
+  return (
+    <>
       <h2>Change Password</h2>
       <form>
         <label>
@@ -39,11 +19,14 @@ const UserChangePassword = ({ onClose }) => (
           Submit
         </button>
       </form>
-      <button onClick={onClose} style={{ marginTop: 16 }}>
-        Close
-      </button>
-    </div>
-  </div>
-);
+      <div style={{ marginTop: 16 }}>
+        <button onClick={onBack} style={{ marginRight: 10 }}>
+          Back
+        </button>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </>
+  );
+};
 
 export default UserChangePassword;

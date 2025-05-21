@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import TicketManagementToolbar from './admin_ticket-management-toolbar.jsx';
 import TicketManagementTable from './admin_ticket-management-table.jsx';
-import { loadTickets } from '../../../../utilities/ticket-data/ticketData.js';
+import { loadTickets, updateTicketStatus } from '../../../../utilities/ticket-data/ticketData.js';
 
 const TicketManagement = () => {
   const [tickets, setTickets] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Filters state
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,16 +18,49 @@ const TicketManagement = () => {
 
   // Load tickets on mount
   useEffect(() => {
-    const fetchedTickets = loadTickets();
-    setTickets(Array.isArray(fetchedTickets) ? fetchedTickets : []);
+    const fetchTickets = async () => {
+      try {
+        const fetchedTickets = loadTickets();
+        setTickets(Array.isArray(fetchedTickets) ? fetchedTickets : []);
+      } catch (error) {
+        console.error('Failed to load tickets:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchTickets();
   }, []);
+
+  // Handle ticket status updates
+  const handleStatusUpdate = async (ticketNumber, newStatus) => {
+    try {
+      setIsLoading(true);
+      await updateTicketStatus(ticketNumber, newStatus);
+      
+      setTickets(prevTickets => 
+        prevTickets.map(ticket => 
+          ticket.number === ticketNumber ? { ...ticket, status: newStatus } : ticket
+        )
+      );
+    } catch (error) {
+      console.error('Failed to update ticket status:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Filter & sort tickets based on filters
   const filteredTickets = tickets
     .filter(ticket => {
-      // Search filter
-      if (searchQuery && !ticket.subject?.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
+      // Search filter (checks subject and ticket number)
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        if (!ticket.subject?.toLowerCase().includes(query) && 
+            !ticket.number?.toString().toLowerCase().includes(query)) {
+          return false;
+        }
       }
 
       // Category filter
@@ -39,7 +73,7 @@ const TicketManagement = () => {
         return false;
       }
 
-      // Status filter
+      // Status filter (with mapping for 'Open' to 'Approved/Open')
       if (statusFilter) {
         const normalizedStatus = statusFilter === 'Open' ? 'Approved/Open' : statusFilter;
         if (ticket.status !== normalizedStatus) {
@@ -52,8 +86,12 @@ const TicketManagement = () => {
       if (dateFrom && ticketDate < new Date(dateFrom)) {
         return false;
       }
-      if (dateTo && ticketDate > new Date(dateTo)) {
-        return false;
+      if (dateTo) {
+        const toDate = new Date(dateTo);
+        toDate.setHours(23, 59, 59); // Include entire end day
+        if (ticketDate > toDate) {
+          return false;
+        }
       }
 
       return true;
@@ -68,7 +106,9 @@ const TicketManagement = () => {
     <div className="active-tickets-layout">
       <div className="active-tickets-header">
         <h2>Ticket Management</h2>
+        {isLoading && <div className="loading-indicator">Loading...</div>}
       </div>
+      
       <div className="active-tickets-toolbar">
         <TicketManagementToolbar
           searchQuery={searchQuery}
@@ -85,11 +125,21 @@ const TicketManagement = () => {
           setDateTo={setDateTo}
           sortAsc={sortAsc}
           setSortAsc={setSortAsc}
-          tickets={tickets} // optional, for dropdown options
+          tickets={tickets}
         />
       </div>
+      
       <div className="active-tickets-content">
-        <TicketManagementTable filteredTickets={filteredTickets} />
+        {isLoading ? (
+          <div className="loading-overlay">
+            <div className="spinner"></div>
+          </div>
+        ) : (
+          <TicketManagementTable 
+            filteredTickets={filteredTickets} 
+            onStatusUpdate={handleStatusUpdate}
+          />
+        )}
       </div>
     </div>
   );

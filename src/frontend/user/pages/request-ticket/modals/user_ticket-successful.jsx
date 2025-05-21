@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-// import '../../../styles/components/modals/user/user_ticket-successful.css';
+import './user_ticket-successful.css';
 import { loadTickets } from '../../../../../utilities/ticket-data/ticketData.js';
 
 const TicketSuccessful = ({ isOpen, onClose, ticketData }) => {
