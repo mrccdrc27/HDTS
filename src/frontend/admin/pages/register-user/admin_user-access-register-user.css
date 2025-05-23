@@ -16,9 +16,6 @@
 }
 
 .register-user-form-container {
-    max-width: 90%;
-    margin: 3rem auto;
-    padding: 2rem;
     background: var(--neutral-light-gray);
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

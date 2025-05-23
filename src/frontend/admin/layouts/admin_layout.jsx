@@ -4,8 +4,10 @@ import './admin_layout.css';
 
 const AdminLayout = () => {
   return (
-    <div className="admin-layout"> {/* <- Apply the correct class */}
-      <AdminNavbar />
+    <div className="admin-layout"> 
+      <div className="admin-layout-header">
+        <AdminNavbar />
+      </div>
       <div className="admin-layout-content">
         <Outlet />
       </div>

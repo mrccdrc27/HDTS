@@ -96,15 +96,16 @@ const AdminNavbar = () => {
         {/* Dropdown for User Access */}
         <div className="adminNavbar-menu-dropdown">
           <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('user-access')}>
-            <NavLink to="/admin/user-access-all-users" className="adminNavbar-menu-item">User Access</NavLink>
+            <NavLink to="/admin/user-access/all-users" className="adminNavbar-menu-item">User Access</NavLink>
             <ChevronDown size={18} />
           </div>
           {activeDropdown === 'user-access' && (
             <div className="dropdown-content">
-              <NavLink to="/admin/user-access-all-users">All Users</NavLink>
-              <NavLink to="/admin/user-access-employees">Employees</NavLink>
-              <NavLink to="/admin/user-access-ticket-agents">Ticket Agents</NavLink>
-              <NavLink to="/admin/user-access-system-managers">System Managers</NavLink>
+              <NavLink to="/admin/user-access/all-users">All Users</NavLink>
+              <NavLink to="/admin/user-access/users">Users</NavLink>
+              <NavLink to="/admin/user-access/ticket-agents">Ticket Agents</NavLink>
+              <NavLink to="/admin/user-access/system-admins">System Admins</NavLink>
+              <NavLink to="/admin/user-access/for-approvals">For Approvals</NavLink>
             </div>
           )}
         </div>
@@ -112,14 +113,14 @@ const AdminNavbar = () => {
         {/* Dropdown for Reports */}
         <div className="adminNavbar-menu-dropdown">
           <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('reports')}>
-            <NavLink to="/admin/reports-agent-performance-report" className="adminNavbar-menu-item">Reports</NavLink>
+            <NavLink to="/admin/reports/agent-performance-report" className="adminNavbar-menu-item">Reports</NavLink>
             <ChevronDown size={18} />
           </div>
           {activeDropdown === 'reports' && (
             <div className="dropdown-content">
-              <NavLink to="/admin/reports-agent-performance-report">Agent Performance Report</NavLink>
-              <NavLink to="/admin/reports-department-report">Department Report</NavLink>
-              <NavLink to="/admin/reports-sla-compliance-report">SLA Compliance Report</NavLink>
+              <NavLink to="/admin/reports/agent-performance-report">Agent Performance Report</NavLink>
+              <NavLink to="/admin/reports/department-report">Department Report</NavLink>
+              <NavLink to="/admin/reports/sla-compliance-report">SLA Compliance Report</NavLink>
             </div>
           )}
         </div>

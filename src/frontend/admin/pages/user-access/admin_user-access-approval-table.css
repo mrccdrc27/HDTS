@@ -1,0 +1,132 @@
+/* Container */
+.user-access-table {
+  width: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Table */
+.user-access-table table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+/* Header */
+.user-access-table th {
+  background-color: #8b0000;
+  color: white;
+  padding: 12px 10px;
+  font-weight: 600;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.sort-icon-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sort-icon {
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.sort-icon:hover,
+.sort-icon.active {
+  color: white;
+}
+
+/* Table Body */
+.user-access-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Status Badge */
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.status.active {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.status.inactive {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+.status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.approve-btn,
+.reject-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.approve-btn {
+  background-color: #198754;
+}
+
+.approve-btn:hover {
+  background-color: #157347;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+}
+
+.reject-btn:hover {
+  background-color: #bb2d3b;
+}
+
+/* Pagination */
+.pagination-controls {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pagination-controls button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination-controls button.active-page {
+  font-weight: bold;
+  background-color: #ccc;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

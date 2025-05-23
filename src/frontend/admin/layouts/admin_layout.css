@@ -1,6 +1,6 @@
 :root {
   --admin-header-height: 64px;
-  --admin-header-bg: var(--blue-logo); /* Same as user header */
+  --admin-header-bg: var(--blue-logo);
   --admin-content-bg: #f5f7fa;
   --admin-container-bg: #ffffff;
   --admin-container-radius: 8px;
@@ -9,26 +9,26 @@
   --admin-page-padding: 20px;
 }
 
-/* Base layout styles */
+/* Base styles */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-y: auto;
   font-family: 'Poppins', sans-serif;
   background-color: var(--admin-content-bg);
-  overflow: hidden; /* Prevent double scrollbar */
 }
 
-/* Make layout fill the screen and scrollable */
+/* Layout wrapper */
 .admin-layout {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  background-color: var(--admin-content-bg);
+  padding: var(--admin-page-padding);
+  box-sizing: border-box;
 }
 
-/* Fixed Navbar */
-.admin-navbar {
+/* Header wrapper */
+.admin-layout-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -39,44 +39,28 @@ html, body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Scrollable content below navbar */
+/* Content area */
 .admin-layout-content {
-  margin-top: var(--admin-header-height);
-  padding: var(--admin-page-padding);
-  overflow-y: auto;
-  flex-grow: 1;
-}
-
-/* Container inside the scrollable area */
-.admin-layout-inner {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: calc(var(--admin-header-height) + 1.5rem) auto 0 auto;
   background-color: var(--admin-container-bg);
   border-radius: var(--admin-container-radius);
   box-shadow: var(--admin-container-shadow);
-  padding: 2rem;
+  padding: 1rem 1.25rem; /* Reduced from 2rem */
   box-sizing: border-box;
-  min-height: 100%;
   width: 100%;
 }
 
-/* Responsive for small screens */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .admin-layout-inner {
-    padding: 1rem;
+  .admin-layout-content {
+    padding: 0.75rem 1rem;
+    margin-top: calc(var(--admin-header-height) + 1rem);
   }
 }
 
-/* Medium screens */
 @media (max-width: 1024px) {
-  .admin-layout-inner {
-    padding: 1.5rem;
-  }
-}
-
-/* Large screens */
-@media (max-width: 1440px) {
-  .admin-layout-inner {
-    padding: 2rem;
+  .admin-layout-content {
+    padding: 1rem;
   }
 }

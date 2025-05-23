@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "./admin_uploaded-image-preview.css";
+import "./uploaded-image-preview.css";
 
-function AdminUploadedImagePreview({ showModal, imageSrc, closeModal }) {
+function UploadedImagePreview({ showModal, imageSrc, closeModal }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -64,4 +64,4 @@ function AdminUploadedImagePreview({ showModal, imageSrc, closeModal }) {
   );
 }
 
-export default AdminUploadedImagePreview;
+export default UploadedImagePreview;

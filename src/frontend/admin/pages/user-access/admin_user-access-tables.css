@@ -1,0 +1,114 @@
+.user-access-table table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+/* Header styles */
+.user-access-table th {
+  background-color: #8b0000;
+  color: white;
+  padding: 10px;
+  user-select: none;
+}
+
+/* Align label and icon */
+.user-access-table .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* Sort icon behavior */
+.sort-icon-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sort-icon {
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.sort-icon:hover {
+  color: white;
+}
+
+.sort-icon.active {
+  color: white;
+}
+
+/* Table cell styles */
+.user-access-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Status badge */
+.status {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.status.active {
+  background-color: #c1f0c1;
+  color: #1e7e34;
+}
+
+/* Action buttons */
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.view-btn,
+.update-btn {
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.view-btn {
+  background-color: #0d6efd;
+}
+
+.view-btn:hover {
+  background-color: #0b5ed7;
+}
+
+.update-btn {
+  background-color: #6c757d;
+}
+
+.update-btn:hover {
+  background-color: #5c636a;
+}
+
+.pagination-controls {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.pagination-controls button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.pagination-controls button.active-page {
+  font-weight: bold;
+  background-color: #ccc;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

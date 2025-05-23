@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
+import AdminUploadedImagePreview from "../../components/modals/admin_uploaded-image-preview.jsx";
 import './admin_user-access-register-user.css';
 
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
@@ -529,7 +529,7 @@ function CreateAccount() {
           {errors.image && <p className="error-message">{errors.image}</p>}
         </div>
 
-        <UploadedImagePreview
+        <AdminUploadedImagePreview
           showModal={showImagePreviewModal}
           imageSrc={uploadedImage ? URL.createObjectURL(uploadedImage) : null}
           closeModal={() => setShowImagePreviewModal(false)}

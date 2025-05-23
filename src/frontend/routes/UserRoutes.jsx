@@ -7,6 +7,8 @@ import RequestTicket from '../user/pages/request-ticket/user_request-ticket.jsx'
 import TicketDetailsLayout from '../user/layouts/user_ticket-details-layout.jsx';
 import ActiveTickets from '../user/pages/active-tickets/user_active-tickets-main.jsx';
 import TicketRecords from '../user/pages/ticket-records/user_ticket-records-main.jsx';
+import NotFound from '../pages/others/404-not-found.jsx';
+
 
 const UserRoutes = () => {
   return (
@@ -18,6 +20,8 @@ const UserRoutes = () => {
         <Route path="ticket-details/:ticketNumber" element={<TicketDetailsLayout />} />
         <Route path="active-tickets" element={<ActiveTickets />} />
         <Route path="ticket-records" element={<TicketRecords />} />
+
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );

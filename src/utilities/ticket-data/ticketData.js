@@ -195,20 +195,6 @@ const mockActiveTickets = [
     dateCreated: '2025-04-28T14:00:00Z',
     lastUpdated: '2025-05-10T14:00:00Z',
   },
-
-  // Additional Software Tickets (to fill count)
-  {
-    number: 'TICKET-20250510-0015',
-    subject: 'Outlook Calendar Sync',
-    category: 'Software',
-    subCategory: 'Email',
-    description: 'Issues syncing calendar across devices',
-    scheduleDate: '2025-05-19',
-    files: [],
-    status: 'Submitted',
-    dateCreated: '2025-04-27T09:00:00Z',
-    lastUpdated: '2025-05-10T15:00:00Z',
-  },
 ];
 
 
