@@ -1,12 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions, viewsets
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from .models import Employee
-from .serializers import EmployeeSerializer
+from .models import Employee, Ticket, TicketAttachment
+from .serializers import EmployeeSerializer, TicketSerializer
 from .serializers import MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.utils import timezone
 
 # For employee registration
 class CreateEmployeeView(APIView):
@@ -41,3 +43,59 @@ class EmployeeTokenObtainPairView(TokenObtainPairView):
 # ✅ Token view for admin login (only admins, not superusers)
 class AdminTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer  # restricts to System Admin and Ticket Agent
+
+class TicketViewSet(viewsets.ModelViewSet):
+    serializer_class = TicketSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # For handling file uploads
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role in ['System Admin', 'Ticket Agent']:
+            return Ticket.objects.all()  # Admins and agents can see everything
+        return Ticket.objects.filter(employee=user)  # Regular employees see their own
+    
+    def create(self, request, *args, **kwargs):
+        # Extract the initial priority based on the category and subcategory
+        # This logic would need to be updated based on your specific rules
+        
+        data = request.data.copy()
+        
+        # Set employee department if not provided
+        if not data.get('department'):
+            data['department'] = request.user.department
+            
+        # Handle file uploads separately
+        files = request.FILES.getlist('files[]')
+        
+        serializer = self.get_serializer(data=data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(serializer)
+        
+        # Process multiple file attachments
+        for file in files:
+            TicketAttachment.objects.create(
+                ticket=instance,
+                file=file,
+                file_name=file.name,
+                file_type=file.content_type,
+                file_size=file.size,
+                uploaded_by=request.user
+            )
+        
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def perform_create(self, serializer):
+        return serializer.save()
+        
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        if instance.status != serializer.validated_data.get('status'):
+            # Status change logic
+            new_status = serializer.validated_data.get('status')
+            if new_status == 'Closed' and instance.status != 'Closed':
+                serializer.validated_data['time_closed'] = timezone.now()
+                if instance.submit_date:
+                    serializer.validated_data['resolution_time'] = timezone.now() - instance.submit_date
+        serializer.save()

@@ -440,6 +440,12 @@ function CreateAccount() {
             {errors.image && <p className="error-message">{errors.image}</p>}
           </div>
 
+        <UploadedImagePreview
+          showModal={showImagePreviewModal}
+          imageSrc={uploadedImage ? URL.createObjectURL(uploadedImage) : null}
+          closeModal={() => setShowImagePreviewModal(false)}
+        />
+
           {/* Email and password fields */}
           <div className="create-account-form-group">
             <label htmlFor="email">Email Address</label>

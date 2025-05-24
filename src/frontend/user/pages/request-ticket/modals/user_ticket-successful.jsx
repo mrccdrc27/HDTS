@@ -20,7 +20,7 @@ const TicketSuccessful = ({ isOpen, onClose, ticketData }) => {
   } = ticketData;
 
   // Validate ticketData fields (ensure necessary fields are present)
-  if (!ticketNumber || !subject || !category) {
+  if (!ticketData || !ticketData.ticket_number || !ticketData.subject || !ticketData.category) {
     return (
       <div className="ticket-successful-modal">
         <div className="modal-content">
@@ -43,8 +43,8 @@ const TicketSuccessful = ({ isOpen, onClose, ticketData }) => {
 
   // Handle navigation for "View Ticket" button
   const handleViewTicket = () => {
-    if (savedTicket) {
-      navigate(`/user/ticket-details/${savedTicket.number}`);
+    if (ticketNumber) {
+      navigate(`/user/ticket-details/${ticketNumber}`);
     }
 
     // Close the modal after navigation
@@ -61,23 +61,23 @@ const TicketSuccessful = ({ isOpen, onClose, ticketData }) => {
     <div className="ticket-successful-modal">
       <div className="modal-content">
         <h2>Ticket Submitted Successfully!</h2>
-        <p><strong>Ticket Number:</strong> {savedTicket ? savedTicket.number : 'N/A'}</p>
-        <p><strong>Subject:</strong> {savedTicket ? savedTicket.subject : 'N/A'}</p>
-        <p><strong>Category:</strong> {savedTicket ? savedTicket.category : 'N/A'}</p>
-        <p><strong>Sub-Category:</strong> {savedTicket ? savedTicket.subCategory : 'N/A'}</p>
-        <p><strong>Description:</strong> {savedTicket ? savedTicket.description : 'N/A'}</p>
+        <p><strong>Ticket Number:</strong> {ticketData.ticket_number || 'N/A'}</p>
+        <p><strong>Subject:</strong> {subject || 'N/A'}</p>
+        <p><strong>Category:</strong> {category || 'N/A'}</p>
+        <p><strong>Sub-Category:</strong> {subCategory || 'N/A'}</p>
+        <p><strong>Description:</strong> {description || 'N/A'}</p>
 
         <p><strong>Files:</strong> 
-          {savedTicket && savedTicket.files && savedTicket.files.length > 0 ? (
+          {files && files.length > 0 ? (
             <ul>
-              {savedTicket.files.map((file, index) => (
-                <li key={index}>{file.name}</li>
+              {files.map((file, index) => (
+                <li key={index}>{file.name || file.file_name || 'Untitled File'}</li>
               ))}
             </ul>
           ) : 'No files attached'}
         </p>
-        
-        <p><strong>Schedule Date:</strong> {savedTicket ? savedTicket.scheduleDate : 'N/A'}</p>
+
+        <p><strong>Schedule Date:</strong> {scheduleDate || 'N/A'}</p>
 
         <div className="modal-buttons">
           <button onClick={handleClose}>Close</button>

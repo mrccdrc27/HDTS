@@ -29,7 +29,7 @@ const UserLogin = () => {
         }
       
         const data = await response.json();
-        localStorage.setItem("accessToken", data.access);
+        localStorage.setItem("authToken", data.access);
         localStorage.setItem("refreshToken", data.refresh);
       
         // Redirect to home page

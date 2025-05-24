@@ -1,19 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Upload, X, ChevronDown } from 'lucide-react';
 import { ticketCategories } from '../../../../utilities/ticket/categoryAndSubCategory.js';
 import TicketSuccessful from './modals/user_ticket-successful.jsx';
 import FilePreviewModal from './modals/user_request-ticket-uploaded-files.jsx';
+import ticketService from '../../../../utilities/ticket/ticketService.jsx';
 
-// import '../../styles/pages/user/user_request-ticket.css';
-
-import { addTicket } from '../../../../utilities/ticket-data/ticketData.js';
-import { generateTicketNumber } from '../../../../utilities/ticket-data/generateTicketNumber.js';
 
 const RequestTicket = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submittedTicket, setSubmittedTicket] = useState(null);
   const [fileError, setFileError] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);  // To track the clicked file
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);  // Track submission state
 
   const [formData, setFormData] = useState({
     subject: '',
@@ -26,6 +24,8 @@ const RequestTicket = () => {
 
   const [availableCategories, setAvailableCategories] = useState([]);
   const [availableSubCategories, setAvailableSubCategories] = useState([]);
+
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const categories = Object.keys(ticketCategories).flatMap(department => {
@@ -45,48 +45,48 @@ const RequestTicket = () => {
   }, [formData.category, availableCategories]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+  const { name, value, files, type } = e.target;
 
-    if (name === 'file') {
-      const validTypes = [
-        'image/png', 'image/jpeg', 'application/pdf',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel'
-      ];
-      const maxSize = 25 * 1024 * 1024;
+  if (type === 'file') {
+    const validTypes = [
+      'image/png', 'image/jpeg', 'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel'
+    ];
+    const maxSize = 25 * 1024 * 1024; // 25MB
 
-      const selectedFiles = Array.from(files);
-      const validFiles = [];
-      const errorMessages = [];
+    const selectedFiles = Array.from(files);
+    const validFiles = [];
+    const errorMessages = [];
 
-      selectedFiles.forEach(file => {
-        if (!validTypes.includes(file.type)) {
-          errorMessages.push(`${file.name}: Invalid file type.`);
-        } else if (file.size > maxSize) {
-          errorMessages.push(`${file.name}: File too large (max 25MB).`);
-        } else {
-          validFiles.push(file);
-        }
-      });
-
-      if (errorMessages.length > 0) {
-        setFileError(errorMessages.join(' '));
-        return;
+    selectedFiles.forEach(file => {
+      if (!validTypes.includes(file.type)) {
+        errorMessages.push(`${file.name}: Invalid file type.`);
+      } else if (file.size > maxSize) {
+        errorMessages.push(`${file.name}: File too large (max 25MB).`);
+      } else {
+        validFiles.push(file);
       }
+    });
 
-      setFileError('');
-      setFormData(prev => ({
-        ...prev,
-        files: [...prev.files, ...validFiles]
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+    if (errorMessages.length > 0) {
+      setFileError(errorMessages.join(' '));
+      return;
     }
-  };
+
+    setFileError('');
+    setFormData(prev => ({
+      ...prev,
+      files: [...prev.files, ...validFiles] // Append new valid files
+    }));
+  } else {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+};
 
   const handleFileRemove = (fileToRemove) => {
     setFormData(prev => ({
@@ -99,29 +99,67 @@ const RequestTicket = () => {
     setSelectedFile(file);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const ticketNumber = generateTicketNumber();
+    setIsSubmitting(true);
 
-    const fullTicketData = {
-      ...formData,
-      ticketNumber
-    };
+    try {
+      // Call the API service to create the ticket
+      const response = await ticketService.createTicket({
+        subject: formData.subject,
+        category: formData.category,
+        subCategory: formData.subCategory,
+        description: formData.description,
+        scheduleDate: formData.scheduleDate,
+        files: formData.files
+      });
 
-    setSubmittedTicket(fullTicketData);
-    setIsModalOpen(true);
+      // If successful, update the UI
+      setSubmittedTicket({
+        ticket_number: response.ticket_number,
+        subject: response.subject,
+        category: response.category,
+        subCategory: response.sub_category,
+        description: response.description,
+        scheduleDate: response.scheduled_date,
+        files: response.attachments || []
+      });
+      setIsModalOpen(true);
 
-    // Use addTicket to save the ticket data to localStorage
-    addTicket(fullTicketData);
+      // Reset the form
+      setFormData({
+        subject: '',
+        category: '',
+        subCategory: '',
+        files: [],
+        description: '',
+        scheduleDate: ''
+      });
 
-    setFormData({
-      subject: '',
-      category: '',
-      subCategory: '',
-      files: [],
-      description: '',
-      scheduleDate: ''
-    });
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
+
+    } catch (error) {
+      // Handle error
+      console.error('Error creating ticket:', error);
+      
+      // Show error to the user
+      if (error.response && error.response.data) {
+        // Display API error messages
+        if (typeof error.response.data === 'string') {
+          setFileError(error.response.data);
+        } else if (error.response.data.detail) {
+          setFileError(error.response.data.detail);
+        } else {
+          setFileError('Failed to submit ticket. Please try again.');
+        }
+      } else {
+        setFileError('Network error. Please check your connection and try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -247,6 +285,7 @@ const RequestTicket = () => {
               type="file"
               id="file"
               name="file"
+              ref={fileInputRef}
               className="request-ticket-file-upload-input"
               onChange={handleChange}
               multiple
@@ -310,8 +349,12 @@ const RequestTicket = () => {
         </div>
 
         {/* Submit */}
-        <button type="submit" className="submit-btn">
-          SUBMIT TICKET
+        <button 
+          type="submit" 
+          className="submit-btn" 
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'SUBMITTING...' : 'SUBMIT TICKET'}
         </button>
       </form>
 

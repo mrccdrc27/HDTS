@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Employee
+from .models import Employee, Ticket, TicketAttachment
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -42,4 +42,34 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         data['email'] = user.email
         data['role'] = user.role if hasattr(user, 'role') else 'Unknown'
+        data['first_name'] = user.first_name
+        
         return data
+
+class TicketAttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketAttachment
+        fields = ['id', 'file', 'file_name', 'file_type', 'file_size', 'upload_date']
+        read_only_fields = ['id', 'upload_date', 'file_size']
+
+class TicketSerializer(serializers.ModelSerializer):
+    attachments = TicketAttachmentSerializer(many=True, read_only=True)
+    scheduled_date = serializers.DateField(required=False, allow_null=True)
+    attachment = serializers.FileField(required=False, allow_null=True)
+
+    class Meta:
+        model = Ticket
+        fields = [
+            'id', 'ticket_number', 'subject', 'category', 'sub_category', 'attachment',
+            'description', 'scheduled_date', 'priority', 'department',
+            'status', 'submit_date', 'update_date', 'attachments'
+        ]
+        read_only_fields = [
+            'id', 'submit_date', 'update_date', 'response_time',
+            'resolution_time', 'time_closed'
+        ]
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        ticket = Ticket.objects.create(employee=user, **validated_data)
+        return ticket

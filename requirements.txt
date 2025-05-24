@@ -1,6 +1,6 @@
-Django==4.2
-djangorestframework==3.14.0
-psycopg2==2.9.6
-django-cors-headers==4.0.0
-Pillow==9.4.0
-djangorestframework-simplejwt==5.2.2
+Django
+djangorestframework
+psycopg2
+django-cors-headers
+Pillow
+djangorestframework-simplejwt
