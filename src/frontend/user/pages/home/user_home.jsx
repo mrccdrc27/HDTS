@@ -1,20 +1,23 @@
+// UserHome.jsx
 import React, { useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Menu, Bot, HelpCircle } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import SupportChatModal from '../chatbot/user_chatbot.jsx'; // <-- Correct import
+import SupportChatModal from '../chatbot/user_chatbot.jsx';
 import './user_home.css';
-
 
 const UserHome = () => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showModal, setShowModal] = useState(false); // <-- Manage modal visibility
+  const [showModal, setShowModal] = useState(false);
 
   const handleToggle = () => {
-    setIsExpanded(!isExpanded);
+    if (!showModal) {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   const openModal = () => {
+    setIsExpanded(false);
     setShowModal(true);
   };
 
@@ -62,7 +65,6 @@ const UserHome = () => {
 
       <section>
         <h2 className="section-title">Ticket Status</h2>
-
         <div className="ticket-card">
           <div className="ticket-header">
             <div>
@@ -70,7 +72,6 @@ const UserHome = () => {
               <div className="ticket-title">Subject: Laptop Requesting</div>
               <div className="ticket-assigned">Assigned to: John Doe</div>
             </div>
-
             <div className="ticket-status-container">
               <span className="ticket-status">In Progress</span>
             </div>
@@ -78,7 +79,6 @@ const UserHome = () => {
 
           <div className="ticket-info">
             <p className="ticket-message">Status update: Working on procurement process.</p>
-
             <div className="ticket-dates">
               <span>Last Update: 2025-04-20</span>
               <span>Submitted Date: 2025-04-19</span>
@@ -89,31 +89,32 @@ const UserHome = () => {
 
       {/* Floating Button Menu */}
       <div className="floating-menu">
-        {/* Main Expand Button */}
-        <button className="float-button main-button" onClick={handleToggle}>
-          +
-        </button>
-
         {/* Expanded Options */}
-        {isExpanded && (
-          <>
-            {/* 💬 opens Modal now */}
-            <button
-              className="float-button message-button"
-              onClick={openModal}
-            >
-              💬
-            </button>
+        <div className={`floating-options ${isExpanded ? "showing" : "hidden"}`}>
+          <button
+            className="float-button help-button"
+            onClick={() => navigate('/user/frequently-asked-questions')}
+            title="FAQs"
+          >
+            <HelpCircle size={24} />
+          </button>
 
-            {/* ❓ still navigates */}
-            <button
-              className="float-button help-button"
-              onClick={() => navigate('/user/frequently-asked-questions')}
-            >
-              ❓
-            </button>
-          </>
-        )}
+          <button
+            className="float-button message-button"
+            onClick={openModal}
+            title="Chat"
+          >
+            <Bot size={24} />
+          </button>
+        </div>
+
+        {/* Main Expand Button */}
+        <button
+          className={`float-button main-button ${isExpanded ? "rotated" : ""}`}
+          onClick={handleToggle}
+        >
+          <Menu size={24} />
+        </button>
       </div>
 
       {/* Show the Chat Modal */}
