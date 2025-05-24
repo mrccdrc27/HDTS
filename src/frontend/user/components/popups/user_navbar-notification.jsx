@@ -1,9 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import './user_navbar-notification.css';
 
 
 export default function NotificationSystem() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
   const [notifications, setNotifications] = useState([
     {
@@ -32,32 +31,6 @@ export default function NotificationSystem() {
     }
   ]);
   
-  const notificationBtnRef = useRef(null);
-  const modalRef = useRef(null);
-  
-  // Handle click outside to close modal
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        modalRef.current && 
-        !modalRef.current.contains(event.target) && 
-        !notificationBtnRef.current.contains(event.target)
-      ) {
-        setIsModalOpen(false);
-      }
-    }
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-  
-  // Toggle modal
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-  
   // Set filter
   const handleFilterAll = () => {
     setActiveFilter('all');
@@ -81,20 +54,10 @@ export default function NotificationSystem() {
   
   return (
     <div className="notification-wrapper">
-      <button 
-        ref={notificationBtnRef}
-        id="notificationBtn" 
-        className="notification-btn"
-        onClick={toggleModal}
-      >
-        🔔
-      </button>
-      
       <div 
-        ref={modalRef}
         id="notificationModal" 
         className="notification-modal"
-        style={{ display: isModalOpen ? 'block' : 'none' }}
+        style={{ display: 'block' }}
       >
         <h2 className="modal-title">Notification</h2>
         <hr />
@@ -119,7 +82,7 @@ export default function NotificationSystem() {
           <a href="#" className="see-all">See all</a>
         </div>
         
-        <p className="section-title">Earlier</p>
+        <p className="earlier">Earlier</p>
         
         {notifications.map(notification => (
           <div 
