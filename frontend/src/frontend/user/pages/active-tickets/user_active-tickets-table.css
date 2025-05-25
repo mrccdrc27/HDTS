@@ -1,0 +1,258 @@
+/* Tickets Table Container */
+.tickets-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+/* Table Styles */
+.tickets-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Table Header */
+.tickets-table thead {
+  background-color: #99000f;
+  color: whitesmoke;
+}
+
+.tickets-table th {
+  padding: 10px 10px;
+  text-align: center !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Table Body */
+.tickets-table tbody tr {
+  border-bottom: 1px solid #bebebe;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.tickets-table tbody tr:hover {
+  background-color: #edf3fb;
+}
+
+.tickets-table td {
+  padding: 8px 45px;
+  vertical-align: middle;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Subject Cell */
+.subject-cell {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  text-align: center;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Status Colors */
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+.status-open {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+.status-progress {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+.status-hold {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+.status-submitted {
+  background-color: #cce5ff;
+  color: #004085;
+  border: 1px solid #b8daff;
+}
+.status-unknown {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+/* Center-align actions */
+.actions-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: 8px 10px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-btn {
+  background-color: #007bff;
+  color: white;
+}
+.view-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.close-btn {
+  background-color: #28a745;
+  color: white;
+}
+.close-btn:hover {
+  background-color: #1e7e34;
+  transform: translateY(-1px);
+}
+
+.action-btn:active {
+  transform: translateY(0);
+}
+
+/* No Tickets Message */
+.no-tickets-row td {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.no-tickets-message {
+  font-size: 16px;
+}
+
+/* Pagination and Items-Per-Page Controls in Same Row */
+.table-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+/* Items Per Page Control */
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+.items-per-page input {
+  width: 50px;
+  padding: 4px 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-controls button {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-controls button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .tickets-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tickets-table {
+    width: 100%;
+    min-width: 800px;
+  }
+
+  .action-buttons {
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px;
+  }
+
+  .action-btn {
+    width: auto !important;
+    justify-content: center;
+  }
+
+  .table-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+  }
+}
+
+/* Hover & focus effects */
+.tickets-table tbody tr:hover .action-btn {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+.action-btn:focus:not(:focus-visible) {
+  outline: none;
+}
