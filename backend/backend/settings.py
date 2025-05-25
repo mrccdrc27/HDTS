@@ -32,6 +32,10 @@ ALLOWED_HOSTS = [
     'group5capstone1-production.up.railway.app',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://group5capstone1-production.up.railway.app',
+]
+
 
 # Application definition
 
