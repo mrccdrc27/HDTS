@@ -12,7 +12,7 @@ class Command(BaseCommand):
         password = os.getenv("DJANGO_SUPERUSER_PASSWORD")
 
         if not all([username, email, password]):
-            self.stdout.write(self.style.ERROR("Missing superuser environment variables"))
+            self.stdout.write(self.style.ERROR("Missing env vars"))
             return
 
         if not User.objects.filter(username=username).exists():
