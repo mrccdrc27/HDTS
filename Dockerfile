@@ -18,3 +18,4 @@ RUN python manage.py collectstatic --noinput
 # Run migrations + start the app
 CMD ["sh", "-c", "python manage.py migrate && python manage.py createinitialsuperuser && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 backend.wsgi"]
 
+
