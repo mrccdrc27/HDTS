@@ -94,7 +94,7 @@ class EmployeeAdmin(UserAdmin):
                     message = (
                         "Dear Employee,\n\n"
                         "We are pleased to inform you that your SmartSupport account has been successfully created.\n\n"
-                        "http://192.168.100.43:3000/login/employee\n\n"
+                        "https://frontend-production-658e.up.railway.app/login/employee\n\n"
                         "If you have any questions or need further assistance, feel free to contact our support team.\n\n"
                         "Respectfully,\n"
                         "SmartSupport Help Desk Team"
