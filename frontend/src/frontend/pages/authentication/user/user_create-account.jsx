@@ -181,13 +181,13 @@ function CreateAccount() {
     formData.append("image", uploadedImage);
     formData.append("confirm_password", confirmPassword);
   
-    const J = import.meta.env.VITE_API_BASE_URL;
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     try {
-      const J = await fetch(`${J}/api/create_employee/`, {
+      const response = await fetch(`${BASE_URL}/api/create_employee/`, {
         method: "POST",
         body: formData,
-      });      
+      });         
   
       console.log("🔍 Status:", response.status);
   
