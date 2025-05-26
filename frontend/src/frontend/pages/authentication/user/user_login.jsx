@@ -43,8 +43,10 @@ const UserLogin = () => {
 
             if (!response.ok) {
                 const error = await response.json();
-                console.error("❌ Login error:", error);
-                setError(error.detail || "Login failed. Please check your credentials.");
+                const message = error.detail 
+                             || (error.non_field_errors && error.non_field_errors[0]) 
+                             || "Login failed.";
+                alert(message);
                 return;
             }
         
