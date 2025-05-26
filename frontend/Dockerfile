@@ -4,7 +4,6 @@ FROM node:20 AS build
 WORKDIR /app
 
 # Copy .env and install deps
-COPY ./.env .env
 COPY package*.json ./
 RUN npm install
 
