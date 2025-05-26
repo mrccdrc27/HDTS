@@ -192,7 +192,7 @@ function CreateAccount() {
     formData.append("image", uploadedImage);
   
     try {
-      const response = await fetch("http://localhost:8000/api/create_employee/", {
+      const response = await fetch("https://group5capstone1-production.up.railway.app/api/create_employee/", {
         method: "POST",
         body: formData,
       });
