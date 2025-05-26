@@ -42,35 +42,76 @@ const UserLogin = () => {
             console.log("🔍 Login response status:", response.status);
 
             if (!response.ok) {
-                const error = await response.json();
-                const message = error.detail 
-                             || (error.non_field_errors && error.non_field_errors[0]) 
-                             || "Login failed.";
-                alert(message);
+                const errorData = await response.json();
+                console.error("🚨 Login error response:", errorData);
+                
+                // Handle different error formats from the serializer
+                let message = "Login failed.";
+                
+                if (errorData.non_field_errors && Array.isArray(errorData.non_field_errors)) {
+                    message = errorData.non_field_errors[0];
+                } else if (errorData.detail) {
+                    message = errorData.detail;
+                } else if (typeof errorData === 'string') {
+                    message = errorData;
+                }
+                
+                setError(message);
                 return;
             }
         
             const data = await response.json();
-            console.log("✅ Login successful");
+            console.log("✅ Login successful", data);
             
-            // Store tokens in localStorage (this will work in production)
+            // Store tokens in localStorage
             localStorage.setItem("authToken", data.access);
             localStorage.setItem("refreshToken", data.refresh);
-        
-            const profileResponse = await fetch(`${BASE_URL}/api/employee/profile/`, {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${data.access}`,
-                },
-              });              
-              
-              if (profileResponse.ok) {
-                const profile = await profileResponse.json();
-                localStorage.setItem("firstName", profile.first_name);
-                localStorage.setItem("lastName", profile.last_name);
-              } else {
-                console.warn("Failed to fetch profile");
-              }
+            
+            // Store user information that comes directly from the token response
+            if (data.email) {
+                localStorage.setItem("userEmail", data.email);
+            }
+            if (data.role) {
+                localStorage.setItem("userRole", data.role);
+            }
+            if (data.first_name) {
+                localStorage.setItem("firstName", data.first_name);
+            }
+
+            // Try to fetch additional profile information
+            try {
+                const profileResponse = await fetch(`${BASE_URL}/api/employee/profile/`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${data.access}`,
+                    },
+                });              
+                
+                if (profileResponse.ok) {
+                    const profile = await profileResponse.json();
+                    console.log("📋 Profile fetched successfully", profile);
+                    
+                    // Store additional profile information
+                    if (profile.first_name) {
+                        localStorage.setItem("firstName", profile.first_name);
+                    }
+                    if (profile.last_name) {
+                        localStorage.setItem("lastName", profile.last_name);
+                    }
+                    if (profile.email) {
+                        localStorage.setItem("userEmail", profile.email);
+                    }
+                    if (profile.role) {
+                        localStorage.setItem("userRole", profile.role);
+                    }
+                } else {
+                    console.warn("⚠️ Failed to fetch profile, but login was successful");
+                    // Don't treat this as an error since login was successful
+                }
+            } catch (profileError) {
+                console.warn("⚠️ Profile fetch failed:", profileError);
+                // Don't treat this as an error since login was successful
+            }
 
             // Redirect to home page
             navigate("/user/home");
