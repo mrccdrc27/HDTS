@@ -13,7 +13,7 @@ const AdminLogin = () => {
 
     const handleLogin = async () => {
         try {
-          const response = await fetch("http://localhost:8000/api/token/admin/", {
+          const response = await fetch("https://group5capstone1-production.up.railway.app/api/token/admin/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
