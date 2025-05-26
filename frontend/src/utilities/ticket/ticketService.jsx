@@ -18,7 +18,7 @@ function getCookie(name) {
 
 // Create an axios instance with default configurations
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL + '/api',
+  baseURL: 'https://group5capstone1-production.up.railway.app/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
