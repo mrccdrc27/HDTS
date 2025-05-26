@@ -64,10 +64,7 @@ function CreateAccount() {
         setErrors(prev => ({ ...prev, image: null }));
         setSelectedUploadedImage(file.name);
         setUploadedImage(file);
-        setFormData((prevData) => ({
-          ...prevData,
-          image: file,
-        }));
+        // Removed the problematic setFormData call
       }
     };
     img.onerror = () => {
@@ -151,7 +148,7 @@ function CreateAccount() {
     }
 
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Password didn't matched";
+      newErrors.confirmPassword = "Password didn't match";
     }
   
     if (!/^\d{4}$/.test(companyId)) {
@@ -173,7 +170,12 @@ function CreateAccount() {
   
     console.log("✅ VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
 
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    // Better fallback handling for the base URL
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+                     process.env.VITE_API_BASE_URL || 
+                     "https://group5capstone1-production.up.railway.app";
+
+    console.log("📦 BASE_URL:", BASE_URL);
 
     const formData = new FormData();
     formData.append("last_name", lastName);
@@ -188,12 +190,10 @@ function CreateAccount() {
     formData.append("confirm_password", confirmPassword);
 
     try {
-      console.log("📦 BASE_URL:", BASE_URL);
-
       const response = await fetch(`${BASE_URL}/api/create_employee/`, {
         method: "POST",
         body: formData,
-      });         
+      });              
   
       console.log("🔍 Status:", response.status);
   
@@ -206,10 +206,10 @@ function CreateAccount() {
       
           const formattedErrors = {};
           if (errorJson.company_id) {
-            formattedErrors.companyId = "Invalid Company ID"; // 👈 custom message
+            formattedErrors.companyId = "Invalid Company ID";
           }
           if (errorJson.email) {
-            formattedErrors.email = "Invalid Email"; // 👈 optional customization
+            formattedErrors.email = "Invalid Email";
           }
       
           setErrors(formattedErrors);
@@ -335,8 +335,6 @@ function CreateAccount() {
                 pattern="\d{4}"
               />
             </div>
-
-            {/* ✅ Move error message outside of the flex div */}
             {errors.companyId && <p className="error-message">{errors.companyId}</p>}
           </div>
 
@@ -443,8 +441,6 @@ function CreateAccount() {
                 )}
               </span>
             </div>
-
-            {/* ✅ Error message placed correctly here */}
             {errors.image && <p className="error-message">{errors.image}</p>}
           </div>
 
