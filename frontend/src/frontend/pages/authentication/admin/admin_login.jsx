@@ -9,10 +9,11 @@ const AdminLogin = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
+    const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false);
 
-    const handleLogin = async () => {
-      e.preventDefault();
+    // ✅ Fixed: Added 'e' parameter to handleLogin function
+    const handleLogin = async (e) => {
+        e.preventDefault(); // Now this will work properly
         try {
           const response = await fetch("https://group5capstone1-production.up.railway.app/api/token/admin/", {
             method: "POST",
@@ -44,7 +45,7 @@ const AdminLogin = () => {
           console.error("Login error:", error);
           alert("Something went wrong. Try again.");
         }
-      };
+    };
 
     return (
         <div className="admin-login-wrapper">
@@ -98,12 +99,9 @@ const AdminLogin = () => {
                             </span>
                         </div>
 
-                        {/* ✅ Changed type to button (if you don't want a form submission refresh) */}
                         <button
                             type="submit"
-                            className="admin-login-button"
-                            
-                        >
+                            className="admin-login-button">
                             Log In
                         </button>
                     </form>
