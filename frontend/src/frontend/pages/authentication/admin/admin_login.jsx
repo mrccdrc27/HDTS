@@ -12,6 +12,7 @@ const AdminLogin = () => {
     const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
 
     const handleLogin = async () => {
+      e.preventDefault();
         try {
           const response = await fetch("https://group5capstone1-production.up.railway.app/api/token/admin/", {
             method: "POST",
@@ -32,12 +33,12 @@ const AdminLogin = () => {
           const payload = JSON.parse(atob(token.split('.')[1]));
           const userRole = payload.role;
     
-          if (userRole === "System Admin" || userRole === "Ticket Agent" || userRole === "Superuser") {
+          if (["System Admin", "Ticket Agent", "Superuser"].includes(userRole)) {
             localStorage.setItem("token", token);
             navigate("/admin/dashboard");
           } else {
             alert("Access denied. Only admins and ticket agents can log in here.");
-          }          
+          }         
     
         } catch (error) {
           console.error("Login error:", error);
@@ -99,7 +100,7 @@ const AdminLogin = () => {
 
                         {/* ✅ Changed type to button (if you don't want a form submission refresh) */}
                         <button
-                            
+                            type="submit"
                             className="admin-login-button"
                             
                         >
