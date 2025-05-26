@@ -169,6 +169,8 @@ function CreateAccount() {
   
     if (!validateForm()) return;
   
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const formData = new FormData();
     formData.append("last_name", lastName);
     formData.append("first_name", firstName);
@@ -180,10 +182,10 @@ function CreateAccount() {
     formData.append("password", password);
     formData.append("image", uploadedImage);
     formData.append("confirm_password", confirmPassword);
-  
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     try {
+      console.log("📦 BASE_URL:", BASE_URL);
+
       const response = await fetch(`${BASE_URL}/api/create_employee/`, {
         method: "POST",
         body: formData,
