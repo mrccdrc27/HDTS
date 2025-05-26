@@ -5,9 +5,9 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 
-ARG VITE_API_BASE_URL
-ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
-RUN npm run build
+ARG VITE_API_BASE_URL=""
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+RUN echo "🔧 Injected API URL: $VITE_API_BASE_URL" && npm run build
 
 FROM nginx:alpine
 RUN rm -rf /etc/nginx/conf.d/default.conf
