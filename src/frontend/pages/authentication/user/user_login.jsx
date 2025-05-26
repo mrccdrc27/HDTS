@@ -12,34 +12,48 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     
     const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-        const response = await fetch("http://localhost:8000/api/token/employee/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        e.preventDefault();
+        try {
+          const response = await fetch("http://localhost:8000/api/token/employee/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
       
-        if (!response.ok) {
+          if (!response.ok) {
             const error = await response.json();
             alert(error.detail || "Login failed.");
             return;
+          }
+      
+          const data = await response.json();
+          localStorage.setItem("authToken", data.access);
+          localStorage.setItem("refreshToken", data.refresh);
+      
+          // ✅ Fetch employee profile
+          const profileResponse = await fetch("http://localhost:8000/api/employee/profile/", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${data.access}`,
+            },
+          });
+      
+          if (profileResponse.ok) {
+            const profile = await profileResponse.json();
+            localStorage.setItem("firstName", profile.first_name);
+            localStorage.setItem("lastName", profile.last_name);
+          } else {
+            console.warn("Failed to fetch profile");
+          }
+      
+          navigate("/user/home");
+        } catch (error) {
+          console.error("Login error:", error);
+          alert("Something went wrong. Please try again.");
         }
-      
-        const data = await response.json();
-        localStorage.setItem("authToken", data.access);
-        localStorage.setItem("refreshToken", data.refresh);
-      
-        // Redirect to home page
-        navigate("/user/home");
-
-      } catch (error) {
-        console.error("Login error:", error);
-        alert("Something went wrong. Please try again.");
-      }
-    };
+      };      
 
     return (
         <div className="login-wrapper">

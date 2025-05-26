@@ -12,7 +12,7 @@ node_modules/
 dist
 dist-ssr
 *.local
-
+src/backend/media/employee_images
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

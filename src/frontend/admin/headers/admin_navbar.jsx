@@ -11,6 +11,9 @@ const AdminNavbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [profileName, setProfileName] = useState('');
+  const [userRole, setUserRole] = useState('');
   const [notifications] = useState([
     'New ticket #TX0456 has been created.',
     'Agent John assigned to ticket #TX0123.',
@@ -36,6 +39,17 @@ const AdminNavbar = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const fName = payload.first_name || '';
+      const lName = payload.last_name || '';
+      const formattedName = `${lName.charAt(0).toUpperCase() + lName.slice(1)}, ${fName.charAt(0).toUpperCase() + fName.slice(1)}`;
+      setFullName(formattedName);
+    }
+  }, []);  
+
   // Handle clicking outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,6 +69,23 @@ const AdminNavbar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [activeDropdown, showProfilePopup, showNotificationPopup]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const fName = payload.first_name || '';
+      const lName = payload.last_name || '';
+      const role = payload.role || '';
+  
+      const formattedFullName = `${lName.charAt(0).toUpperCase() + lName.slice(1)}, ${fName.charAt(0).toUpperCase() + fName.slice(1)}`;
+      const formattedProfileName = `${fName.charAt(0).toUpperCase() + fName.slice(1)} ${lName.charAt(0).toUpperCase() + lName.slice(1)}`;
+  
+      setFullName(formattedFullName);        // for <span>{fullName}</span>
+      setProfileName(formattedProfileName);  // for <p className="profile-name">{profileName}</p>
+      setUserRole(role);
+    }
+  }, []);  
 
   const formatDateTime = (date) => {
     const options = {
@@ -149,7 +180,7 @@ const AdminNavbar = () => {
         </div>
 
         <div className="user-info">
-          <span>Admin User</span>
+          <span>{fullName}</span>
           <br />
           <span>{formatDateTime(currentTime)}</span>
         </div>
@@ -164,8 +195,8 @@ const AdminNavbar = () => {
           />
           {showProfilePopup && (
             <div className="profile-popup">
-              <p className="profile-name">John Doe</p>
-              <p className="profile-role">System Administrator</p>
+              <p className="profile-name">{profileName}</p>
+              <p className="profile-role">{userRole}</p>
               {/* Logout Button */}
               <Link to="/">
                 <button className="admin-logout-button">

@@ -11,39 +11,40 @@ const AdminLogin = () => {
     const [password, setPassword] = useState("");
     const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
 
-    const handleLogin = async () => {
-        try {
-          const response = await fetch("http://localhost:8000/api/token/admin/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email, password }),
-          });
+    const handleLogin = async (e) => {
+      e.preventDefault(); // ✅ Prevent default form refresh
     
-          const data = await response.json();
+      try {
+        const response = await fetch("http://localhost:8000/api/token/admin/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password }),
+        });
     
-          if (!response.ok) {
-            alert(data.detail || "Invalid credentials.");
-            return;
-          }
+        const data = await response.json();
     
-          const token = data.access;
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const userRole = payload.role;
-    
-          if (userRole === "System Admin" || userRole === "Ticket Agent" || userRole === "Superuser") {
-            localStorage.setItem("token", token);
-            navigate("/admin/dashboard");
-          } else {
-            alert("Access denied. Only admins and ticket agents can log in here.");
-          }          
-    
-        } catch (error) {
-          console.error("Login error:", error);
-          alert("Something went wrong. Try again.");
+        if (!response.ok) {
+          alert(data.detail || "Invalid credentials.");
+          return;
         }
-      };
+    
+        const token = data.access;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const userRole = payload.role;
+    
+        if (userRole === "System Admin" || userRole === "Ticket Agent" || userRole === "Superuser") {
+          localStorage.setItem("token", token);
+          navigate("/admin/dashboard");
+        } else {
+          alert("Access denied. Only admins and ticket agents can log in here.");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Something went wrong. Try again.");
+      }
+    };    
 
     return (
         <div className="admin-login-wrapper">
@@ -58,7 +59,7 @@ const AdminLogin = () => {
                 <LoginHeader />
 
                 <div className="admin-login-container">
-                    <form>
+                    <form onSubmit={handleLogin}>
                         <div className="admin-form-group">
                             <label htmlFor="email">Email Address</label>
                             <input
@@ -99,9 +100,7 @@ const AdminLogin = () => {
 
                         {/* ✅ Changed type to button (if you don't want a form submission refresh) */}
                         <button
-                            type="button"
                             className="admin-login-button"
-                            onClick={handleLogin}
                         >
                             Log In
                         </button>
