@@ -6,6 +6,8 @@ import UploadedImagePreview from "../../../components/modals/authentication/uplo
 import "../../../styles/components/authentication/user_create-account.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
+console.log("⚡ This is a rebuild test");
+
 function CreateAccount() {
   const [suffix, setSuffix] = useState("");
   const [department, setDepartment] = useState("");
