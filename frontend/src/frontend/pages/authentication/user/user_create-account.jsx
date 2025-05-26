@@ -184,10 +184,10 @@ function CreateAccount() {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     try {
-      const response = await fetch(`${BASE_URL}/api/create_employee/`, {
+      const J = await fetch(`${BASE_URL}/api/create_employee/`, {
         method: "POST",
         body: formData,
-      });
+      });      
   
       console.log("🔍 Status:", response.status);
   
