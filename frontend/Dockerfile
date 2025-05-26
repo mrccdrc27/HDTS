@@ -3,12 +3,12 @@ FROM node:20 AS build
 
 WORKDIR /app
 
-# Copy env and install deps
-COPY .env .env
+# Copy .env and install deps
+COPY ./.env .env
 COPY package*.json ./
 RUN npm install
 
-# Copy source and build
+# Copy app source and build
 COPY . .
 RUN npm run build
 
