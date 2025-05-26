@@ -12,8 +12,6 @@ const AdminLogin = () => {
     const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
 
     const handleLogin = async () => {
-        e.preventDefault();
-
         try {
           const response = await fetch("https://group5capstone1-production.up.railway.app/api/token/admin/", {
             method: "POST",
