@@ -12,6 +12,8 @@ const AdminLogin = () => {
     const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
 
     const handleLogin = async () => {
+        e.preventDefault();
+
         try {
           const response = await fetch("https://group5capstone1-production.up.railway.app/api/token/admin/", {
             method: "POST",
@@ -58,7 +60,7 @@ const AdminLogin = () => {
                 <LoginHeader />
 
                 <div className="admin-login-container">
-                    <form>
+                    <form onSubmit={handleLogin}>
                         <div className="admin-form-group">
                             <label htmlFor="email">Email Address</label>
                             <input
@@ -99,9 +101,9 @@ const AdminLogin = () => {
 
                         {/* ✅ Changed type to button (if you don't want a form submission refresh) */}
                         <button
-                            type="button"
+                            
                             className="admin-login-button"
-                            onClick={handleLogin}
+                            
                         >
                             Log In
                         </button>

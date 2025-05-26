@@ -1,5 +1,5 @@
 // UserHome.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, Search, Menu, Bot, HelpCircle } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import SupportChatModal from '../chatbot/user_chatbot.jsx';
@@ -9,6 +9,7 @@ const UserHome = () => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [firstName, setFirstName] = useState("");
 
   const handleToggle = () => {
     if (!showModal) {
@@ -25,11 +26,16 @@ const UserHome = () => {
     setShowModal(false);
   };
 
+  useEffect(() => {
+    const name = localStorage.getItem("firstName");
+    if (name) setFirstName(name);
+  }, []);
+
   return (
     <div className="container">
       <header className="header">
         <h1 className="welcome">
-          Welcome, <span className="username">Username!</span>
+          Welcome, <span className="username">{firstName}!</span>
         </h1>
       </header>
 

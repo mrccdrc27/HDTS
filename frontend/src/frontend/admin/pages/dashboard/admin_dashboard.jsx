@@ -1,8 +1,18 @@
 import './admin_dashboard.css'; // Import the CSS file for styling
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useState, useEffect } from 'react';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setFirstName(payload.first_name || '');
+    }
+  }, []);
   // Sample data for approval requests
   const approvalRequests = [
     { id: '14086', subject: 'Printer not working', department: 'IT Department', category: 'Hardware', subCategory: 'Printer Issue' },
@@ -14,7 +24,7 @@ const AdminDashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>Welcome <span className="user-name">Bogart</span>,</h1>
+        <h1>Welcome, <span className="user-name">{firstName}</span> </h1>
       </div>
 
       <div className="ticket-status-cards">

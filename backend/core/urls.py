@@ -3,7 +3,8 @@ from .views import (
     CreateEmployeeView,
     EmployeeTokenObtainPairView,
     AdminTokenObtainPairView,
-    TicketViewSet
+    TicketViewSet,
+    employee_profile_view,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
@@ -22,4 +23,5 @@ urlpatterns = [
     path('token/employee/', EmployeeTokenObtainPairView.as_view(), name='token_employee'),
     path('token/admin/', AdminTokenObtainPairView.as_view(), name='admin_token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('employee/profile/', employee_profile_view, name='employee_profile'),
 ]

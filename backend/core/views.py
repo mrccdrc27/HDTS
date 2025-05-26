@@ -9,6 +9,28 @@ from .serializers import EmployeeSerializer, TicketSerializer
 from .serializers import MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+import json
+
+@csrf_exempt
+def login_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = data.get('email')
+        password = data.get('password')
+
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            return JsonResponse({
+                'success': True,
+                'first_name': user.first_name,
+                'message': 'Login successful'
+            })
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid credentials'})
 
 # For employee registration
 class CreateEmployeeView(APIView):
@@ -99,3 +121,10 @@ class TicketViewSet(viewsets.ModelViewSet):
                 if instance.submit_date:
                     serializer.validated_data['resolution_time'] = timezone.now() - instance.submit_date
         serializer.save()
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def employee_profile_view(request):
+    user = request.user
+    serializer = EmployeeSerializer(user)
+    return Response(serializer.data)

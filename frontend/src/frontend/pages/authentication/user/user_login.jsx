@@ -5,6 +5,11 @@ import LoginImage from "/src/frontend/assets/login/login-image.png";
 import LoginHeader from "/src/frontend/components/headers/user_login-header.jsx";
 import { Eye, EyeOff } from "lucide-react";
 
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  process.env.VITE_API_BASE_URL ||
+  "https://group5capstone1-production.up.railway.app";
+
 const UserLogin = () => {
     const navigate = useNavigate();
     const [showLogInPassword, setShowLogInPassword] = useState(false);
@@ -50,6 +55,21 @@ const UserLogin = () => {
             localStorage.setItem("authToken", data.access);
             localStorage.setItem("refreshToken", data.refresh);
         
+            const profileResponse = await fetch(`${BASE_URL}/api/employee/profile/`, {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${data.access}`,
+                },
+              });              
+              
+              if (profileResponse.ok) {
+                const profile = await profileResponse.json();
+                localStorage.setItem("firstName", profile.first_name);
+                localStorage.setItem("lastName", profile.last_name);
+              } else {
+                console.warn("Failed to fetch profile");
+              }
+
             // Redirect to home page
             navigate("/user/home");
 
