@@ -1,17 +1,22 @@
-// 1. header where the reports will be displayed (agent performance report, derpartment report, sla compliance report)
-// 2. search bar and print report button 
-// 3. filters such as category, subcategory, department, date range
-// 4. table to display the report data
+import { useParams } from 'react-router-dom';
 
 import AdminReportsSearchPrint from "./admin_reports-search-print.jsx";
 import AdminReportsFilters from "./admin_reports-filters.jsx";
 import AdminReportsTables from "./admin_reports-tables.jsx";
 
 const AdminReports = () => {
+    const { category } = useParams();
+    
+    const formatHeading = (category) => {
+    return category
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');};
+
     return (
         <div className="admin-reports-main">
             <div className="admin-reports-main-header">
-                <h1>Admin Reports</h1>
+                <h1>{formatHeading(category)}</h1>
             </div>
 
             <div className="admin-reports-main-search-print">

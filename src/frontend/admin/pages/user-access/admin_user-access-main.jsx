@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import UserAccessSearchBar from "./admin_user-access-search-bar.jsx";
+import UserAccessSearchAndCreateUser from "./admin_user-access-search-and-create-user.jsx";
 import UserAccessFilters from "./admin_user-access-filters.jsx";
 import UserAccessTable from "./admin_user-access-tables.jsx";
 import ApprovalsFilters from "./admin_user-access-approval-filters.jsx";
@@ -53,7 +53,7 @@ const UserAccess = () => {
   return (
     <div className="user-access-main">
       <h1>{getFormattedCategory(category)}</h1>
-      <UserAccessSearchBar />
+      <UserAccessSearchAndCreateUser />
 
       {category === "for-approvals" ? (
         <>

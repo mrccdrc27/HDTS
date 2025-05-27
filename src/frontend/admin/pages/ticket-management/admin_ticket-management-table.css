@@ -282,21 +282,21 @@
   .ticket-management-table {
     font-size: 12px;
   }
-  
+
   .ticket-management-table th,
   .ticket-management-table td {
     padding: 8px 12px;
   }
-  
+
   .subject-cell {
     max-width: 150px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 4px;
   }
-  
+
   .action-btn {
     font-size: 11px;
     padding: 4px 8px;
@@ -307,24 +307,24 @@
   .table-wrapper {
     border-radius: 0;
   }
-  
+
   .ticket-management-table {
     font-size: 11px;
   }
-  
+
   .ticket-management-table th,
   .ticket-management-table td {
     padding: 6px 8px;
   }
-  
+
   .subject-cell {
     max-width: 120px;
   }
-  
+
   .date-cell {
     font-size: 10px;
   }
-  
+
   .status-badge {
     font-size: 9px;
     padding: 2px 6px;

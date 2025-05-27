@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+
+import AdminNavbarProfile from '../popups/admin_navbar-profile.jsx';
+import AdminNavbarNotifications, { getNotificationCount } from '../popups/admin_navbar-notifications.jsx';
+
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
 import { ChevronDown, Bell } from 'lucide-react';
 import AdminProfileImage from '/src/frontend/admin/assets/admin-profile.jpg';
@@ -11,11 +15,6 @@ const AdminNavbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
-  const [notifications] = useState([
-    'New ticket #TX0456 has been created.',
-    'Agent John assigned to ticket #TX0123.',
-    'SLA breach warning for ticket #TX0789.',
-  ]);
 
   const toggleDropdown = (menu) => {
     setActiveDropdown(activeDropdown === menu ? null : menu);
@@ -88,9 +87,21 @@ const AdminNavbar = () => {
 
         {/* Dropdown for Ticket Management */}
         <div className="adminNavbar-menu-dropdown">
-          <div className="adminNavbar-menu-trigger">
-            <NavLink to="/admin/ticket-management" className="adminNavbar-menu-item">Ticket Management</NavLink>
+          <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('ticket-management')}>
+            <NavLink to="/admin/ticket-management/all-tickets" className="adminNavbar-menu-item">Ticket Management</NavLink>
+            <ChevronDown size={18} />
           </div>
+          {activeDropdown === 'ticket-management' && (
+            <div className="dropdown-content">
+              <NavLink to="/admin/ticket-management/all-tickets">All Tickets</NavLink>
+              <NavLink to="/admin/ticket-management/new-tickets">New Tickets</NavLink>
+              <NavLink to="/admin/ticket-management/open-tickets">Open Tickets</NavLink>
+              <NavLink to="/admin/ticket-management/on-progress-tickets">On Progress Tickets</NavLink>
+              <NavLink to="/admin/ticket-management/on-hold-tickets">On Hold Tickets</NavLink>
+              <NavLink to="/admin/ticket-management/pending-tickets">Pending Tickets</NavLink>
+              <NavLink to="/admin/ticket-management/rejected-tickets">Rejected Tickets</NavLink>
+            </div>
+          )}
         </div>
 
         {/* Dropdown for User Access */}
@@ -121,6 +132,7 @@ const AdminNavbar = () => {
               <NavLink to="/admin/reports/agent-performance-report">Agent Performance Report</NavLink>
               <NavLink to="/admin/reports/department-report">Department Report</NavLink>
               <NavLink to="/admin/reports/sla-compliance-report">SLA Compliance Report</NavLink>
+              <NavLink to="/admin/reports/ticket-reports">Ticket Reports</NavLink>
             </div>
           )}
         </div>
@@ -134,19 +146,10 @@ const AdminNavbar = () => {
             className="notification-bell"
             onClick={toggleNotificationPopup}
           />
-          {notifications.length > 0 && (
-            <span className="notification-badge">{notifications.length}</span>
+          {getNotificationCount() > 0 && (
+            <span className="notification-badge">{getNotificationCount()}</span>
           )}
-          {showNotificationPopup && (
-            <div className="profile-popup">
-              <p className="profile-name">Notifications</p>
-              {notifications.map((notification, index) => (
-                <div key={index} className="notification-item">
-                  {notification}
-                </div>
-              ))}
-            </div>
-          )}
+          {showNotificationPopup && <AdminNavbarNotifications />}
         </div>
 
         <div className="user-info">
@@ -163,18 +166,7 @@ const AdminNavbar = () => {
             className="profile-avatar"
             onClick={toggleProfilePopup}
           />
-          {showProfilePopup && (
-            <div className="profile-popup">
-              <p className="profile-name">John Doe</p>
-              <p className="profile-role">System Administrator</p>
-              {/* Logout Button */}
-              <Link to="/">
-                <button className="admin-logout-button">
-                  Logout
-                </button>
-              </Link>
-            </div>
-          )}
+          {showProfilePopup && ( <AdminNavbarProfile /> )}
         </div>
       </div>
     </div>

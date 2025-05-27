@@ -156,7 +156,10 @@ const UserAccessTable = ({ category, filters }) => {
                   </>
                 ) : (
                   <>
-                    <button className="view-btn">View</button>
+                    <button 
+                    className="view-btn"
+                    onClick={() => navigate(`/admin/account-information`)}>
+                      View</button>
                     <button className="update-btn">Update</button>
                   </>
                 )}
