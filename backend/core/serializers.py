@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Employee, Ticket, TicketAttachment
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import AuthenticationFailed, ValidationError
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +35,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         try:
             data = super().validate(attrs)
-        except AuthenticationFailed:
+        except (AuthenticationFailed, ValidationError):
             raise serializers.ValidationError("Invalid credentials.")
 
         user = self.user
@@ -47,7 +47,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise serializers.ValidationError("Account is pending for approval.")
 
         data['email'] = user.email
-        data['role'] = user.role if hasattr(user, 'role') else 'Unknown'
+        data['role'] = getattr(user, 'role', 'Unknown')
         data['first_name'] = user.first_name
 
         return data
