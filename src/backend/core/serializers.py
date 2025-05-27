@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Employee, Ticket, TicketAttachment
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,21 +33,23 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        data = super().validate(attrs)
+        try:
+            data = super().validate(attrs)
+        except AuthenticationFailed:
+            raise serializers.ValidationError("Invalid credentials.")
+
         user = self.user
 
-        # ❌ Block superusers and admin roles from this endpoint
         if user.is_superuser or user.role in ["System Admin", "Ticket Agent"]:
-            raise serializers.ValidationError("This login is for employee accounts only.")
+            raise serializers.ValidationError("Invalid credentials.")
 
-        # ❌ Block employees who are not approved
         if hasattr(user, 'status') and user.status != 'Approved':
-            raise serializers.ValidationError("Your account is pending approval.")
+            raise serializers.ValidationError("Account is pending for approval.")
 
         data['email'] = user.email
         data['role'] = user.role if hasattr(user, 'role') else 'Unknown'
         data['first_name'] = user.first_name
-        
+
         return data
 
 class TicketAttachmentSerializer(serializers.ModelSerializer):
