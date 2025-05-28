@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
 import { Bell } from 'lucide-react';
 import UserProfileImage from '../../assets/profile-management/user-profile.png';
-import '../../components/headers/user_navbar.css';
+import './user_navbar.css';
 
 import UserProfilePopup from '../popups/user_navbar-profile.jsx';
 import NotificationPopup from '../popups/user_navbar-notification.jsx';
@@ -54,7 +54,7 @@ const UserNavbar = () => {
   return (
     <div className="userNavbar">
       <div className="userNavbar-left">
-        <NavLink to="/user/request-ticket" className="userNavbar-left-item">
+        <NavLink to="/user/home" className="userNavbar-left-item">
           <img src={Logo} alt="Smart Support Logo" className="userNavbar-logo" />
           <h2>
             Smart<span>Support</span>

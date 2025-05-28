@@ -4,15 +4,15 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './global.css';
 import { AuthRoutes } from './frontend/routes/AuthenticationRoutes.jsx';
-// import { UserRoutes } from './frontend/routes/UserRoutes.jsx';
 import { AdminRoutes } from './frontend/routes/AdminRoutes.jsx';
+import { UserRoutes } from './frontend/routes/UserRoutes.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AuthRoutes />  
-      {/* <UserRoutes />      */}
-      <AdminRoutes />   
+      <AdminRoutes />    
+      <UserRoutes />   
     </BrowserRouter>
   </StrictMode>,
 )
