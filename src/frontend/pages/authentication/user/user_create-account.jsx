@@ -167,8 +167,10 @@ function CreateAccount() {
       newErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invalid Company ID.";
     }
 
-    if (!email) {
+    if (!email.trim()) {
       newErrors.email = "Please fill in the required field.";
+    } else if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) {
+      newErrors.email = "Invalid Email.";
     }
 
     if (!document.getElementById('privacypolicy_termsandconditions').checked) {
@@ -186,10 +188,6 @@ function CreateAccount() {
 
     if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password did not matched.";
-    }
-  
-    if (!email.endsWith("@gmail.com")) {
-      newErrors.email = "Please fill in the required field.";
     }
 
     setErrors(newErrors);
@@ -482,13 +480,12 @@ function CreateAccount() {
           <div className="create-account-form-group">
             <label htmlFor="email">Email Address</label>
             <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 placeholder="@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
                 title="Only Gmail addresses are allowed"
               />
               {errors.email && <p className="error-message">{errors.email}</p>}
