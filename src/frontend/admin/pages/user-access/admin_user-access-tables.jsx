@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import './admin_user-access-tables.css';
 
+import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
 import { users } from '/src/utilities/storage/userStorage.js';
@@ -100,7 +101,7 @@ const UserAccessTable = ({ category, filters }) => {
                   {user.status === 'Pending' ? (
                     <button
                       className="user-access-review-btn"
-                      onClick={() => navigate(`/admin/account-information?type=review&user=${user.companyId}`)}
+                      onClick={() => openModal('review', user)}
                     >
                       Review
                     </button>
@@ -127,11 +128,8 @@ const UserAccessTable = ({ category, filters }) => {
         </tbody>
       </table>
 
-      {modalType === 'approve' && selectedUser && (
-        <ApproveModal user={selectedUser} onClose={closeModal} />
-      )}
-      {modalType === 'reject' && selectedUser && (
-        <RejectModal user={selectedUser} onClose={closeModal} />
+      {modalType === 'review' && selectedUser && (
+        <AdminUserAccessReviewUser user={selectedUser} onClose={closeModal} />
       )}
       {modalType === 'update' && selectedUser && (
         <UpdateModal user={selectedUser} onClose={closeModal} />

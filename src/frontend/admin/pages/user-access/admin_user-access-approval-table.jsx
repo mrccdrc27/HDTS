@@ -1,9 +1,23 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import './admin_user-access-approval-table.css';
 import { users } from '/src/utilities/storage/userStorage.js';
 
+import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
+
 const ApprovalsTable = ({ filters }) => {
-  // Filter only pending users and apply other filters
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openReviewModal = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const closeReviewModal = () => {
+    setSelectedUser(null);
+    setIsModalOpen(false);
+  };
+
   const filteredData = useMemo(() => {
     return users.filter((user) => {
       if (user.status.toLowerCase() !== 'pending') return false;
@@ -67,8 +81,11 @@ const ApprovalsTable = ({ filters }) => {
                 </td>
                 <td>{user.dateCreated}</td>
                 <td className="user-access-approval-table-actions">
-                  <button className="user-access-approval-table-view-btn">
-                    View
+                  <button
+                    className="user-access-approval-table-review-btn"
+                    onClick={() => openReviewModal(user)}
+                  >
+                    Review
                   </button>
                 </td>
               </tr>
@@ -76,6 +93,10 @@ const ApprovalsTable = ({ filters }) => {
           )}
         </tbody>
       </table>
+
+      {isModalOpen && selectedUser && (
+        <AdminUserAccessReviewUser user={selectedUser} onClose={closeReviewModal} />
+      )}
     </div>
   );
 };

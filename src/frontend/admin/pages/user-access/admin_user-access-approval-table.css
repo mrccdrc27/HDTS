@@ -86,9 +86,7 @@
   flex-wrap: wrap;
 }
 
-.user-access-approval-table-view-btn,
-.user-access-approval-table-approve-btn,
-.user-access-approval-table-reject-btn {
+.user-access-approval-table-review-btn {
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 11px;
@@ -101,39 +99,15 @@
 }
 
 /* View button */
-.user-access-approval-table-view-btn {
-  background-color: var(--blue-light, #0d6efd);
+.user-access-approval-table-review-btn {
+  background-color: var(--warning);
   color: var(--text-secondary, #fff); /* white text */
 }
-.user-access-approval-table-view-btn:hover,
-.user-access-approval-table-view-btn:focus {
-  background-color: var(--blue-dark, #0b5ed7);
+.user-access-approval-table-review-btn:hover,
+.user-access-approval-table-review-btn:focus {
+  background-color: var(--warning-dark);
   transform: scale(1.05);
   color: var(--text-secondary, #fff);
-}
-
-/* Approve button */
-.user-access-approval-table-approve-btn {
-  background-color: var(--success-light, #d1fae5);
-  color: var(--text-secondary, #fff); /* white text */
-}
-.user-access-approval-table-approve-btn:hover,
-.user-access-approval-table-approve-btn:focus {
-  background-color: var(--success-dark, #157347);
-  color: var(--text-secondary, #fff); /* white text */
-  transform: scale(1.05);
-}
-
-/* Reject button */
-.user-access-approval-table-reject-btn {
-  background-color: var(--error-light, #fee2e2);
-  color: var(--text-secondary, #fff); /* white text */
-}
-.user-access-approval-table-reject-btn:hover,
-.user-access-approval-table-reject-btn:focus {
-  background-color: var(--error, #bb2d3b);
-  color: var(--text-secondary, #fff); /* white text */
-  transform: scale(1.05);
 }
 
 /* No results row */
