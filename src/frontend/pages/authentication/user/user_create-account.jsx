@@ -43,6 +43,8 @@ function CreateAccount() {
         ...prev,
         image: 'Only JPG, JPEG, and PNG formats are allowed.',
       }));
+      setPassword("");
+      setConfirmPassword("");
       return;
     }
   
@@ -51,6 +53,8 @@ function CreateAccount() {
         ...prev,
         image: 'Image must not exceed 2MB.',
       }));
+      setPassword("");
+      setConfirmPassword("");
       return;
     }
   
@@ -61,6 +65,8 @@ function CreateAccount() {
           ...prev,
           image: 'Image must be exactly 1024x1024 pixels.',
         }));
+        setPassword("");
+        setConfirmPassword("");
       } else {
         setErrors(prev => ({ ...prev, image: null }));
         setSelectedUploadedImage(file.name);
@@ -76,6 +82,8 @@ function CreateAccount() {
         ...prev,
         image: 'Could not read image. Please upload a valid file.',
       }));
+      setPassword("");
+      setConfirmPassword("");
     };
     img.src = URL.createObjectURL(file);
   };  
@@ -198,12 +206,15 @@ function CreateAccount() {
     const passwordMessage = getPasswordErrorMessage(password);
     if (passwordMessage) {
       newErrors.password = passwordMessage;
-      setPassword(""); // 👈 Clear invalid password input
     }
 
     if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password did not matched.";
-      setConfirmPassword(""); // 👈 Clear invalid confirm password input
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setPassword("");
+      setConfirmPassword("");
     }
 
     setErrors(newErrors);
@@ -251,10 +262,17 @@ function CreateAccount() {
           }
       
           setErrors(formattedErrors);
+
+          if (Object.keys(formattedErrors).length > 0) {
+            setPassword("");
+            setConfirmPassword("");
+          }
         } else {
           const errorText = await response.text();
           console.error("❌ Text error:", errorText);
           alert(`Error: ${errorText}`);
+          setPassword("");
+          setConfirmPassword("");
         }
         return;
       }         
