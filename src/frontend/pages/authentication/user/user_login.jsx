@@ -23,13 +23,17 @@ const UserLogin = () => {
           });
       
           if (!response.ok) {
-            const error = await response.json();
-            const message = error.detail 
-                         || (error.non_field_errors && error.non_field_errors[0]) 
-                         || "Login failed.";
-            alert(message);
-            return;
-          }          
+              const error = await response.json();
+              
+              // Check if it's a validation error from your custom serializer
+              if (error.non_field_errors && error.non_field_errors.length > 0) {
+                  alert(error.non_field_errors[0]);
+              } else {
+                  // Fallback to generic message
+                  alert("Invalid credentials.");
+              }
+              return;
+          }        
       
           const data = await response.json();
           localStorage.setItem("authToken", data.access);

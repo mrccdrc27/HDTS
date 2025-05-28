@@ -26,9 +26,17 @@ const AdminLogin = () => {
         const data = await response.json();
     
         if (!response.ok) {
-          alert(data.detail || "Invalid credentials.");
-          return;
-        }
+              const error = await response.json();
+              
+              // Check if it's a validation error from your custom serializer
+              if (error.non_field_errors && error.non_field_errors.length > 0) {
+                  alert(error.non_field_errors[0]);
+              } else {
+                  // Fallback to generic message
+                  alert("Invalid credentials.");
+              }
+              return;
+          }  
     
         const token = data.access;
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -38,11 +46,11 @@ const AdminLogin = () => {
           localStorage.setItem("token", token);
           navigate("/admin/dashboard");
         } else {
-          alert("Access denied. Only admins and ticket agents can log in here.");
+          alert("Invalid credentials.");
         }
       } catch (error) {
         console.error("Login error:", error);
-        alert("Something went wrong. Try again.");
+        alert("Invalid credentials.");
       }
     };    
 

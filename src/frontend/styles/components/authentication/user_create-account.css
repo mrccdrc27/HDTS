@@ -91,6 +91,20 @@ form {
   position: relative;
 }
 
+.select-wrapper select {
+  padding: 0.6rem;
+  margin: 0;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  height: 2.5rem;       /* Consistent height */
+  background: #fff;
+  background-position: right 10px center; /* Ensures space for the chevron */
+  background-repeat: no-repeat;
+  padding-right: 2.5rem; /* Space for chevron */
+  box-sizing: border-box; 
+}
+
 .suffix-select {
   width: 100%;
   padding: 0.6rem;
@@ -114,7 +128,7 @@ form {
   position: absolute;
   top: 50%;
   right: 10px;
-  transform: translateY(-85%);
+  transform: translateY(-50%);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -127,7 +141,7 @@ form {
   top: 0px;
   right: 36px; /* same as chevron + margin */
   width: 1px;
-  height: calc(100% - 16px); /* align nicely with padding */
+  height: 100%;
   background: var(--bg-dark);
   pointer-events: none;
 }

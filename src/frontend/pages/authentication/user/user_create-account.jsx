@@ -1,4 +1,4 @@
-import { useState } from "react";
+  import { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateAccountForgotPasswordHeader from "../../../components/headers/user_create-account-forgot-password-header";
 import PrivacyPolicyAndTermsAndConditions from "../../../components/modals/authentication/privacy-policy-and-terms-and-conditions.jsx";
@@ -85,6 +85,10 @@ function CreateAccount() {
   const getPasswordErrorMessage = (password) => {
     const messages = [];
   
+    if (!password || password.trim() === "") {
+        return "Please fill in the required field.";
+    }
+
     const hasMinLength = password.length >= 8;
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
@@ -132,15 +136,47 @@ function CreateAccount() {
     } else if (missingKeys.length) {
       return `Password must include ${buildList(missingKeys)}.`;
     }
-  
-    return null; // No error
-  };  
+  };
 
   const validateForm = () => {
     const newErrors = {};
   
+    if (!firstName.trim()) {
+      newErrors.firstName = "Please fill in the required field.";
+    } else if (!/^[a-zA-Z.\-'\s]+$/.test(firstName)) {
+      newErrors.firstName = "Invalid character.";
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "Please fill in the required field.";
+    } else if (!/^[a-zA-Z.\-'\s]+$/.test(lastName)) {
+      newErrors.lastName = "Invalid character.";
+    }
+
+    if (middleName.trim() && !/^[a-zA-Z.\-'\s]+$/.test(middleName)) {
+      newErrors.middleName = "Invalid character.";
+    }
+
+    if (!department) {
+      newErrors.department = "Please fill in the required field.";
+    }
+
+    if (!companyId) {
+      newErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Please fill in the required field.";
+    } else if (!/^\d{4}$/.test(companyId)) {
+      newErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invalid Company ID.";
+    }
+
+    if (!email) {
+      newErrors.email = "Please fill in the required field.";
+    }
+
+    if (!document.getElementById('privacypolicy_termsandconditions').checked) {
+      newErrors.terms = "Please fill in the required field.";
+    }
+
     if (!uploadedImage) {
-      newErrors.image = "Image is required.";
+      newErrors.image = "Please fill in the required field.";
     }
   
     const passwordMessage = getPasswordErrorMessage(password);
@@ -149,17 +185,13 @@ function CreateAccount() {
     }
 
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Password didn't matched";
-    }
-  
-    if (!/^\d{4}$/.test(companyId)) {
-      newErrors.companyId = "Company ID must be a 4-digit number.";
+      newErrors.confirmPassword = "Password did not matched.";
     }
   
     if (!email.endsWith("@gmail.com")) {
-      newErrors.email = "Only Gmail addresses are allowed.";
+      newErrors.email = "Please fill in the required field.";
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };  
@@ -198,7 +230,7 @@ function CreateAccount() {
       
           const formattedErrors = {};
           if (errorJson.company_id) {
-            formattedErrors.companyId = "Invalid Company ID"; // 👈 custom message
+            formattedErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invalid Company ID"; // 👈 custom message
           }
           if (errorJson.email) {
             formattedErrors.email = "Invalid Email"; // 👈 optional customization
@@ -235,12 +267,12 @@ function CreateAccount() {
             <input
               type="text"
               id="last-name"
-              name="last_name"
-              required
+              name="last_name"  
               placeholder="Last Name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
+             {errors.lastName && <p className="error-message">{errors.lastName}</p>}
           </div>
 
           <div className="create-account-form-group">
@@ -249,11 +281,11 @@ function CreateAccount() {
               type="text"
               id="first-name"
               name="first_name"
-              required
               placeholder="First Name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
+            {errors.firstName && <p className="error-message">{errors.firstName}</p>}
           </div>
 
           <div className="create-account-form-group">
@@ -266,6 +298,7 @@ function CreateAccount() {
               value={middleName}
               onChange={(e) => setMiddleName(e.target.value)}
             />
+            {errors.middleName && <p className="error-message">{errors.middleName}</p>}
           </div>
 
           <div className="create-account-form-group">
@@ -313,8 +346,7 @@ function CreateAccount() {
                 type="text"
                 id="company-id"
                 name="company_id"
-                required
-                placeholder="0001"
+                placeholder="XXXX"
                 value={companyId}
                 onChange={(e) => {
                   const numeric = e.target.value.replace(/\D/g, "");
@@ -324,7 +356,6 @@ function CreateAccount() {
                 }}
                 maxLength={4}
                 inputMode="numeric"
-                pattern="\d{4}"
               />
             </div>
 
@@ -365,11 +396,12 @@ function CreateAccount() {
                 </div>
               )}
             </div>
+              {errors.department && <p className="error-message">{errors.department}</p>}
           </div>
 
           {/* Upload image */}
           <div className="create-account-form-group">
-            <label htmlFor="upload-label">Upload Image</label>
+            <label htmlFor="upload-label">Upload Profile Image</label>
             <div className="file-upload-container">
               <label
                 htmlFor="image"
@@ -453,8 +485,7 @@ function CreateAccount() {
                 type="email"
                 id="email"
                 name="email"
-                required
-                placeholder="Email Address"
+                placeholder="@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
@@ -470,8 +501,6 @@ function CreateAccount() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                required
-                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -498,8 +527,6 @@ function CreateAccount() {
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirm-password"
                 name="confirm_password"
-                required
-                placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
@@ -526,7 +553,6 @@ function CreateAccount() {
                 type="checkbox"
                 id="privacypolicy_termsandconditions"
                 name="privacypolicy_termsandconditions"
-                required
               />
               I agree to the{" "}
               <span
@@ -541,6 +567,7 @@ function CreateAccount() {
                 Privacy Policy and Terms and Conditions
               </span>
             </label>
+            {errors.terms && <p className="error-message">{errors.terms}</p>}
           </div>
 
           <PrivacyPolicyAndTermsAndConditions
