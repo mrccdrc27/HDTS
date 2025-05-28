@@ -9,7 +9,7 @@
   font-size: 13px;
 }
 
-.table-wrapper {
+.ticket-management-table-wrapper {
   overflow-x: auto;
 }
 
@@ -87,13 +87,13 @@
 }
 
 /* Left align Ticket Number and Subject */
-.ticket-management-table .ticket-number-cell,
-.ticket-management-table .subject-cell {
+.ticket-management-table .ticket-management-ticket-number-cell,
+.ticket-management-table .ticket-management-subject-cell {
   text-align: left;
 }
 
 /* Status badges - UNIFIED with user-access styles */
-.status-badge {
+.ticket-management-status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -108,66 +108,57 @@
 }
 
 /* Status colors - UNIFIED system */
-.status-submitted {
-  background-color: #e0e7ff;
-  color: var(--info-dark);
+/* Status colors - DISTINCT colors for each status */
+.ticket-management-status-new {
+  background-color: #e0e7ff; /* light blue */
+  color: #3730a3; /* indigo-800 */
 }
 
-.status-open {
-  background-color: #d1fae5;
-  color: var(--success-dark);
+.ticket-management-status-open {
+  background-color: #bbf7d0; /* lighter green */
+  color: #166534; /* green-800 */
 }
 
-.status-pending {
-  background-color: var(--warning-light);
-  color: var(--warning-dark);
+.ticket-management-status-pending {
+  background-color: #fde68a; /* amber-300 */
+  color: #92400e; /* amber-800 */
 }
 
-.status-progress {
-  background-color: var(--info-light);
-  color: var(--info-dark);
+.ticket-management-status-progress {
+  background-color: #bfdbfe; /* light sky blue */
+  color: #1e40af; /* blue-800 */
 }
 
-.status-hold {
-  background-color: #fee2e2;
-  color: var(--red-light);
+.ticket-management-status-hold {
+  background-color: #fecaca; /* light red */
+  color: #b91c1c; /* red-700 */
 }
 
-.status-resolved {
-  background-color: #d1fae5;
-  color: var(--success-dark);
+.ticket-management-status-resolved {
+  background-color: #d1fae5; /* mint green */
+  color: #065f46; /* teal-800 */
 }
 
-.status-closed {
-  background-color: #f3f4f6;
-  color: var(--neutral-dark-gray);
+.ticket-management-status-closed {
+  background-color: #e5e7eb; /* light gray */
+  color: #374151; /* gray-700 */
 }
 
-.status-unknown {
-  background-color: #fef2f2;
-  color: var(--red-dark);
+.ticket-management-status-unknown {
+  background-color: #fef2f2; /* very light red */
+  color: #991b1b; /* red-900 */
 }
 
-/* Status colors that match user-access table */
-.status-active {
-  background-color: #d1fae5;
-  color: var(--success-dark);
-}
-
-.status-inactive {
-  background-color: #fee2e2;
-  color: var(--red-light);
-}
 
 /* Actions - EXACTLY matching user-access */
-.action-buttons {
+.ticket-management-action-buttons {
   display: flex;
   gap: 6px;
   justify-content: center;
   align-items: center;
 }
 
-.action-btn {
+.ticket-management-action-btn {
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 11px;
@@ -180,59 +171,59 @@
 }
 
 /* Button styles - EXACTLY matching user-access */
-.view-btn {
+.ticket-management-view-btn {
   background-color: var(--blue-light);
   color: var(--text-secondary);
 }
 
-.view-btn:hover {
+.ticket-management-view-btn:hover {
   background-color: var(--blue-dark);
   color: var(--text-secondary);
 }
 
-.close-btn {
+.ticket-management-close-btn {
   background-color: var(--success-light);
   color: var(--success-dark);
 }
 
-.close-btn:hover {
+.ticket-management-close-btn:hover {
   background-color: var(--success-dark);
   color: white;
 }
 
 /* Additional button styles to match user-access */
-.update-btn {
+.ticket-management-update-btn {
   background-color: var(--neutral-light-gray);
   color: var(--neutral-dim-gray);
 }
 
-.update-btn:hover {
+.ticket-management-update-btn:hover {
   background-color: var(--neutral-dim-gray);
   color: white;
 }
 
-.approve-btn {
+.ticket-management-approve-btn {
   background-color: var(--success-light);
   color: var(--success-dark);
 }
 
-.approve-btn:hover {
+.ticket-management-approve-btn:hover {
   background-color: var(--success-dark);
   color: white;
 }
 
-.reject-btn {
+.ticket-management-reject-btn {
   background-color: var(--error-light);
-  color: var(--error);
+  color: var(--text-secondary);
 }
 
-.reject-btn:hover {
+.ticket-management-reject-btn:hover {
   background-color: var(--error);
   color: white;
 }
 
 /* No tickets message */
-.no-tickets-row td {
+.ticket-management-no-tickets-row td {
   text-align: center;
   padding: 60px 16px;
   border: none;
@@ -260,27 +251,16 @@
   .ticket-management-table td {
     padding: 5px 8px;
   }
-  .status-badge {
+  .ticket-management-status-badge {
     font-size: 9px;
     padding: 2px 6px;
   }
-  .action-buttons {
+  .ticket-management-action-buttons {
     flex-direction: column;
     gap: 4px;
   }
-  .action-btn {
+  .ticket-management-action-btn {
     font-size: 10px;
-    padding: 4px 8px;
+    padding: 3px 6px;
   }
 }
-
-/* FIXES APPLIED:
-   ✅ Unified status badge system with user-access
-   ✅ Consistent action button styles
-   ✅ Exact same responsive breakpoints
-   ✅ Same hover effects and transitions
-   ✅ Identical padding and spacing
-   ✅ Same font sizes and weights
-   ✅ Added missing button variants
-   ✅ Consistent border and shadow styles
-*/

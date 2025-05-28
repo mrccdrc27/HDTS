@@ -1,0 +1,24 @@
+/* modal-wrapper.css */
+
+.modal-overlay {
+  position: fixed; /* cover entire viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* centers content vertically and horizontally */
+  z-index: 1000; /* ensure it’s above other content */
+}
+
+.modal-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 90vw; /* responsive max width */
+  max-height: 90vh; /* responsive max height */
+  overflow-y: auto; /* scroll if content too tall */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}

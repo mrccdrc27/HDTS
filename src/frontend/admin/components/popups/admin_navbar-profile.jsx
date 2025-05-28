@@ -5,6 +5,8 @@ import AdminProfile from '../modals/navbar/admin_profile.jsx';
 import AdminTermsAndConditions from '../modals/navbar/admin_terms-and-conditions.jsx';
 import AdminPrivacyPolicy from '../modals/navbar/admin_privacy-policy.jsx';
 
+import './admin_navbar-profile.css'; 
+
 const AdminNavbarProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +45,7 @@ const AdminNavbarProfile = () => {
           <p className="profile-name">Admin Name</p>
           <p className="profile-role">System Administrator</p>
         </div>
-        <hr className="divider" />
+        <hr className="divider"/>
         <div className="profile-links">
           <button className="profile-link" onClick={() => addQueryParam('section', 'profile')}>
             Profile

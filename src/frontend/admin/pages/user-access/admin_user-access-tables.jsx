@@ -2,8 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import './admin_user-access-tables.css';
 
-import ApproveModal from '../../components/modals/user-access/admin_user-access-approve-user.jsx';
-import RejectModal from '../../components/modals/user-access/admin_user-access-reject-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
 import { users } from '/src/utilities/storage/userStorage.js';
@@ -100,30 +98,17 @@ const UserAccessTable = ({ category, filters }) => {
                 <td>{user.dateCreated}</td>
                 <td className="user-access-actions">
                   {user.status === 'Pending' ? (
-                    <>
-                      <button
-                        className="user-access-view-btn"
-                      >
-                        View
-                      </button>
-                      <button
-                        className="user-access-approve-btn"
-                        onClick={() => openModal('approve', user)}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        className="user-access-reject-btn"
-                        onClick={() => openModal('reject', user)}
-                      >
-                        Reject
-                      </button>
-                    </>
+                    <button
+                      className="user-access-review-btn"
+                      onClick={() => navigate(`/admin/account-information?type=review&user=${user.companyId}`)}
+                    >
+                      Review
+                    </button>
                   ) : (
                     <>
                       <button
                         className="user-access-view-btn"
-                        onClick={() => navigate(`/admin/account-information`)}
+                        onClick={() => navigate(`/admin/account-information?type=view&user=${user.companyId}`)}
                       >
                         View
                       </button>

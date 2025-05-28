@@ -1,55 +1,48 @@
 .profile-popup {
   background: var(--background-color);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  width: 240px;
+  border-radius: 12px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  width: 220px;
   font-family: 'Poppins', sans-serif;
+  padding: 10px 12px;
 }
 
 .profile-info {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  padding-left: 10px; /* Align text with buttons */
 }
 
 .profile-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--neutral-dark-gray);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .profile-role {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--neutral-dim-gray);
   margin: 0;
-  line-height: 1.2;
-}
-
-.divider {
-  border: none;
-  height: 1px;
-  background: var(--neutral-light-gray);
-  margin: 12px 0;
+  line-height: 1.1;
 }
 
 .profile-links {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .profile-link {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--neutral-dark-gray);
   background: transparent;
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .profile-link:hover {
@@ -57,13 +50,12 @@
 }
 
 .profile-link.logout {
-  color: var(--text-secondary); /* white text */
-  background: var(--error);     /* filled with red */
+  color: var(--text-secondary);
+  background: var(--error);
   border: none;
-  margin-top: 6px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .profile-link.logout:hover {
-  background: var(--error-dark); /* darker red on hover */
+  background: var(--error-dark);
 }

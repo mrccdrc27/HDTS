@@ -19,7 +19,7 @@
 }
 
 .user-access-th {
-  padding: 6px 10px;
+  padding: 8px 12px;
   font-weight: 600;
   color: var(--text-secondary, #f0f0f0);
   user-select: none;
@@ -35,14 +35,12 @@
   border-top-right-radius: 8px;
 }
 
-/* Rows */
 .user-access-row {
   background: var(--background-color, #fff);
   transition: background-color 0.2s;
   cursor: pointer;
 }
 
-/* Horizontal lines between rows except last */
 .user-access-table-element tbody tr:not(:last-child) td {
   border-bottom: 1px solid var(--neutral-light-gray, #e0e0e0);
 }
@@ -52,14 +50,12 @@
 }
 
 .user-access-row td {
-  padding: 6px 10px;
+  padding: 8px 12px;
   white-space: nowrap;
 }
 
 /* Status badges */
-.user-access-status.pending {
-  background-color: var(--warning-light, #fff3cd);
-  color: var(--warning-dark, #856404);
+.user-access-status {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -73,25 +69,29 @@
   white-space: nowrap;
 }
 
-/* Add other statuses if you have, example: */
+.user-access-status.pending {
+  background-color: var(--warning-light, #fff3cd);
+  color: var(--warning-dark, #856404);
+}
 .user-access-status.active {
   background-color: var(--success-light, #d1fae5);
   color: var(--success-dark, #157347);
-  border-radius: 10px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: capitalize;
 }
-
 .user-access-status.inactive {
   background-color: var(--neutral-light-gray, #e0e0e0);
   color: var(--neutral-dark-gray, #666);
-  border-radius: 10px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: capitalize;
+}
+.user-access-status.approved {
+  background-color: var(--success-bg, #e6ffed);
+  color: var(--success-dark, #2e7d32);
+}
+.user-access-status.rejected {
+  background-color: var(--danger-light, #fdecea);
+  color: var(--danger-dark, #b00020);
+}
+.user-access-status.archived {
+  background-color: var(--neutral-light, #f5f5f5);
+  color: var(--neutral-medium, #999);
 }
 
 /* Actions */
@@ -103,10 +103,9 @@
 }
 
 .user-access-view-btn,
-.user-access-approve-btn,
-.user-access-reject-btn,
-.user-access-update-btn {
-  padding: 4px 10px;
+.user-access-update-btn,
+.user-access-review-btn {
+  padding: 5px 10px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
@@ -126,31 +125,6 @@
 .user-access-view-btn:focus {
   background-color: var(--blue-dark, #0b5ed7);
   transform: scale(1.05);
-  color: var(--text-secondary, #fff);
-}
-
-/* Approve button */
-.user-access-approve-btn {
-  background-color: var(--success-light, #d1fae5);
-  color: var(--success-dark, #157347);
-}
-.user-access-approve-btn:hover,
-.user-access-approve-btn:focus {
-  background-color: var(--success-dark, #157347);
-  color: var(--text-secondary, #fff);
-  transform: scale(1.05);
-}
-
-/* Reject button */
-.user-access-reject-btn {
-  background-color: var(--error-light, #fee2e2);
-  color: var(--error, #bb2d3b);
-}
-.user-access-reject-btn:hover,
-.user-access-reject-btn:focus {
-  background-color: var(--error, #bb2d3b);
-  color: var(--text-secondary, #fff);
-  transform: scale(1.05);
 }
 
 /* Update button */
@@ -162,6 +136,18 @@
 .user-access-update-btn:focus {
   background-color: var(--neutral-dark-gray, #bbb);
   color: var(--text-secondary, #fff);
+  transform: scale(1.05);
+}
+
+/* Review button (new) */
+.user-access-review-btn {
+  background-color: var(--error-light);
+  color: var(--text-secondary, #fff);
+}
+.user-access-review-btn:hover,
+.user-access-review-btn:focus {
+  background-color: var(--error-dark);
+  color: #fff;
   transform: scale(1.05);
 }
 
@@ -181,9 +167,9 @@
   }
   .user-access-th,
   .user-access-row td {
-    padding: 5px 6px;
+    padding: 6px 8px;
   }
-  .user-access-status.pending {
+  .user-access-status {
     font-size: 9px;
     padding: 2px 6px;
   }
@@ -192,10 +178,9 @@
     gap: 4px;
   }
   .user-access-view-btn,
-  .user-access-approve-btn,
-  .user-access-reject-btn,
-  .user-access-update-btn {
+  .user-access-update-btn,
+  .user-access-review-btn {
     font-size: 10px;
-    padding: 3px 6px;
+    padding: 4px 6px;
   }
 }
