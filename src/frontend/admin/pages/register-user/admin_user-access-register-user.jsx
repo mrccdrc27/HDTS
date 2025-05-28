@@ -4,6 +4,9 @@ import './admin_user-access-register-user.css';
 
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 
+const capitalizeWords = (str) =>
+  str.replace(/\b\w/g, (char) => char.toUpperCase());
+
 function CreateAccount() {
   // Form field states
   const [password, setPassword] = useState("");
@@ -28,54 +31,85 @@ function CreateAccount() {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    const maxSize = 2 * 1024 * 1024; // 2MB
-  
-    // Clear previous image errors
+    const maxSize = 2 * 1024 * 1024; // optionally increase to accept larger source files
+
     setErrors(prev => ({ ...prev, image: null }));
-  
+
     if (!validTypes.includes(file.type)) {
       setErrors(prev => ({
         ...prev,
         image: 'Only JPG, JPEG, and PNG formats are allowed.',
       }));
+      setPassword("");
+      setConfirmPassword("");
       return;
     }
-  
+
     if (file.size > maxSize) {
       setErrors(prev => ({
         ...prev,
         image: 'Image must not exceed 2MB.',
       }));
+      setPassword("");
+      setConfirmPassword("");
       return;
     }
-  
+
     const img = new Image();
-    img.onload = () => {
-      if (img.width !== 1024 || img.height !== 1024) {
-        setErrors(prev => ({
-          ...prev,
-          image: 'Image must be exactly 1024x1024 pixels.',
-        }));
-      } else {
-        setErrors(prev => ({ ...prev, image: null }));
-        setSelectedUploadedImage(file.name);
-        setUploadedImage(file);
-      }
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      img.src = e.target.result;
     };
+
+    img.onload = () => {
+      // Create canvas and draw resized image
+      const canvas = document.createElement("canvas");
+      canvas.width = 1024;
+      canvas.height = 1024;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, 1024, 1024);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const resizedFile = new File([blob], file.name, { type: file.type });
+
+          setSelectedUploadedImage(file.name);
+          setUploadedImage(resizedFile);
+          setErrors(prev => ({ ...prev, image: null }));
+        } else {
+          setErrors(prev => ({
+            ...prev,
+            image: 'Image processing failed. Try another image.',
+          }));
+          setPassword("");
+          setConfirmPassword("");
+        }
+      }, file.type || "image/jpeg");
+    };
+
     img.onerror = () => {
       setErrors(prev => ({
         ...prev,
         image: 'Could not read image. Please upload a valid file.',
       }));
+      setPassword("");
+      setConfirmPassword("");
     };
-    img.src = URL.createObjectURL(file);
+
+    reader.readAsDataURL(file);
   };
 
   const getPasswordErrorMessage = (password) => {
     const messages = [];
   
+    if (!password || password.trim() === "") {
+        return "Please fill in the required field.";
+    }
+
     const hasMinLength = password.length >= 8;
     const hasUpper = /[A-Z]/.test(password);
     const hasLower = /[a-z]/.test(password);
@@ -123,23 +157,60 @@ function CreateAccount() {
     } else if (missingKeys.length) {
       return `Password must include ${buildList(missingKeys)}.`;
     }
-  
-    return null; // No error
   };
+
+  const namePattern = /^[a-zA-Z.\-'\s]+$/;
+  const letterPresencePattern = /[a-zA-Z]/;
 
   const validateForm = () => {
     const newErrors = {};
   
+    if (!firstName.trim()) {
+      newErrors.firstName = "Please fill in the required field.";
+    } else if (!namePattern.test(firstName)) {
+      newErrors.firstName = "Invalid character.";
+    } else if (!letterPresencePattern.test(firstName)) {
+      newErrors.firstName = "Invalid First Name.";
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "Please fill in the required field.";
+    } else if (!namePattern.test(lastName)) {
+      newErrors.lastName = "Invalid character.";
+    } else if (!letterPresencePattern.test(lastName)) {
+      newErrors.lastName = "Invalid Last Name.";
+    }
+
+    if (middleName.trim()) {
+      if (!namePattern.test(middleName)) {
+        newErrors.middleName = "Invalid character.";
+      } else if (!letterPresencePattern.test(middleName)) {
+        newErrors.middleName = "Invalid Middle Name.";
+      }
+    }
+
+    if (!department) {
+      newErrors.department = "Please fill in the required field.";
+    }
+
+    if (!role) {
+      newErrors.role = "Please fill in the required field.";
+    }
+
+    if (!companyId) {
+      newErrors.companyId = "Please fill in the required field.";
+    } else if (!/^\d{4}$/.test(companyId)) {
+      newErrors.companyId = "Invalid Company ID.";
+    }
+
+    if (!email.trim()) {
+      newErrors.email = "Please fill in the required field.";
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      newErrors.email = "Invalid Email.";
+    }
+
     if (!uploadedImage) {
-      newErrors.image = "Profile image is required.";
-    }
-    
-    if (!firstName) {
-      newErrors.firstName = "First name is required.";
-    }
-    
-    if (!lastName) {
-      newErrors.lastName = "Last name is required.";
+      newErrors.image = "Please fill in the required field.";
     }
   
     const passwordMessage = getPasswordErrorMessage(password);
@@ -147,37 +218,62 @@ function CreateAccount() {
       newErrors.password = passwordMessage;
     }
 
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Password didn't match";
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please fill in the required field.";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Password did not matched.";
     }
-  
-    if (!/^\d{4}$/.test(companyId)) {
-      newErrors.companyId = "Company ID must be a 4-digit number.";
+
+    if (Object.keys(newErrors).length > 0) {
+      setPassword("");
+      setConfirmPassword("");
     }
-  
-    if (!email) {
-      newErrors.email = "Email is required.";
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      newErrors.email = "Invalid email format.";
-    }
-    
-    if (!department) {
-      newErrors.department = "Department is required.";
-    }
-    
-    if (!role) {
-      newErrors.role = "User role is required.";
-    }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };  
+
+  const checkBackendErrors = async (formData) => {
+    const email = formData.get("email");
+    const companyId = formData.get("company_id");
+
+    // Don't check if both are empty
+    if (!email && !companyId) return {};
+
+    try {
+      const response = await fetch("http://localhost:8000/api/create_employee/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const contentType = response.headers.get("content-type");
+
+      const formattedErrors = {};
+
+      if (!response.ok && contentType?.includes("application/json")) {
+        const errorJson = await response.json();
+
+        // Only set error if email was entered
+        if (email && errorJson.email) {
+          formattedErrors.email = "Invalid Email.";
+        }
+
+        // Only set error if company ID was entered
+        if (companyId && errorJson.company_id) {
+          formattedErrors.companyId = "Invalid Company ID.";
+        }
+      }
+
+      return formattedErrors;
+    } catch (error) {
+      console.error("🚨 Network error while checking backend:", error);
+      return {};
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    if (!validateForm()) return;
-  
+
     const formData = new FormData();
     formData.append("last_name", lastName);
     formData.append("first_name", firstName);
@@ -188,42 +284,56 @@ function CreateAccount() {
     formData.append("role", role);
     formData.append("email", email);
     formData.append("password", password);
-    formData.append("confirm_password", confirmPassword);
     formData.append("image", uploadedImage);
-  
+    formData.append("confirm_password", confirmPassword);
+
+    // Step 1: Frontend validation
+    const isValid = validateForm(); // this sets some errors already
+
+    // Step 2: Backend error check — even if isValid is false
+    const backendErrors = await checkBackendErrors(formData);
+
+    // Step 3: Merge all errors
+    if (Object.keys(backendErrors).length > 0 || !isValid) {
+      setErrors((prev) => ({
+        ...prev,
+        ...backendErrors,
+      }));
+
+      setPassword("");
+      setConfirmPassword("");
+      return;
+    }
+
+    // Step 4: Submit the form
     try {
       const response = await fetch("http://localhost:8000/api/create_employee/", {
         method: "POST",
         body: formData,
       });
-  
-      console.log("🔍 Status:", response.status);
-  
-      const contentType = response.headers.get("content-type");
-  
+
+      const data = await response.json();
+
       if (!response.ok) {
-        if (contentType && contentType.includes("application/json")) {
-          const errorJson = await response.json();
-          console.error("❌ JSON error:", errorJson);
-      
-          const formattedErrors = {};
-          if (errorJson.company_id) {
-            formattedErrors.companyId = "Invalid Company ID";
-          }
-          if (errorJson.email) {
-            formattedErrors.email = "Invalid Email";
-          }
-      
-          setErrors(formattedErrors);
-        } else {
-          const errorText = await response.text();
-          console.error("❌ Text error:", errorText);
-          alert(`Error: ${errorText}`);
-        }
+        console.error("❌ Submission error:", data);
+        alert("User registered successfully!");
+        
+        // Reset form after successful submission
+        setFirstName("");
+        setLastName("");
+        setMiddleName("");
+        setSuffix("");
+        setCompanyId("");
+        setDepartment("");
+        setRole("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setUploadedImage(null);
+        setSelectedUploadedImage("");
         return;
       }
-  
-      const data = await response.json();
+
       console.log("✅ Success:", data);
       alert("User registered successfully!");
       
@@ -242,7 +352,11 @@ function CreateAccount() {
       setSelectedUploadedImage("");
     } catch (error) {
       console.error("🚨 Network error:", error);
-      alert("Network error. Please try again.");
+      alert("Network error. Please check your connection and try again.");
+      
+      // Clear passwords on error
+      setPassword("");
+      setConfirmPassword("");
     }
   };
 
@@ -250,46 +364,45 @@ function CreateAccount() {
     <div className="register-user-form-container">
       <h2>Register New User</h2>
       <hr />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         {/* Name fields */}
         <div className="register-user-form-group">
           <label htmlFor="last-name">Last Name</label>
-          <input 
-            type="text" 
-            id="last-name" 
-            name="last_name" 
-            required 
-            placeholder="Last Name" 
+          <input
+            type="text"
+            id="last-name"
+            name="last_name"  
+            placeholder="Last Name"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={(e) => setLastName(capitalizeWords(e.target.value))}
           />
-          {errors.lastName && <p className="error-message">{errors.lastName}</p>}
+           {errors.lastName && <p className="error-message">{errors.lastName}</p>}
         </div>
 
         <div className="register-user-form-group">
           <label htmlFor="first-name">First Name</label>
-          <input 
-            type="text" 
-            id="first-name" 
-            name="first_name" 
-            required 
-            placeholder="First Name" 
+          <input
+            type="text"
+            id="first-name"
+            name="first_name"
+            placeholder="First Name"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={(e) => setFirstName(capitalizeWords(e.target.value))}
           />
           {errors.firstName && <p className="error-message">{errors.firstName}</p>}
         </div>
 
         <div className="register-user-form-group">
           <label htmlFor="middle-name">Middle Name</label>
-          <input 
-            type="text" 
-            id="middle-name" 
-            name="middle_name" 
-            placeholder="Middle Name" 
+          <input
+            type="text"
+            id="middle-name"
+            name="middle_name"
+            placeholder="Middle Name"
             value={middleName}
-            onChange={(e) => setMiddleName(e.target.value)}
+            onChange={(e) => setMiddleName(capitalizeWords(e.target.value))}
           />
+          {errors.middleName && <p className="error-message">{errors.middleName}</p>}
         </div>
         
         <div className="register-user-form-group">
@@ -341,12 +454,39 @@ function CreateAccount() {
         </div>
 
         <div className="register-user-form-group">
+          <label htmlFor="company-id">Company ID</label>
+          <div className="company-id-wrapper">
+            <span className="company-id-prefix">MA</span>
+            <div className="company-id-separator"></div>
+            <input
+              type="text"
+              id="company-id"
+              name="company_id"
+              placeholder="XXXX"
+              value={companyId}
+              autoComplete="off"
+              onChange={(e) => {
+                const numeric = e.target.value.replace(/\D/g, "");
+                if (numeric.length <= 4) {
+                  setCompanyId(numeric);
+                }
+              }}
+              maxLength={4}
+              inputMode="numeric"
+              className="company-id-input"
+            />
+          </div>
+
+          {/* ✅ Move error message outside of the flex div */}
+          {errors.companyId && <p className="error-message">{errors.companyId}</p>}
+        </div>
+
+        <div className="register-user-form-group">
           <label htmlFor="department">Department</label>
           <div className="register-user-select-wrapper">
             <select
               id="department"
               name="department"
-              required
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
               className="suffix-select"
@@ -389,37 +529,11 @@ function CreateAccount() {
         </div>
         
         <div className="register-user-form-group">
-          <label htmlFor="company-id">Company ID</label>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span style={{ marginRight: "4px" }}>MA</span>
-            <input
-              type="text"
-              id="company-id"
-              name="company_id"
-              required
-              placeholder="0001"
-              value={companyId}
-              onChange={(e) => {
-                const numeric = e.target.value.replace(/\D/g, "");
-                if (numeric.length <= 4) {
-                  setCompanyId(numeric);
-                }
-              }}
-              maxLength={4}
-              inputMode="numeric"
-              pattern="\d{4}"
-            />
-          </div>
-          {errors.companyId && <p className="error-message">{errors.companyId}</p>}
-        </div>
-
-        <div className="register-user-form-group">
           <label htmlFor="role-selection">User Role</label>
           <div className="register-user-select-wrapper">
             <select
               id="role-selection"
               name="role"
-              required
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="register-user-suffix-select"
@@ -456,22 +570,21 @@ function CreateAccount() {
           {errors.role && <p className="error-message">{errors.role}</p>}
         </div>
 
-        {/* Image Upload */}
+        {/* Upload image */}
         <div className="register-user-form-group">
-          <label htmlFor="image-upload">Upload Profile Picture</label>
+          <label htmlFor="upload-label">Upload Profile Image</label>
           <div className="register-user-file-upload-container">
             <label
               htmlFor="image"
               className={`register-user-file-upload-btn full-clickable ${uploadedImage ? "disabled" : ""}`}
               style={uploadedImage ? { cursor: "not-allowed", opacity: 0.6 } : {}}
             >
-              <Upload size={18} className="upload-icon" />
+              <Upload size={18} />
               <input
                 type="file"
                 id="image"
                 name="image"
                 accept="image/*"
-                required
                 onChange={handleImageUpload}
                 style={{ display: "none" }}
                 disabled={!!uploadedImage}
@@ -480,7 +593,7 @@ function CreateAccount() {
 
             <span
               className={`register-user-file-name ${selectedUploadedImage ? "has-file" : ""}`}
-              style={{ color: '#7e7e7e' }}
+              style={{ color: "#7e7e7e" }}
               onClick={() => {
                 if (uploadedImage) {
                   setShowImagePreviewModal(true);
@@ -502,8 +615,7 @@ function CreateAccount() {
                 }
               }}
             >
-              {selectedUploadedImage || "Upload Profile Picture"}
-
+              {selectedUploadedImage || "Upload Image"}
               {selectedUploadedImage && (
                 <span
                   onClick={(e) => {
@@ -526,6 +638,8 @@ function CreateAccount() {
               )}
             </span>
           </div>
+
+          {/* ✅ Error message placed correctly here */}
           {errors.image && <p className="error-message">{errors.image}</p>}
         </div>
 
@@ -538,10 +652,9 @@ function CreateAccount() {
         <div className="register-user-form-group">
           <label htmlFor="email">Email Address</label>
           <input 
-            type="email" 
+            type="text" 
             id="email" 
-            name="email" 
-            required 
+            name="email"
             placeholder="Email Address" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -556,14 +669,15 @@ function CreateAccount() {
               type={showPassword ? "text" : "password"}
               id="password"
               name="password"
-              required
               placeholder="Password"
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
             />
+            
             <span
               className="register-user-password-icon"
-              data-tooltip={showPassword ? "Hide Password" : "Show Password"}
+              data-tooltip={showPassword ? "Hide password" : "Show password"}
               onClick={() => setShowPassword(!showPassword)}
               role="button"
               tabIndex={0}
@@ -571,7 +685,7 @@ function CreateAccount() {
                 if (e.key === "Enter" || e.key === " ") setShowPassword(!showPassword);
               }}
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
             </span>
           </div>
           {errors.password && <p className="error-message">{errors.password}</p>}
@@ -585,10 +699,11 @@ function CreateAccount() {
               id="confirm-password"
               name="confirm_password"
               placeholder="Confirm Password"
-              required
               value={confirmPassword}
+              autoComplete="new-password"
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
+            
             <span
               className="register-user-password-icon"
               data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
@@ -599,7 +714,7 @@ function CreateAccount() {
                 if (e.key === "Enter" || e.key === " ") setShowConfirmPassword(!showConfirmPassword);
               }}
             >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
             </span>
           </div>
           {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
