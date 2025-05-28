@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Download, CheckCircle } from 'lucide-react';
-import './admin_submitted-ticket-review.css';
+import './admin_new-ticket-review.css';
 
 const SubmittedTicketReviewPage = () => {
   const navigate = useNavigate();
