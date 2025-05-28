@@ -9,8 +9,6 @@ import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 const capitalizeWords = (str) =>
   str.replace(/\b\w/g, (char) => char.toUpperCase());
 
-const namePattern = /^(?=.*[a-zA-Z])[a-zA-Z.\-'\s]+$/;
-
 function CreateAccount() {
   const [suffix, setSuffix] = useState("");
   const [department, setDepartment] = useState("");
@@ -143,6 +141,9 @@ function CreateAccount() {
     }
   };
 
+  const namePattern = /^[a-zA-Z.\-'\s]+$/;
+  const letterPresencePattern = /[a-zA-Z]/;
+
   const validateForm = () => {
     const newErrors = {};
   
@@ -150,16 +151,24 @@ function CreateAccount() {
       newErrors.firstName = "Please fill in the required field.";
     } else if (!namePattern.test(firstName)) {
       newErrors.firstName = "Invalid character.";
+    } else if (!letterPresencePattern.test(firstName)) {
+      newErrors.firstName = "Invalid First Name.";
     }
 
     if (!lastName.trim()) {
       newErrors.lastName = "Please fill in the required field.";
     } else if (!namePattern.test(lastName)) {
       newErrors.lastName = "Invalid character.";
+    } else if (!letterPresencePattern.test(lastName)) {
+      newErrors.lastName = "Invalid Last Name.";
     }
 
-    if (middleName.trim() && !namePattern.test(middleName)) {
-      newErrors.middleName = "Invalid character.";
+    if (middleName.trim()) {
+      if (!namePattern.test(middleName)) {
+        newErrors.middleName = "Invalid character.";
+      } else if (!letterPresencePattern.test(middleName)) {
+        newErrors.middleName = "Invalid Middle Name.";
+      }
     }
 
     if (!department) {
