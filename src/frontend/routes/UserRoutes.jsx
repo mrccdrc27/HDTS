@@ -8,6 +8,7 @@ import TicketDetailsLayout from '../user/layouts/user_ticket-details-layout.jsx'
 import ActiveTickets from '../user/pages/active-tickets/user_active-tickets-main.jsx';
 import TicketRecords from '../user/pages/ticket-records/user_ticket-records-main.jsx';
 
+// ticket details layout to be edited
 export const UserRoutes = () => {
   return (
     <Routes>
