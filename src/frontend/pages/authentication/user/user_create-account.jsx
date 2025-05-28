@@ -429,7 +429,7 @@ function CreateAccount() {
             <label htmlFor="company-id">Company ID</label>
             <div className="company-id-wrapper">
               <span className="company-id-prefix">MA</span>
-              <div className="company-id-separator"></div>
+              <span className="company-id-separator"></span>
               <input
                 type="text"
                 id="company-id"

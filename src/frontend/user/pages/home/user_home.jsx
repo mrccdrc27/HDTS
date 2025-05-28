@@ -35,7 +35,7 @@ const UserHome = () => {
     <div className="container">
       <header className="header">
         <h1 className="welcome">
-          Welcome, <span className="username">{firstName}</span>
+          Welcome, <span className="username">{firstName}!</span>
         </h1>
       </header>
 
@@ -56,13 +56,19 @@ const UserHome = () => {
       <hr className="divider" />
 
       <section className="notice">
-        <h2 className="notice-title">NOTICE</h2>
+        <h2 className="notice-title">NOTICE!</h2>
         <p className="notice-content">
           Our support team operates during <strong className="highlight">8:00 AM - 5:00 PM</strong>.
         </p>
         <ul className="notice-list">
-          <li>Tickets submitted outside working hours will be placed in the <span className="pending">Pending</span> queue.</li>
-          <li>Once working hours resume, tickets will move to <strong>Open</strong> or <strong>In Progress</strong> based on priority.</li>
+          <li>
+            Tickets submitted outside working hours will be placed in the{''} 
+            <span className="pending">Pending</span> queue.
+          </li>
+          <li>
+            Once working hours resume, tickets will move to <strong>Open</strong> or{''} 
+            <strong>In Progress</strong> based on priority.
+          </li>
         </ul>
         <p className="notice-content">Thank you for your patience!</p>
       </section>
@@ -75,8 +81,10 @@ const UserHome = () => {
           <div className="ticket-header">
             <div>
               <div className="ticket-number">Ticket Number: TX0123</div>
-              <div className="ticket-title">Subject: Laptop Requesting</div>
-              <div className="ticket-assigned">Assigned to: John Doe</div>
+              <div className="ticket-details-row">
+                <div className="ticket-title">Subject: Laptop Requesting</div>
+                <div className="ticket-assigned">Assigned to: John Doe</div>
+              </div>
             </div>
             <div className="ticket-status-container">
               <span className="ticket-status">In Progress</span>
@@ -116,7 +124,7 @@ const UserHome = () => {
 
         {/* Main Expand Button */}
         <button
-          className={`float-button main-button ${isExpanded ? "rotated" : ""}`}
+          className={`float-button main-button ${isExpanded ? 'rotated' : ''}`}
           onClick={handleToggle}
         >
           <Menu size={24} />

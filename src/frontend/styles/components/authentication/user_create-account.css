@@ -178,6 +178,7 @@ form {
   border: none !important;
   outline: none !important;
   padding: 0.6rem 12px;
+  margin-left: 6px;
   font-size: 0.95rem;
   background: transparent;
   box-shadow: none !important;

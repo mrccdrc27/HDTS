@@ -1,3 +1,4 @@
+
 /* user_home.css */
 
 * {
@@ -6,20 +7,25 @@
   padding: 0;
 }
 
-body {
+/* Ensure html and body take full height and allow scrolling */
+html, body {
+  height: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto; /* Enable scrolling on the page */
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
   color: #333;
 }
 
+/* Container without max-height or overflow */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   position: relative;
-  min-height: 100vh;
-  overflow-y: auto;
-  max-height: 100vh;
+  /* REMOVE any max-height or overflow properties here */
 }
 
 .header {
@@ -27,7 +33,7 @@ body {
 }
 
 .welcome {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
 }
 
@@ -80,13 +86,14 @@ body {
 
 .notice-title {
   color: #b22222;
-  font-size: 22px;
-  margin-bottom: 12px;
+  font-size: 18px;
+  margin-bottom: 18px;
 }
 
-.notice-content {
-  line-height: 1.5;
-  margin-bottom: 10px;
+.notice-content { 
+  line-height: 0.5;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .highlight {
@@ -96,17 +103,18 @@ body {
 
 .pending {
   color: #f59e0b;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .notice-list {
-  margin: 15px 0;
+  margin: 15px 10px;
   padding-left: 20px;
 }
 
 .notice-list li {
   margin-bottom: 8px;
-  line-height: 1.5;
+  line-height: 1;
+  font-size: 14px;
 }
 
 .section-title {
@@ -116,10 +124,10 @@ body {
 }
 
 .ticket-card {
-  background-color: #e6f0ff;
+  background-color: #e9f0fa;
   border: 1px solid #c9d8f0;
   border-radius: 8px;
-  padding: 18px;
+  padding: 15px;
   margin-top: 15px;
 }
 
@@ -127,18 +135,19 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 14px;
 }
 
 .ticket-number {
   font-weight: bold;
   font-size: 16px;
-  margin-bottom: 5px;
+  margin-bottom: 1px;
+  color: #000;
 }
 
 .ticket-assigned {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: #222;
+  margin: 2px 0;
 }
 
 .ticket-status-container {
@@ -146,33 +155,38 @@ body {
 }
 
 .ticket-status {
-  background-color: #e6f7e6;
-  color: #1e7e1e;
+  background-color: #d0f0d0;
+  color: #1c6c1c;
   padding: 5px 10px;
   border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
 }
+
+.ticket-details-row {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
 
 .ticket-title {
-  font-size: 16px;
-  margin: 12px 0;
-}
-
-.ticket-info {
-  margin-top: 15px;
+  font-size: 13px;
+  margin: 2px 0;
+  color: #222;
 }
 
 .ticket-message {
-  color: #555;
-  margin-bottom: 15px;
+  color: #000;
+  font-size: 14px;
 }
 
 .ticket-dates {
   display: flex;
   justify-content: space-between;
-  color: #777;
-  font-size: 13px;
+  color: #838383;
+  font-size: 12px;
   margin-top: 15px;
 }
 
@@ -181,7 +195,7 @@ body {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  flex-direction: column-reverse; /* main button at the bottom */
+  flex-direction: column-reverse;
   align-items: center;
   z-index: 1500;
 }
@@ -225,7 +239,6 @@ body {
   background-color: #0a2b55;
 }
 
-/* Main Button */
 .main-button {
   background-color: #0d3b73;
   font-size: 24px;
@@ -235,19 +248,12 @@ body {
   background-color: #0a2b55;
 }
 
-/* Specific Button Colors */
-.message-button {
-  background-color: #0d3b73;
-}
-
-.message-button:hover {
-  background-color: #0a2b55;
-}
-
+.message-button,
 .help-button {
   background-color: #0d3b73;
 }
 
+.message-button:hover,
 .help-button:hover {
   background-color: #0a2b55;
 }
