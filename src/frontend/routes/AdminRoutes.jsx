@@ -8,7 +8,6 @@ import AdminSubmittedTicketReview from '../admin/pages/submitted-ticket-review/a
 import TicketManagement from '../admin/pages/ticket-management/admin_ticket-management-main.jsx';
 import TicketDetailsLayout from '../user/layouts/user_ticket-details-layout.jsx';
 import UserAccess from '../admin/pages/user-access/admin_user-access-main.jsx';
-import AdminPendingAccountsReview from '../admin/pages/pending-accounts-review/admin_pending-accounts-review.jsx';
 import AdminUserAccountInformation from '../admin/pages/user-account-information/admin_user-account-information.jsx';
 import AdminReports from '../admin/pages/reports/admin_reports-main.jsx';
 import AdminReportInformation from '../admin/pages/report-information/admin_report-information.jsx';
@@ -27,8 +26,6 @@ export const AdminRoutes = () => {
         <Route path="ticket-management/:category" element={<TicketManagement />} />
  
         <Route path="user-access/:category" element={<UserAccess />} />
-
-        <Route path="user-access/account-review" element={<AdminPendingAccountsReview />} />
 
         <Route path="account-information" element={<AdminUserAccountInformation />} />
 

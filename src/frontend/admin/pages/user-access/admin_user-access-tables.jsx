@@ -10,7 +10,7 @@ import { users } from '/src/utilities/storage/userStorage.js';
 
 const UserAccessTable = ({ category, filters }) => {
   const navigate = useNavigate();
-  const [modalType, setModalType] = useState(null); // 'approve', 'reject', 'update'
+  const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
 
   const openModal = (type, user) => {
@@ -66,25 +66,25 @@ const UserAccessTable = ({ category, filters }) => {
 
   return (
     <div className="user-access-table">
-      <table>
+      <table className="user-access-table-element">
         <thead>
           <tr>
             {columns.map(({ label, key }) => (
-              <th key={key}>{label}</th>
+              <th key={key} className="user-access-th">{label}</th>
             ))}
-            <th>Actions</th>
+            <th className="user-access-th">Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredData.length === 0 ? (
             <tr>
-              <td colSpan={columns.length + 1} className="no-results">
+              <td colSpan={columns.length + 1} className="user-access-no-results">
                 No users match the filter.
               </td>
             </tr>
           ) : (
             filteredData.map((user) => (
-              <tr key={user.companyId || user.id || user.email}>
+              <tr key={user.companyId || user.id || user.email} className="user-access-row">
                 <td>{user.companyId}</td>
                 <td>{user.lastName}</td>
                 <td>{user.firstName}</td>
@@ -93,28 +93,27 @@ const UserAccessTable = ({ category, filters }) => {
                 <td>{user.department}</td>
                 <td>{user.role}</td>
                 <td>
-                  <span className={`status ${user.status.toLowerCase()}`}>
+                  <span className={`user-access-status ${user.status.toLowerCase()}`}>
                     {user.status}
                   </span>
                 </td>
                 <td>{user.dateCreated}</td>
-                <td className="actions">
+                <td className="user-access-actions">
                   {user.status === 'Pending' ? (
                     <>
                       <button
-                        className="view-btn"
-                        onClick={() => navigate(`/admin/user-access/account-review`)}
+                        className="user-access-view-btn"
                       >
                         View
                       </button>
                       <button
-                        className="approve-btn"
+                        className="user-access-approve-btn"
                         onClick={() => openModal('approve', user)}
                       >
                         Approve
                       </button>
                       <button
-                        className="reject-btn"
+                        className="user-access-reject-btn"
                         onClick={() => openModal('reject', user)}
                       >
                         Reject
@@ -123,13 +122,13 @@ const UserAccessTable = ({ category, filters }) => {
                   ) : (
                     <>
                       <button
-                        className="view-btn"
+                        className="user-access-view-btn"
                         onClick={() => navigate(`/admin/account-information`)}
                       >
                         View
                       </button>
                       <button
-                        className="update-btn"
+                        className="user-access-update-btn"
                         onClick={() => openModal('update', user)}
                       >
                         Update
@@ -143,7 +142,6 @@ const UserAccessTable = ({ category, filters }) => {
         </tbody>
       </table>
 
-      {/* Modals */}
       {modalType === 'approve' && selectedUser && (
         <ApproveModal user={selectedUser} onClose={closeModal} />
       )}

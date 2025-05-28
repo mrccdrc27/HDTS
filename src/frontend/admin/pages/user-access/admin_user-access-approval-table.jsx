@@ -1,11 +1,8 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { users } from '/src/utilities/storage/userStorage.js';
 import './admin_user-access-approval-table.css';
+import { users } from '/src/utilities/storage/userStorage.js';
 
 const ApprovalsTable = ({ filters }) => {
-  const navigate = useNavigate();
-
   // Filter only pending users and apply other filters
   const filteredData = useMemo(() => {
     return users.filter((user) => {
@@ -70,14 +67,9 @@ const ApprovalsTable = ({ filters }) => {
                 </td>
                 <td>{user.dateCreated}</td>
                 <td className="user-access-approval-table-actions">
-                  <button
-                    className="user-access-approval-table-view-btn"
-                    onClick={() => navigate('/admin/user-access/account-review')}
-                  >
+                  <button className="user-access-approval-table-view-btn">
                     View
                   </button>
-                  <button className="user-access-approval-table-approve-btn">Approve</button>
-                  <button className="user-access-approval-table-reject-btn">Reject</button>
                 </td>
               </tr>
             ))

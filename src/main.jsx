@@ -10,9 +10,8 @@ import { AdminRoutes } from './frontend/routes/AdminRoutes.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-    {/* Auth Routes working */}
       <AuthRoutes />  
-      {/* <UserRoutes />     */}
+      {/* <UserRoutes />      */}
       <AdminRoutes />   
     </BrowserRouter>
   </StrictMode>,

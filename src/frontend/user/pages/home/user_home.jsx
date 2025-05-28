@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import SupportChatModal from '../chatbot/user_chatbot.jsx'; // <-- Correct import
