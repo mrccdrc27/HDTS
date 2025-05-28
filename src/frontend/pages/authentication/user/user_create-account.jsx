@@ -1,10 +1,15 @@
-  import { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateAccountForgotPasswordHeader from "../../../components/headers/user_create-account-forgot-password-header";
 import PrivacyPolicyAndTermsAndConditions from "../../../components/modals/authentication/privacy-policy-and-terms-and-conditions.jsx";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
 import "../../../styles/components/authentication/user_create-account.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
+
+const capitalizeWords = (str) =>
+  str.replace(/\b\w/g, (char) => char.toUpperCase());
+
+const namePattern = /^(?=.*[a-zA-Z])[a-zA-Z.\-'\s]+$/;
 
 function CreateAccount() {
   const [suffix, setSuffix] = useState("");
@@ -143,17 +148,17 @@ function CreateAccount() {
   
     if (!firstName.trim()) {
       newErrors.firstName = "Please fill in the required field.";
-    } else if (!/^[a-zA-Z.\-'\s]+$/.test(firstName)) {
+    } else if (!namePattern.test(firstName)) {
       newErrors.firstName = "Invalid character.";
     }
 
     if (!lastName.trim()) {
       newErrors.lastName = "Please fill in the required field.";
-    } else if (!/^[a-zA-Z.\-'\s]+$/.test(lastName)) {
+    } else if (!namePattern.test(lastName)) {
       newErrors.lastName = "Invalid character.";
     }
 
-    if (middleName.trim() && !/^[a-zA-Z.\-'\s]+$/.test(middleName)) {
+    if (middleName.trim() && !namePattern.test(middleName)) {
       newErrors.middleName = "Invalid character.";
     }
 
@@ -184,10 +189,12 @@ function CreateAccount() {
     const passwordMessage = getPasswordErrorMessage(password);
     if (passwordMessage) {
       newErrors.password = passwordMessage;
+      setPassword(""); // 👈 Clear invalid password input
     }
 
     if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password did not matched.";
+      setConfirmPassword(""); // 👈 Clear invalid confirm password input
     }
 
     setErrors(newErrors);
@@ -268,7 +275,7 @@ function CreateAccount() {
               name="last_name"  
               placeholder="Last Name"
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => setLastName(capitalizeWords(e.target.value))}
             />
              {errors.lastName && <p className="error-message">{errors.lastName}</p>}
           </div>
@@ -281,7 +288,7 @@ function CreateAccount() {
               name="first_name"
               placeholder="First Name"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => setFirstName(capitalizeWords(e.target.value))}
             />
             {errors.firstName && <p className="error-message">{errors.firstName}</p>}
           </div>
@@ -294,7 +301,7 @@ function CreateAccount() {
               name="middle_name"
               placeholder="Middle Name"
               value={middleName}
-              onChange={(e) => setMiddleName(e.target.value)}
+              onChange={(e) => setMiddleName(capitalizeWords(e.target.value))}
             />
             {errors.middleName && <p className="error-message">{errors.middleName}</p>}
           </div>
