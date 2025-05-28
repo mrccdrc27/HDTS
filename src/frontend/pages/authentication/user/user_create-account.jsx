@@ -31,13 +31,12 @@ function CreateAccount() {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-  
+
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    const maxSize = 2 * 1024 * 1024; // 2MB
-  
-    // Clear previous image errors
+    const maxSize = 2 * 1024 * 1024; // optionally increase to accept larger source files
+
     setErrors(prev => ({ ...prev, image: null }));
-  
+
     if (!validTypes.includes(file.type)) {
       setErrors(prev => ({
         ...prev,
@@ -47,7 +46,7 @@ function CreateAccount() {
       setConfirmPassword("");
       return;
     }
-  
+
     if (file.size > maxSize) {
       setErrors(prev => ({
         ...prev,
@@ -57,26 +56,45 @@ function CreateAccount() {
       setConfirmPassword("");
       return;
     }
-  
+
     const img = new Image();
-    img.onload = () => {
-      if (img.width !== 1024 || img.height !== 1024) {
-        setErrors(prev => ({
-          ...prev,
-          image: 'Image must be exactly 1024x1024 pixels.',
-        }));
-        setPassword("");
-        setConfirmPassword("");
-      } else {
-        setErrors(prev => ({ ...prev, image: null }));
-        setSelectedUploadedImage(file.name);
-        setUploadedImage(file);
-        setFormData((prevData) => ({
-          ...prevData,
-          image: file,
-        }));
-      }
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      img.src = e.target.result;
     };
+
+    img.onload = () => {
+      // Create canvas and draw resized image
+      const canvas = document.createElement("canvas");
+      canvas.width = 1024;
+      canvas.height = 1024;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, 1024, 1024);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const resizedFile = new File([blob], file.name, { type: file.type });
+
+          setSelectedUploadedImage(file.name);
+          setUploadedImage(resizedFile);
+          setFormData((prevData) => ({
+            ...prevData,
+            image: resizedFile,
+          }));
+          setErrors(prev => ({ ...prev, image: null }));
+        } else {
+          setErrors(prev => ({
+            ...prev,
+            image: 'Image processing failed. Try another image.',
+          }));
+          setPassword("");
+          setConfirmPassword("");
+        }
+      }, file.type || "image/jpeg");
+    };
+
     img.onerror = () => {
       setErrors(prev => ({
         ...prev,
@@ -85,8 +103,9 @@ function CreateAccount() {
       setPassword("");
       setConfirmPassword("");
     };
-    img.src = URL.createObjectURL(file);
-  };  
+
+    reader.readAsDataURL(file);
+  };
 
   const handleLabelClick = (e) => {
     e.preventDefault();
@@ -184,9 +203,9 @@ function CreateAccount() {
     }
 
     if (!companyId) {
-      newErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Please fill in the required field.";
+      newErrors.companyId = "Please fill in the required field.";
     } else if (!/^\d{4}$/.test(companyId)) {
-      newErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invalid Company ID.";
+      newErrors.companyId = "Invalid Company ID.";
     }
 
     if (!email.trim()) {
@@ -208,7 +227,10 @@ function CreateAccount() {
       newErrors.password = passwordMessage;
     }
 
-    if (password !== confirmPassword) {
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Please fill in the required field.";
+    } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Password did not matched.";
     }
 
@@ -221,11 +243,47 @@ function CreateAccount() {
     return Object.keys(newErrors).length === 0;
   };  
 
-  const handleSubmit = async (event) => {
+ const checkBackendErrors = async (formData) => {
+    const email = formData.get("email");
+    const companyId = formData.get("company_id");
+
+    // Don't check if both are empty
+    if (!email && !companyId) return {};
+
+    try {
+      const response = await fetch("http://localhost:8000/api/create_employee/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const contentType = response.headers.get("content-type");
+
+      const formattedErrors = {};
+
+      if (!response.ok && contentType?.includes("application/json")) {
+        const errorJson = await response.json();
+
+        // Only set error if email was entered
+        if (email && errorJson.email) {
+          formattedErrors.email = "Invalid Email.";
+        }
+
+        // Only set error if company ID was entered
+        if (companyId && errorJson.company_id) {
+          formattedErrors.companyId = "Invalid Company ID.";
+        }
+      }
+
+      return formattedErrors;
+    } catch (error) {
+      console.error("🚨 Network error while checking backend:", error);
+      return {};
+    }
+  };
+
+ const handleSubmit = async (event) => {
     event.preventDefault();
-  
-    if (!validateForm()) return;
-  
+
     const formData = new FormData();
     formData.append("last_name", lastName);
     formData.append("first_name", firstName);
@@ -237,54 +295,51 @@ function CreateAccount() {
     formData.append("password", password);
     formData.append("image", uploadedImage);
     formData.append("confirm_password", confirmPassword);
-  
+
+    // Step 1: Frontend validation
+    const isValid = validateForm(); // this sets some errors already
+
+    // Step 2: Backend error check — even if isValid is false
+    const backendErrors = await checkBackendErrors(formData);
+
+    // Step 3: Merge all errors
+    if (Object.keys(backendErrors).length > 0 || !isValid) {
+      setErrors((prev) => ({
+        ...prev,
+        ...backendErrors,
+      }));
+
+      setPassword("");
+      setConfirmPassword("");
+      return;
+    }
+
+    // Step 4: Submit the form
     try {
       const response = await fetch("http://localhost:8000/api/create_employee/", {
         method: "POST",
         body: formData,
       });
-  
-      console.log("🔍 Status:", response.status);
-  
-      const contentType = response.headers.get("content-type");
-  
-      if (!response.ok) {
-        if (contentType && contentType.includes("application/json")) {
-          const errorJson = await response.json();
-          console.error("❌ JSON error:", errorJson);
-      
-          const formattedErrors = {};
-          if (errorJson.company_id) {
-            formattedErrors.companyId = "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0Invalid Company ID"; // 👈 custom message
-          }
-          if (errorJson.email) {
-            formattedErrors.email = "Invalid Email"; // 👈 optional customization
-          }
-      
-          setErrors(formattedErrors);
 
-          if (Object.keys(formattedErrors).length > 0) {
-            setPassword("");
-            setConfirmPassword("");
-          }
-        } else {
-          const errorText = await response.text();
-          console.error("❌ Text error:", errorText);
-          alert(`Error: ${errorText}`);
-          setPassword("");
-          setConfirmPassword("");
-        }
-        return;
-      }         
-  
       const data = await response.json();
+
+      if (!response.ok) {
+        console.error("❌ Submission error:", data);
+        alert("Account created successfully!");
+        return;
+      }
+
       console.log("✅ Success:", data);
       alert("Account created successfully!");
     } catch (error) {
       console.error("🚨 Network error:", error);
-      alert("Network error. Please try again.");
+      alert("Network error. Please check your connection and try again.");
+      
+      // Clear passwords on error
+      setPassword("");
+      setConfirmPassword("");
     }
-  };  
+  };
 
   return (
     <>
@@ -292,7 +347,7 @@ function CreateAccount() {
       <div className="create-account-form-container">
         <h2>Create Account</h2>
         <hr />
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} autoComplete="off">
           {/* Name fields */}
           <div className="create-account-form-group">
             <label htmlFor="last-name">Last Name</label>
@@ -372,14 +427,16 @@ function CreateAccount() {
 
           <div className="create-account-form-group">
             <label htmlFor="company-id">Company ID</label>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <span style={{ marginRight: "4px" }}>MA</span>
+            <div className="company-id-wrapper">
+              <span className="company-id-prefix">MA</span>
+              <div className="company-id-separator"></div>
               <input
                 type="text"
                 id="company-id"
                 name="company_id"
                 placeholder="XXXX"
                 value={companyId}
+                autoComplete="off"
                 onChange={(e) => {
                   const numeric = e.target.value.replace(/\D/g, "");
                   if (numeric.length <= 4) {
@@ -388,6 +445,7 @@ function CreateAccount() {
                 }}
                 maxLength={4}
                 inputMode="numeric"
+                className="company-id-input"
               />
             </div>
 
@@ -532,10 +590,12 @@ function CreateAccount() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
+                placeholder="Password"
                 value={password}
+                autoComplete="new-password"
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && <p className="error-message">{errors.password}</p>}
+              
               <span
                 className="password-icon"
                 data-tooltip={showPassword ? "Hide password" : "Show password"}
@@ -546,9 +606,10 @@ function CreateAccount() {
                   if (e.key === "Enter" || e.key === " ") setShowPassword(!showPassword);
                 }}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </span>
             </div>
+            {errors.password && <p className="error-message">{errors.password}</p>}
           </div>
 
           <div className="create-account-form-group">
@@ -558,10 +619,12 @@ function CreateAccount() {
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirm-password"
                 name="confirm_password"
+                placeholder="Confirm Password"
                 value={confirmPassword}
+                autoComplete="new-password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
-              {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
+              
               <span
                 className="password-icon"
                 data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
@@ -572,9 +635,10 @@ function CreateAccount() {
                   if (e.key === "Enter" || e.key === " ") setShowConfirmPassword(!showConfirmPassword);
                 }}
               >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
               </span>
             </div>
+            {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
           </div>
 
           {/* Checkbox and modal */}
