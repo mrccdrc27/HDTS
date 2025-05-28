@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import AdminTicketManagementSearch from './admin_ticket-management-search.jsx';
 import TicketManagementFilters from './admin_ticket-management-filters-and-sort.jsx';
 import TicketManagementTable from './admin_ticket-management-table.jsx';
+import TablePagination from '../../components/shared/table-pagination.jsx';
 import { loadTickets, updateTicketStatus } from '../../../../utilities/ticket-data/ticketData.js';
 
 const TicketManagement = () => {
@@ -18,6 +19,8 @@ const TicketManagement = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [sortAsc, setSortAsc] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const getFormattedCategory = (key) => {
     const displayMap = {
@@ -86,7 +89,7 @@ const TicketManagement = () => {
   return (
     <div className="ticket-management-main">
       <div className="ticket-management-main-header">
-        <h2>{getFormattedCategory(category)}</h2>
+        <h1>{getFormattedCategory(category)}</h1>
       </div>
 
       <div className="ticket-management-main-search">
@@ -122,6 +125,10 @@ const TicketManagement = () => {
             onStatusUpdate={handleStatusUpdate}
           />
         )}
+      </div>
+
+      <div className="pagination">
+        <TablePagination />
       </div>
     </div>
   );

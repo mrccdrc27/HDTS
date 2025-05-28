@@ -28,11 +28,26 @@
   --neutral-dim-gray: #7E7E7E;
   --neutral-dark-gray: #323232;
 
-  /* Semantics */
+  /* Semantics (Extended) */
   --success-light: #039855;
-  --success-dark: #05603A;
-  --info-light: #1849A9;
+  --success: #05603A;
+  --success-dark: #054F31;
+
+  --error-light: #D92D20;
+  --error: #B42318;
+  --error-dark: #912018;
+
+  --warning-light: #FDB022;
+  --warning: #DC6803;
+  --warning-dark: #93370D;
+
+  --info-light: #175CD3;
+  --info: #1849A9;
   --info-dark: #194185;
+
+  --neutral-strong: #414651;
+  --neutral-deep: #252B37;
+  --neutral-blackish: #181D27;
 
   /* Text Colors */
   --text-primary: #0C0C0C;
@@ -130,38 +145,6 @@ a:hover {
 .text-italic { font-style: italic; }
 .text-uppercase { text-transform: uppercase; }
 
-/* Margin Utilities */
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mt-5 { margin-top: 3rem; }
-
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-.mb-5 { margin-bottom: 3rem; }
-
-.ml-1 { margin-left: 0.25rem; }
-.ml-2 { margin-left: 0.5rem; }
-.ml-3 { margin-left: 1rem; }
-.ml-4 { margin-left: 1.5rem; }
-.ml-5 { margin-left: 3rem; }
-
-.mr-1 { margin-right: 0.25rem; }
-.mr-2 { margin-right: 0.5rem; }
-.mr-3 { margin-right: 1rem; }
-.mr-4 { margin-right: 1.5rem; }
-.mr-5 { margin-right: 3rem; }
-
-/* Padding Utilities */
-.p-1 { padding: 0.25rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 1rem; }
-.p-4 { padding: 1.5rem; }
-.p-5 { padding: 3rem; }
-
 /* Container */
 .container {
   width: 100%;
@@ -169,15 +152,6 @@ a:hover {
   margin: 0 auto;
   padding: 0 1rem;
 }
-
-/* Flex Utilities */
-.d-flex { display: flex; }
-.flex-column { flex-direction: column; }
-.flex-row { flex-direction: row; }
-.justify-content-center { justify-content: center; }
-.justify-content-between { justify-content: space-between; }
-.align-items-center { align-items: center; }
-.flex-wrap { flex-wrap: wrap; }
 
 /* Button Styles */
 .btn {
@@ -208,15 +182,6 @@ a:hover {
 
 .btn-secondary:hover {
   background-color: #5a6268;
-}
-
-/* Card Component */
-.card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
 }
 
 Form Elements

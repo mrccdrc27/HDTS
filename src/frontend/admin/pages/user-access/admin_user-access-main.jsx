@@ -5,6 +5,7 @@ import UserAccessFilters from "./admin_user-access-filters.jsx";
 import UserAccessTable from "./admin_user-access-tables.jsx";
 import ApprovalsFilters from "./admin_user-access-approval-filters.jsx";
 import ApprovalsTable from "./admin_user-access-approval-table.jsx";
+import TablePagination from '../../components/shared/table-pagination.jsx';
 
 const UserAccess = () => {
   const { category } = useParams();
@@ -66,6 +67,10 @@ const UserAccess = () => {
           <UserAccessTable category={category} filters={filters} />
         </>
       )}
+
+    <div className="pagination">
+      <TablePagination />
+    </div>
     </div>
   );
 };

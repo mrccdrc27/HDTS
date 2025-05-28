@@ -1,114 +1,178 @@
+/* Compact and aligned User Access Table - Prefixed with 'user-access-' */
+
+.user-access-table {
+  background: var(--background-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+}
+
 .user-access-table table {
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 14px;
-}
-
-/* Header styles */
-.user-access-table th {
-  background-color: #8b0000;
-  color: white;
-  padding: 10px;
-  user-select: none;
-}
-
-/* Align label and icon */
-.user-access-table .header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
-/* Sort icon behavior */
-.sort-icon-wrapper {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.sort-icon {
-  color: #ccc;
-  transition: color 0.2s ease;
-}
-
-.sort-icon:hover {
-  color: white;
-}
-
-.sort-icon.active {
-  color: white;
-}
-
-/* Table cell styles */
-.user-access-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-/* Status badge */
-.status {
-  padding: 5px 10px;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
-.status.active {
-  background-color: #c1f0c1;
-  color: #1e7e34;
-}
-
-/* Action buttons */
-.actions {
-  display: flex;
-  gap: 6px;
-}
-
-.view-btn,
-.update-btn {
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.view-btn {
-  background-color: #0d6efd;
-}
-
-.view-btn:hover {
-  background-color: #0b5ed7;
-}
-
-.update-btn {
-  background-color: #6c757d;
-}
-
-.update-btn:hover {
-  background-color: #5c636a;
-}
-
-.pagination-controls {
-  margin-top: 1rem;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: center;
 }
 
-.pagination-controls button {
-  margin: 0 5px;
-  padding: 5px 10px;
-  border: none;
-  background-color: #eee;
+.user-access-table thead {
+  background: linear-gradient(135deg, var(--red-light) 0%, var(--red-dark) 100%);
+}
+
+.user-access-table th,
+.user-access-table td {
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.user-access-table th {
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+  cursor: default;
+  letter-spacing: 0.4px;
+}
+
+.user-access-table th:first-child {
+  border-top-left-radius: 8px;
+}
+.user-access-table th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.user-access-table tbody tr {
+  background: var(--background-color);
+  transition: background-color 0.2s;
   cursor: pointer;
 }
-
-.pagination-controls button.active-page {
-  font-weight: bold;
-  background-color: #ccc;
+.user-access-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+.user-access-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--neutral-light-gray);
 }
 
-.pagination-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Unified status badges */
+.user-access-table .status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.user-access-table .status-active {
+  background-color: #d1fae5;
+  color: var(--success-dark);
+}
+.user-access-table .status-inactive {
+  background-color: #fee2e2;
+  color: var(--red-light);
+}
+.user-access-table .status-pending {
+  background-color: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+/* Action buttons */
+.user-access-table .actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.user-access-table .view-btn,
+.user-access-table .approve-btn,
+.user-access-table .reject-btn,
+.user-access-table .update-btn {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
+}
+
+.user-access-table .view-btn {
+  background-color: var(--blue-light);
+  color: var(--text-secondary);
+}
+.user-access-table .view-btn:hover {
+  background-color: var(--blue-dark);
+  color: var(--text-secondary);
+}
+
+.user-access-table .approve-btn {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+.user-access-table .approve-btn:hover {
+  background-color: var(--success-dark);
+  color: white;
+}
+
+.user-access-table .reject-btn {
+  background-color: var(--error-light);
+  color: var(--error);
+}
+.user-access-table .reject-btn:hover {
+  background-color: var(--error);
+  color: white;
+}
+
+.user-access-table .update-btn {
+  background-color: var(--neutral-light-gray);
+  color: var(--neutral-dim-gray);
+}
+.user-access-table .update-btn:hover {
+  background-color: var(--neutral-dim-gray);
+  color: white;
+}
+
+/* No results row */
+.user-access-table .no-results {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--neutral-dim-gray);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .user-access-table {
+    font-size: 11px;
+  }
+  .user-access-table th,
+  .user-access-table td {
+    padding: 5px 6px;
+  }
+  .user-access-table .status {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+  .user-access-table .actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .user-access-table .view-btn,
+  .user-access-table .approve-btn,
+  .user-access-table .reject-btn,
+  .user-access-table .update-btn {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
 }

@@ -30,18 +30,9 @@ const formatDateTime = (dateString) => {
 
 const TicketManagementTable = ({ filteredTickets = [], onStatusUpdate }) => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [ticketsPerPage, setTicketsPerPage] = useState(5);
-  const [inputValue, setInputValue] = useState('5');
 
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [ticketToClose, setTicketToClose] = useState(null);
-
-  const totalPages = Math.ceil(filteredTickets.length / ticketsPerPage);
-  const currentTickets = filteredTickets.slice(
-    (currentPage - 1) * ticketsPerPage,
-    currentPage * ticketsPerPage
-  );
 
   const handleNavigate = (ticket) => {
     const { number, status } = ticket;
@@ -100,60 +91,8 @@ const TicketManagementTable = ({ filteredTickets = [], onStatusUpdate }) => {
     );
   };
 
-  const renderPagination = () => (
-    <div className="pagination-controls">
-      <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="pagination-btn">
-        Previous
-      </button>
-      <span className="pagination-info">
-        Page {currentPage} of {totalPages}
-      </span>
-      <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="pagination-btn">
-        Next
-      </button>
-    </div>
-  );
-
-  const renderItemsPerPageInput = () => (
-    <div className="table-controls-row">
-      <div className="items-per-page">
-        <label htmlFor="itemsPerPageInput">Show </label>
-        <input
-          type="text"
-          id="itemsPerPageInput"
-          value={inputValue}
-          onChange={(e) => {
-            const val = e.target.value;
-            if (val === '' || /^\d+$/.test(val)) {
-              setInputValue(val);
-            }
-          }}
-          onBlur={() => {
-            let num = parseInt(inputValue, 10);
-            if (isNaN(num) || num <= 0) num = 5;
-            else if (num > 100) num = 100;
-            setTicketsPerPage(num);
-            setCurrentPage(1);
-            setInputValue(num.toString());
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.target.blur();
-            }
-          }}
-          inputMode="numeric"
-          pattern="[0-9]*"
-          style={{ width: '3rem', textAlign: 'center' }}
-        />
-        <span> items per page</span>
-      </div>
-    </div>
-  );
-
   return (
     <div className="ticket-management-container">
-      {renderItemsPerPageInput()}
-
       <div className="table-wrapper">
         <table className="ticket-management-table">
           <thead>
@@ -170,8 +109,8 @@ const TicketManagementTable = ({ filteredTickets = [], onStatusUpdate }) => {
             </tr>
           </thead>
           <tbody>
-            {currentTickets.length > 0
-              ? currentTickets.map(renderTicketRow)
+            {filteredTickets.length > 0
+              ? filteredTickets.map(renderTicketRow)
               : (
                 <tr className="no-tickets-row">
                   <td colSpan="9">
@@ -184,8 +123,6 @@ const TicketManagementTable = ({ filteredTickets = [], onStatusUpdate }) => {
           </tbody>
         </table>
       </div>
-
-      {totalPages > 1 && renderPagination()}
 
       {showCloseModal && (
         <AdminTicketManagementCloseTicketReview

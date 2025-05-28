@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { X, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { useState } from 'react';
+import DateFilter from '../../components/shared/date-filter.jsx';
+import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import './admin_ticket-management-filters-and-sort.css';
 
-// Mock data for demonstration
 const ticketCategories = {
   'Technical': ['Software', 'Hardware', 'Network'],
   'HR': ['Benefits', 'Payroll', 'Leave'],
@@ -18,221 +18,144 @@ const ticketManagementStatuses = [
   'Resolved',
 ];
 
+const sortByLabels = {
+  ticketNumber: 'Ticket Number',
+  subject: 'Subject',
+  dateCreated: 'Date Created',
+  lastUpdated: 'Last Updated',
+};
+
 const TicketManagementFilters = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subcategoryFilter, setSubcategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
   const [subcategories, setSubcategories] = useState([]);
-  const [showDatePopup, setShowDatePopup] = useState(false);
+  const [showDateFilter, setShowDateFilter] = useState(false);
   const [sortBy, setSortBy] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
-  const popupRef = useRef(null);
+  const toggleDateFilter = () => setShowDateFilter((prev) => !prev);
+  const toggleSortDirection = () => setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
 
-  useEffect(() => {
-    if (categoryFilter && ticketCategories[categoryFilter]) {
-      setSubcategories(Object.keys(ticketCategories[categoryFilter]));
+  const handleCategoryChange = (value) => {
+    setCategoryFilter(value);
+    if (ticketCategories[value]) {
+      setSubcategories(ticketCategories[value]);
     } else {
       setSubcategories([]);
-      setSubcategoryFilter('');
     }
-  }, [categoryFilter]);
-
-  const toggleDatePopup = () => setShowDatePopup((prev) => !prev);
-  const handleClearDates = () => {
-    setDateFrom('');
-    setDateTo('');
+    setSubcategoryFilter('');
   };
 
-  const toggleSortDirection = () => {
-    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (popupRef.current && !popupRef.current.contains(e.target)) {
-        setShowDatePopup(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const getDateButtonText = () => {
-    if (dateFrom || dateTo) return 'Date ✓';
-    return 'Date';
+  const handleSortSelect = (value) => {
+    setSortBy(value);
+    setShowSortMenu(false);
   };
 
   return (
-    <div className="ticket-toolbar">
+    <div className="ticket-management-filters-and-sort-wrapper">
       {/* Filter Section */}
-      <div className="filter-section">
-        <div className="section-header">
-          <span className="filter-label">Filter by:</span>
+      <div className="ticket-management-filter-section">
+        <span className="ticket-management-filter-label">Filter by:</span>
+
+        {/* Category */}
+        <div className="ticket-management-filter-dropdown">
+          <select
+            value={categoryFilter}
+            onChange={(e) => handleCategoryChange(e.target.value)}
+            className="ticket-management-filter-select"
+          >
+            <option value="" disabled hidden>Category</option>
+            {Object.keys(ticketCategories).map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
         </div>
-        
-        <div className="filters-grid">
-          {/* Category Filter */}
-          <div className="filter-dropdown">
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="filter-select"
-            >
-              <option value="" disabled hidden>Category</option>
-              {Object.keys(ticketCategories).map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={16} className="dropdown-icon" />
-          </div>
 
-          {/* Subcategory Filter */}
-          <div className="filter-dropdown">
-            <select
-              value={subcategoryFilter}
-              onChange={(e) => setSubcategoryFilter(e.target.value)}
-              disabled={!categoryFilter}
-              className="filter-select"
-            >
-              <option value="" disabled hidden>Sub Category</option>
-              {subcategories.map((subcategory) => (
-                <option key={subcategory} value={subcategory}>
-                  {subcategory}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={16} className="dropdown-icon" />
-          </div>
+        {/* Subcategory */}
+        <div className="ticket-management-filter-dropdown">
+          <select
+            value={subcategoryFilter}
+            onChange={(e) => setSubcategoryFilter(e.target.value)}
+            disabled={!categoryFilter}
+            className="ticket-management-filter-select"
+          >
+            <option value="" disabled hidden>Sub Category</option>
+            {subcategories.map((subcategory) => (
+              <option key={subcategory} value={subcategory}>{subcategory}</option>
+            ))}
+          </select>
+          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
+        </div>
 
-          {/* Department Filter */}
-          <div className="filter-dropdown">
-            <select className="filter-select">
-              <option value="" disabled hidden>Department</option>
-              <option>IT</option>
-              <option>HR</option>
-              <option>Finance</option>
-            </select>
-            <ChevronDown size={16} className="dropdown-icon" />
-          </div>
+        {/* Department */}
+        <div className="ticket-management-filter-dropdown">
+          <select className="ticket-management-filter-select">
+            <option value="" disabled hidden>Department</option>
+            <option>IT</option>
+            <option>HR</option>
+            <option>Finance</option>
+          </select>
+          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
+        </div>
 
-          {/* Status Filter */}
-          <div className="filter-dropdown">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="filter-select"
-            >
-              <option value="" disabled hidden>Status</option>
-              {ticketManagementStatuses.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={16} className="dropdown-icon" />
-          </div>
+        {/* Status */}
+        <div className="ticket-management-filter-dropdown">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="ticket-management-filter-select"
+          >
+            <option value="" disabled hidden>Status</option>
+            {ticketManagementStatuses.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
+        </div>
 
-          {/* Date Filter */}
-          <div className="filter-dropdown date-filter-wrapper">
-            <button onClick={toggleDatePopup} className="date-filter-button">
-              <span>{getDateButtonText()}</span>
-              <ChevronDown size={16} className="dropdown-icon" />
-            </button>
-
-            {showDatePopup && (
-              <div ref={popupRef} className="date-popover">
-                <div className="popover-header">
-                  <h4>Select Date Range</h4>
-                  <button
-                    onClick={() => setShowDatePopup(false)}
-                    className="close-button"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                <div className="date-inputs">
-                  <div className="input-group">
-                    <label htmlFor="dateFrom">From</label>
-                    <input
-                      id="dateFrom"
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
-                      className="date-input"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div className="input-group">
-                    <label htmlFor="dateTo">To</label>
-                    <input
-                      id="dateTo"
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
-                      min={dateFrom}
-                      className="date-input"
-                    />
-                  </div>
-                </div>
-
-                <div className="popover-actions">
-                  <button onClick={handleClearDates} className="secondary-button">
-                    Clear
-                  </button>
-                  <button
-                    onClick={() => setShowDatePopup(false)}
-                    className="primary-button"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+        {/* Date Filter */}
+        <div className="ticket-management-filter-dropdown date-filter-wrapper">
+          <button onClick={toggleDateFilter} className="ticket-management-date-filter-button">
+            <span>Date</span>
+            <ChevronDown size={16} className="ticket-management-filter-date-dropdown-icon" />
+          </button>
+          {showDateFilter && <DateFilter />}
         </div>
       </div>
 
       {/* Sort Section */}
-      <div className="sort-section">
-        <div className="section-header">
-          <span className="sort-label">Sort by:</span>
-        </div>
-        
-        <div className="sort-container">
-          <div className="filter-dropdown sort-dropdown">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="filter-select"
-            >
-              <option value="" disabled hidden>Sort by</option>
-              <option value="ticketNumber">Ticket Number</option>
-              <option value="subject">Subject</option>
-              <option value="dateCreated">Date Created</option>
-              <option value="lastUpdated">Last Updated</option>
-            </select>
-            
-            <div className="sort-icons">
-              <button
-                onClick={toggleSortDirection}
-                className="sort-direction-btn"
-                disabled={!sortBy}
-              >
-                {sortDirection === 'asc' ? 
-                  <ArrowUp size={14} className={`sort-arrow ${sortBy ? 'active' : 'inactive'}`} /> : 
-                  <ArrowDown size={14} className={`sort-arrow ${sortBy ? 'active' : 'inactive'}`} />
-                }
-              </button>
-              <ChevronDown size={16} className="dropdown-icon" />
-            </div>
-          </div>
+      <div className="ticket-management-sort-section">
+        <span className="ticket-management-sort-label">Sort by:</span>
+        <div className="ticket-management-sort-dropdown" style={{ position: 'relative' }}>
+          <button
+            className="ticket-management-custom-select-button"
+            onClick={() => setShowSortMenu(prev => !prev)}
+          >
+            <span className="ticket-management-sort-with-icon">
+              {sortBy ? sortByLabels[sortBy] : 'Select'}
+              {sortBy && (
+                <span className="ticket-management-sort-arrow-icon" onClick={(e) => { e.stopPropagation(); toggleSortDirection(); }}>
+                  {sortDirection === 'asc' 
+                    ? <ArrowUp size={16} />
+                    : <ArrowDown size={16} />}
+                </span>
+              )}
+            </span>
+            <ChevronDown size={16} />
+          </button>
+
+          {showSortMenu && (
+            <ul className="ticket-management-custom-dropdown-menu">
+              {Object.entries(sortByLabels).map(([value, label]) => (
+                <li key={value} onClick={() => handleSortSelect(value)}>
+                  {label}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>
