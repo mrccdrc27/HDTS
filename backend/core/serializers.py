@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Employee, Ticket, TicketAttachment
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.exceptions import AuthenticationFailed, ValidationError
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
