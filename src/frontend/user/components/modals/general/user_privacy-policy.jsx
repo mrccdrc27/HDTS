@@ -1,8 +1,8 @@
-const UserPrivacyPolicy = ({ onClose }) => {
+const UserPrivacyPolicy = ({ onAgree }) => {
   return (
     <div
       className="modal-overlay"
-      onClick={onClose}
+      onClick={onAgree}
       style={{
         position: 'fixed',
         top: 0,
@@ -33,7 +33,7 @@ const UserPrivacyPolicy = ({ onClose }) => {
         <p>
           This is where your Privacy Policy content goes. Make sure to include details about how user data is collected, used, and protected.
         </p>
-        <button onClick={onClose}>Close</button>
+        <button onClick={onAgree}>I Agree</button>
       </div>
     </div>
   );

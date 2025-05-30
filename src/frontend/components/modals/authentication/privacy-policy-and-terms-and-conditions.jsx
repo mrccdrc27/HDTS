@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react";
 import "../../../styles/components/modals/authentication/privacy-policy-and-terms-and-conditions.css";
 
 const PrivacyPolicyAndTermsAndConditions = ({ showModal, closeModal }) => {
-  const [currentTab, setCurrentTab] = useState("terms");
+  const [currentTab, setCurrentTab] = useState("privacy");
 
   // Always show Terms tab when modal opens
   useEffect(() => {
     if (showModal) {
-      setCurrentTab("terms");
+      setCurrentTab("privacy");
     }
   }, [showModal]);
 
@@ -93,7 +93,8 @@ const PrivacyPolicyAndTermsAndConditions = ({ showModal, closeModal }) => {
             </p>
 
             <div>
-              <button onClick={() => setCurrentTab("privacy")} className="next-modal-btn">I Agree</button>
+              <button onClick={() => setCurrentTab("privacy")} className="back-modal-btn">Back</button>
+              <button onClick={closeModal} className="close-modal-btn">I Agree</button>
             </div>
           </>
         )}
@@ -173,8 +174,7 @@ const PrivacyPolicyAndTermsAndConditions = ({ showModal, closeModal }) => {
             </p>
 
             <div>
-              <button onClick={() => setCurrentTab("terms")} className="back-modal-btn">Back</button>
-              <button onClick={closeModal} className="close-modal-btn">I Agree</button>
+              <button onClick={() => setCurrentTab("terms")} className="next-modal-btn">I Agree</button>
             </div>
           </>
         )}

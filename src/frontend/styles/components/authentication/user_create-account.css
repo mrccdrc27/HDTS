@@ -689,10 +689,22 @@ input[type="password"]::-webkit-textfield-decoration-button {
   border: 1px solid var(--bg-dark) !important; /* Using !important to override any conflicting styles */
 }
 
+.privacy-text-wrapper {
+  text-underline-offset: 2px;
+}
+
 .privacy-link {
   color: #007bff;
   text-decoration: underline;
+  text-decoration-color: #007bff;
   cursor: pointer;
+}
+
+.privacy-and {
+  color: #000; /* Black text */
+  text-decoration: underline;
+  text-decoration-color: #007bff; /* Blue underline */
+  cursor: default;
 }
 
 .privacy-link:hover {

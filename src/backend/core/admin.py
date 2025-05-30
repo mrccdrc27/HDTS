@@ -91,7 +91,14 @@ class EmployeeAdmin(UserAdmin):
             ):
                 send_mail(
                     subject='Account Approved',
-                    message='Your account has been approved. You may now log in.',
+                    message = (
+                        "Dear Employee,\n\n"
+                        "We are pleased to inform you that your SmartSupport account has been successfully created.\n\n"
+                        "http://localhost:3000/login/employee\n\n"
+                        "If you have any questions or need further assistance, feel free to contact our support team.\n\n"
+                        "Respectfully,\n"
+                        "SmartSupport Help Desk Team"
+                    ),
                     from_email='sethpelagio20@gmail.com',
                     recipient_list=[obj.email],
                     fail_silently=False,

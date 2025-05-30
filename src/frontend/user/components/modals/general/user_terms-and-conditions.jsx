@@ -1,8 +1,8 @@
-const UserTermsAndConditions = ({ onClose }) => {
+const UserTermsAndConditions = ({ onAgree }) => {
   return (
     <div
       className="modal-overlay"
-      onClick={onClose}
+      onClick={onAgree}
       style={{
         position: 'fixed',
         top: 0,
@@ -33,7 +33,7 @@ const UserTermsAndConditions = ({ onClose }) => {
         <p>
           This is where your Terms and Conditions content goes. It should include rules, obligations, and disclaimers regarding the use of the application.
         </p>
-        <button onClick={onClose}>Close</button>
+        <button onClick={onAgree}>I Agree</button>
       </div>
     </div>
   );

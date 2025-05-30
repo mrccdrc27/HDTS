@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateAccountForgotPasswordHeader from "../../../components/headers/user_create-account-forgot-password-header";
 import PrivacyPolicyAndTermsAndConditions from "../../../components/modals/authentication/privacy-policy-and-terms-and-conditions.jsx";
+import UserTermsAndConditions from "../../../user/components/modals/general/user_terms-and-conditions.jsx";
+import UserPrivacyPolicy from "../../../user/components/modals/general/user_privacy-policy.jsx";
 import UploadedImagePreview from "../../../components/modals/authentication/uploaded-image-preview.jsx";
 import "../../../styles/components/authentication/user_create-account.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
@@ -14,12 +16,16 @@ function CreateAccount() {
   const [department, setDepartment] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedUploadedImage, setSelectedUploadedImage] = useState("");
-  const [showPrivacyPolicyModal, setShowPrivacyPolicyModal] = useState(false);
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  
+  const [showPolicyTermsModal, setShowPolicyTermsModal] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [termsAgreed, setTermsAgreed] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -109,7 +115,23 @@ function CreateAccount() {
 
   const handleLabelClick = (e) => {
     e.preventDefault();
-    setShowPrivacyPolicyModal(true);
+    setShowPolicyTermsModal(true); // open Privacy first
+  };
+
+  const handleAgreePrivacy = () => {
+    setShowPrivacyModal(false);
+    setPrivacyAgreed(true);
+    setShowTermsModal(true); // Open Terms next
+  };
+
+  const handleAgreeTerms = () => {
+    setShowTermsModal(false);
+    setTermsAgreed(true);
+  };
+
+  const handleClosePolicyTerms = () => {
+    setTermsAgreed(true);
+    setShowPolicyTermsModal(false);
   };
 
   const getPasswordErrorMessage = (password) => {
@@ -413,12 +435,16 @@ function CreateAccount() {
                 <option value="IX">IX</option>
                 <option value="X">X</option>
               </select>
+
               <div className="select-separator"></div>
+
               <div className="select-chevron">
                 <ChevronDown size={18} />
               </div>
+
               {suffix && (
-                <div className="clear-suffix" onClick={() => setSuffix("")}>
+                <div className="clear-suffix" 
+                onClick={() => setSuffix("")}>
                   <X size={14} />
                 </div>
               )}
@@ -648,27 +674,47 @@ function CreateAccount() {
                 type="checkbox"
                 id="privacypolicy_termsandconditions"
                 name="privacypolicy_termsandconditions"
+                checked={termsAgreed}
+                disabled={!termsAgreed}
+                readOnly
               />
               I agree to the{" "}
-              <span
-                className="privacy-link"
-                onClick={handleLabelClick}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") handleLabelClick(e);
-                }}
-              >
-                Privacy Policy and Terms and Conditions
+              <span className="privacy-text-wrapper">
+                <span
+                  className="privacy-link"
+                  onClick={handleLabelClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") handleLabelClick(e);
+                  }}
+                >
+                  Privacy Policy
+                </span>
+                <span className="privacy-and"> and </span>
+                <span
+                  className="privacy-link"
+                  onClick={handleLabelClick}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") handleLabelClick(e);
+                  }}
+                >
+                  Terms and Conditions
+                </span>
               </span>
             </label>
             {errors.terms && <p className="error-message">{errors.terms}</p>}
           </div>
 
           <PrivacyPolicyAndTermsAndConditions
-            showModal={showPrivacyPolicyModal}
-            closeModal={() => setShowPrivacyPolicyModal(false)}
+            showModal={showPolicyTermsModal}
+            closeModal={handleClosePolicyTerms}
           />
+
+          {showPrivacyModal && <UserPrivacyPolicy onAgree={handleAgreePrivacy} />}
+          {showTermsModal && <UserTermsAndConditions onAgree={handleAgreeTerms} />}
 
           <button type="submit" className="btn-signup">
             Sign Up

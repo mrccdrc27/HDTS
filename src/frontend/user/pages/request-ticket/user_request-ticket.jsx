@@ -162,6 +162,8 @@ const RequestTicket = () => {
     }
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="request-ticket-form">
       <div className="header">
@@ -344,6 +346,7 @@ const RequestTicket = () => {
             id="scheduleDate"
             name="scheduleDate"
             value={formData.scheduleDate}
+            min={today} 
             onChange={handleChange}
           />
         </div>
