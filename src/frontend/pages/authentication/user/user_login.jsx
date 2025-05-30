@@ -99,6 +99,7 @@ const UserLogin = () => {
                                  required
                                  value={password}
                                  onChange={(e) => setPassword(e.target.value)}
+                                 autoComplete="new-password"
                             />
                              <span
                                 className="login-password-icon"
@@ -110,7 +111,7 @@ const UserLogin = () => {
                                 if (e.key === "Enter" || e.key === " ") setShowLogInPassword(!showLogInPassword);
                                 }}
                             >
-                                {showLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showLogInPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                             </span>
                                 <div className="forgot-password">
                                     <Link to="/forgot-password">Forgot password?</Link>
