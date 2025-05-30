@@ -91,6 +91,7 @@ const AdminLogin = () => {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="new-password"
                             />
                             <span
                                 className="admin-login-password-icon"
@@ -102,7 +103,7 @@ const AdminLogin = () => {
                                 if (e.key === "Enter" || e.key === " ") setShowAdminLogInPassword(!showAdminLogInPassword);
                                 }}
                             >
-                                {showAdminLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showAdminLogInPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                             </span>
                         </div>
 
