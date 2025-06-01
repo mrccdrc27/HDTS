@@ -1,5 +1,3 @@
-/* User Active Tickets Table CSS - Unified with Ticket Management styles */
-
 .user-active-tickets-container {
   background: var(--background-color);
   border-radius: 8px;
@@ -21,9 +19,8 @@
   text-align: center;
 }
 
-/* Table Header */
 .user-active-tickets-table thead {
-  background: linear-gradient(135deg, var(--red-light) 0%, var(--red-dark) 100%);
+  background: linear-gradient(135deg, var(--red-light), var(--red-dark));
 }
 
 .user-active-tickets-table th {
@@ -33,11 +30,9 @@
   font-size: 12px;
   letter-spacing: 0.4px;
   white-space: nowrap;
-  user-select: none;
   line-height: 1.2;
   border: none;
   text-align: center;
-  cursor: default;
 }
 
 .user-active-tickets-table th:first-child {
@@ -48,29 +43,14 @@
   border-top-right-radius: 8px;
 }
 
-/* Table Body Rows */
 .user-active-tickets-table tbody tr:not(:last-child) {
   border-bottom: 1px solid var(--neutral-light-gray);
-  position: relative;
-}
-
-.user-active-tickets-table tbody tr:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background-color: var(--neutral-light-gray);
-  pointer-events: none;
-  z-index: 1;
 }
 
 .user-active-tickets-table tbody tr:hover {
-  background-color: #f8fafc;
+  background-color: var(--neutral-light-gray);
 }
 
-/* Table Cells */
 .user-active-tickets-table td {
   padding: 8px 12px;
   vertical-align: middle;
@@ -82,13 +62,6 @@
   border: none;
 }
 
-/* Left-align specific cells */
-.user-active-tickets-table .user-active-ticket-number-cell,
-.user-active-tickets-table .user-active-subject-cell {
-  text-align: left;
-}
-
-/* Status Badge */
 .user-active-status-badge {
   display: inline-flex;
   align-items: center;
@@ -103,48 +76,66 @@
   white-space: nowrap;
 }
 
-/* Status Colors (same system as admin-side) */
-.user-active-status-new {
-  background-color: #e0e7ff;
-  color: #3730a3;
+.user-active-status-open,
+.user-active-status-pending,
+.user-active-status-progress,
+.user-active-status-hold,
+.user-active-status-resolved,
+.user-active-status-closed {
+  color: var(--text-secondary);
 }
 
 .user-active-status-open {
-  background-color: #bbf7d0;
-  color: #166534;
+  background-color: var(--success-light);
 }
 
 .user-active-status-pending {
-  background-color: #fde68a;
-  color: #92400e;
+  background-color: var(--warning-light);
 }
 
 .user-active-status-progress {
-  background-color: #bfdbfe;
-  color: #1e40af;
+  background-color: var(--info-light);
 }
 
 .user-active-status-hold {
-  background-color: #fecaca;
-  color: #b91c1c;
+  background-color: var(--error-light);
 }
 
 .user-active-status-resolved {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--success-dark);
 }
 
 .user-active-status-closed {
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: var(--neutral-light-gray);
 }
 
-.user-active-status-unknown {
-  background-color: #fef2f2;
-  color: #991b1b;
+.user-active-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-/* Action Buttons */
+.user-active-priority-low {
+  color: var(--success-light);
+}
+
+.user-active-priority-medium {
+  color: var(--warning);
+}
+
+.user-active-priority-high {
+  color: var(--error-light);
+}
+
+.user-active-priority-critical {
+  color: var(--error);
+}
+
 .user-active-ticket-actions {
   display: flex;
   gap: 6px;
@@ -160,22 +151,10 @@
   cursor: pointer;
   border: none;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: all 0.2s ease-in-out;
   font-family: 'Poppins', sans-serif;
 }
 
-/* View Button */
-.user-active-ticket-view-btn {
-  background-color: var(--blue-light);
-  color: var(--text-secondary);
-}
-
-.user-active-ticket-view-btn:hover {
-  background-color: var(--blue-dark);
-  color: var(--text-secondary);
-}
-
-/* Close Button */
 .user-active-ticket-close-btn {
   background-color: var(--success-light);
   color: var(--success-dark);
@@ -183,10 +162,9 @@
 
 .user-active-ticket-close-btn:hover {
   background-color: var(--success-dark);
-  color: white;
+  color: var(--text-secondary);
 }
 
-/* No Tickets Message */
 .user-active-no-tickets-row td {
   text-align: center;
   padding: 60px 16px;
@@ -196,7 +174,6 @@
   font-weight: 600;
 }
 
-/* Responsive Styles */
 @media (max-width: 1024px) {
   .user-active-tickets-container {
     font-size: 11.5px;
@@ -218,7 +195,8 @@
     padding: 5px 8px;
   }
 
-  .user-active-status-badge {
+  .user-active-status-badge,
+  .user-active-priority-badge {
     font-size: 9px;
     padding: 2px 6px;
   }
@@ -232,25 +210,4 @@
     font-size: 10px;
     padding: 3px 6px;
   }
-}
-
-/* Priority Level Text Colors */
-.user-active-priority-low {
-  color: var(--success);
-  font-weight: 800;
-}
-
-.user-active-priority-medium {
-  color: var(--warning);
-  font-weight: 800;
-}
-
-.user-active-priority-high {
-  color: var(--error-light);
-  font-weight: 800;
-}
-
-.user-active-priority-critical {
-  color: var(--error);
-  font-weight: 800;
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 import './user_active-tickets-table.css';
 
@@ -11,7 +12,6 @@ const statusConfig = {
   Pending: { class: 'user-active-status-pending' },
   Resolved: { class: 'user-active-status-resolved' },
   Closed: { class: 'user-active-status-closed' },
-  Unknown: { class: 'user-active-status-unknown' },
 };
 
 const priorityClassMap = {
@@ -36,50 +36,115 @@ const formatDateTime = (dateString) => {
       });
 };
 
-const mockTickets = [
-  {
-    number: 'TCKT-1101',
-    subject: 'Laptop battery drains quickly',
-    status: 'Open',
-    priority: 'Medium',
-    department: 'IT',
-    category: 'Hardware',
-    subCategory: 'Battery',
-    dateCreated: '2025-05-10T10:00:00',
-    lastUpdated: '2025-05-10T12:00:00',
-  },
-  {
-    number: 'TCKT-1102',
-    subject: 'VPN access issue',
-    status: 'On Progress',
-    priority: 'High',
-    department: 'IT',
-    category: 'Network',
-    subCategory: 'VPN',
-    dateCreated: '2025-05-11T09:15:00',
-    lastUpdated: '2025-05-11T11:30:00',
-  },
-  {
-    number: 'TCKT-1103',
-    subject: 'Wrong payslip amount',
-    status: 'Pending',
-    priority: 'Low',
-    department: 'HR',
-    category: 'Payroll',
-    subCategory: 'Error',
-    dateCreated: '2025-05-12T08:00:00',
-    lastUpdated: '2025-05-12T09:00:00',
-  },
-];
-
-const UserActiveTicketsTable = () => {
+const UserActiveTicketsTable = ({
+  departmentFilter = '',
+  categoryFilter = '',
+  subcategoryFilter = '',
+  statusFilter = '',
+  priorityFilter = '',
+  sortBy = '',
+  sortDirection = 'asc',
+  startDate,
+  endDate,
+  searchTerm = '', // new prop for search input
+}) => {
   const navigate = useNavigate();
-  const [tickets] = useState(mockTickets);
+  const { ticketStatus } = useParams();
+  const [tickets] = useState(getTickets());
+
+  const statusMap = {
+    'all-active-tickets': ['Open', 'On Progress', 'On Hold', 'Pending', 'Resolved'],
+    'open-tickets': ['Open'],
+    'on-progress-tickets': ['On Progress'],
+    'on-hold-tickets': ['On Hold'],
+    'pending-tickets': ['Pending'],
+    'resolved-tickets': ['Resolved'],
+  };
+
+  const activeStatuses = statusMap[ticketStatus] || statusMap['all-active-tickets'];
+
+  const normalizedStatusFilter = statusFilter.trim().toLowerCase();
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+  const applyStatusFilter = (ticketStatus) => {
+    if (!normalizedStatusFilter) {
+      return activeStatuses.includes(ticketStatus);
+    }
+    return ticketStatus.toLowerCase() === normalizedStatusFilter;
+  };
+
+  const applyDateRangeFilter = (dateCreated) => {
+    const created = new Date(dateCreated);
+    if (isNaN(created)) return false;
+
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    if (start && created < start) return false;
+    if (end && created > end) return false;
+
+    return true;
+  };
+
+  const applySearchFilter = (ticket) => {
+    if (!normalizedSearchTerm) return true;
+    return (
+      (ticket.ticketNumber && ticket.ticketNumber.toLowerCase().includes(normalizedSearchTerm)) ||
+      (ticket.subject && ticket.subject.toLowerCase().includes(normalizedSearchTerm)) ||
+      (ticket.department && ticket.department.toLowerCase().includes(normalizedSearchTerm))
+    );
+  };
+
+  const filteredTickets = tickets.filter((ticket) => {
+    if (!applyStatusFilter(ticket.status)) return false;
+    if (departmentFilter && ticket.department !== departmentFilter) return false;
+    if (categoryFilter && ticket.category !== categoryFilter) return false;
+    if (subcategoryFilter && ticket.subCategory !== subcategoryFilter) return false;
+    if (priorityFilter && ticket.priorityLevel !== priorityFilter) return false;
+    if (!applyDateRangeFilter(ticket.dateCreated)) return false;
+    if (!applySearchFilter(ticket)) return false;
+    return true;
+  });
+
+  const sortedTickets = [...filteredTickets];
+  if (sortBy) {
+    sortedTickets.sort((a, b) => {
+      let valA = a[sortBy];
+      let valB = b[sortBy];
+
+      if (sortBy === 'dateCreated' || sortBy === 'lastUpdated') {
+        valA = valA ? new Date(valA).getTime() : 0;
+        valB = valB ? new Date(valB).getTime() : 0;
+      }
+
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        return sortDirection === 'asc'
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      }
+
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return sortDirection === 'asc' ? valA - valB : valB - valA;
+      }
+
+      return 0;
+    });
+  }
 
   const handleView = (ticket) => {
-    const { number } = ticket;
-    if (!number) return console.warn('Missing ticket number.');
-    navigate(`/user/ticket-details/${number}`);
+    const { ticketNumber } = ticket;
+    if (!ticketNumber) return console.warn('Missing ticket number.');
+    navigate(`/user/ticket-details/${ticketNumber}`);
+  };
+
+  const handleWithdraw = (e, ticketNumber) => {
+    e.stopPropagation();
+    console.log(`Withdraw ticket ${ticketNumber}`);
+  };
+
+  const handleClose = (e, ticketNumber) => {
+    e.stopPropagation();
+    console.log(`Close ticket ${ticketNumber}`);
   };
 
   return (
@@ -101,13 +166,13 @@ const UserActiveTicketsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {tickets.length > 0 ? (
-              tickets.map((ticket) => {
+            {sortedTickets.length > 0 ? (
+              sortedTickets.map((ticket) => {
                 const {
-                  number,
+                  ticketNumber,
                   subject,
                   status,
-                  priority,
+                  priorityLevel,
                   department,
                   category,
                   subCategory,
@@ -115,33 +180,22 @@ const UserActiveTicketsTable = () => {
                   lastUpdated,
                 } = ticket;
 
-                const statusClass =
-                  statusConfig[status]?.class || statusConfig.Unknown.class;
-
-                const priorityClass =
-                  priorityClassMap[priority] || 'user-active-priority-low';
+                const statusClass = statusConfig[status]?.class || 'user-active-status-default';
+                const priorityClass = priorityClassMap[priorityLevel] || priorityClassMap.Low;
 
                 return (
                   <tr
-                    key={number}
+                    key={ticketNumber}
                     className="user-active-tickets-row"
                     onClick={() => handleView(ticket)}
                   >
-                    <td className="user-active-ticket-number-cell">{number}</td>
+                    <td className="user-active-ticket-number-cell">{ticketNumber}</td>
                     <td className="user-active-subject-cell">{subject}</td>
                     <td>
-                      <span
-                        className={`user-active-status-badge ${statusClass}`}
-                      >
-                        {status}
-                      </span>
+                      <span className={`user-active-status-badge ${statusClass}`}>{status}</span>
                     </td>
                     <td>
-                      <span
-                        className={`user-active-status-badge ${priorityClass}`}
-                      >
-                        {priority}
-                      </span>
+                      <span className={`user-active-priority-badge ${priorityClass}`}>{priorityLevel}</span>
                     </td>
                     <td>{department}</td>
                     <td>{category}</td>
@@ -150,16 +204,24 @@ const UserActiveTicketsTable = () => {
                     <td>{formatDateTime(lastUpdated)}</td>
                     <td>
                       <div className="user-active-ticket-actions">
-                        <button
-                          className="user-active-ticket-btn user-active-ticket-view-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleView(ticket);
-                          }}
-                          title="View Ticket"
-                        >
-                          View
-                        </button>
+                        {['Open', 'On Progress', 'On Hold', 'Pending'].includes(status) && (
+                          <button
+                            className="user-active-ticket-btn user-active-ticket-withdraw-btn"
+                            onClick={(e) => handleWithdraw(e, ticketNumber)}
+                            title="Withdraw Ticket"
+                          >
+                            Withdraw
+                          </button>
+                        )}
+                        {status === 'Resolved' && (
+                          <button
+                            className="user-active-ticket-btn user-active-ticket-close-btn"
+                            onClick={(e) => handleClose(e, ticketNumber)}
+                            title="Close Ticket"
+                          >
+                            Close
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

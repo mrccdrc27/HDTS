@@ -67,6 +67,7 @@ const TicketRecords = () => {
     'all-ticket-records': 'All Ticket Records',
     'closed-tickets': 'Closed Tickets',
     'rejected-tickets': 'Rejected Tickets',
+    'withdrawn-tickets': 'Withdrawn Tickets',
   };
 
   // State for tickets, in real app you may fetch or get from context

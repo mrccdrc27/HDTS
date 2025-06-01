@@ -127,6 +127,12 @@ const UserNavbar = () => {
       >
         Pending Tickets
       </NavLink>
+      <NavLink
+        to="/user/active-tickets/resolved-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        Resolved Tickets
+      </NavLink>
     </div>
   )}
 </div>
@@ -169,6 +175,12 @@ const UserNavbar = () => {
         onClick={() => setActiveDropdown(null)}
       >
         Rejected Tickets
+      </NavLink>
+      <NavLink
+        to="/user/ticket-records/withdrawn-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        Withdrawn Tickets
       </NavLink>
     </div>
   )}
