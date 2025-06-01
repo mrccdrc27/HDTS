@@ -1,16 +1,15 @@
 .dashboard-container {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f5f5f5;
+    margin: 35px 20px 20px 20px;
+    padding: 10px;
     border-radius: 10px;
   }
   
   .dashboard-header h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
-    font-weight: bold;
+    font-size: 36px;
+    margin-bottom: 35px;
+    font-weight: 850;
   }
   
   .user-name {
@@ -25,51 +24,55 @@
   }
   
   .status-card {
-    background-color: white;
+    background-color: #eeeeee;
     border-radius: 10px;
-    padding: 15px;
+    padding: 25px;
     flex: 1;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
   
   .status-card h2 {
-    font-size: 28px;
+    font-size: 32px;
     margin: 0;
     font-weight: bold;
   }
   
   .status-card p {
     margin: 5px 0 0;
-    font-size: 14px;
+    font-size: 13px;
   }
   
   .status-card.blue {
-    background-color: #1e4db7;
+    background-color: #022883;
     color: white;
   }
   
   .open {
-    color: #d32f2f;
+    color: #2370ff;
+    font-weight: bold;
   }
   
   .on-process {
-    color: #000;
+    color: #00195f;
+    font-weight: bold;
   }
   
   .pending {
-    color: #d32f2f;
+    color: #857c00;
+    font-weight: bold;
   }
   
   .resolved {
-    color: #d32f2f;
+    color: #0f5c00;
+    font-weight: bold;
   }
   
   .approval-section {
-    background-color: white;
+    background-color: #f4f2f2;
     border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 30px;
+    padding: 15px;
+    margin-bottom: 35px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
   
@@ -81,23 +84,26 @@
   }
   
   .approval-header h2 {
-    color: #d32f2f;
+    color: #b10505;
     font-size: 20px;
+    font-weight: bold;
     margin: 0;
   }
   
   .manage-button {
-    background-color: #1e4db7;
+    background-color: #00962d;
     color: white;
     border: none;
     border-radius: 5px;
     padding: 8px 15px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 11px;
+    font-weight: bold;
   }
   
   .approval-table-container {
     overflow-x: auto;
+    border-radius: 10px;
   }
   
   .approval-table {
@@ -106,19 +112,21 @@
   }
   
   .approval-table th {
-    background-color: #d32f2f;
-    color: white;
+    background-color: #e7e6e6;
+    color: #000;
     text-align: left;
-    padding: 12px 15px;
+    font-size: 14px;
+    padding: 6px 20px;
   }
   
   .approval-table td {
-    padding: 12px 15px;
+    padding: 6px 15px;
+    font-size: 12px;
     border-top: 1px solid #ddd;
   }
   
   .approval-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: #f4f3f3;
   }
   
   .charts-container {
@@ -129,8 +137,8 @@
   
   .chart-card {
     flex: 1;
-    background-color: white;
-    border-radius: 10px;
+    background-color: #e6e6e6a4;
+    border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }

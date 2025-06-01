@@ -7,7 +7,7 @@
 
 .search-container {
   position: relative;
-  max-width: 400px;
+  max-width: 600px;
   flex: 1;
 }
 
@@ -36,15 +36,16 @@
 }
 
 .create-user-button {
-  padding: 10px 16px;
-  background-color: #007bff;
+  padding: 8px 18px;
+  background-color: #099e1f;
   color: white;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: bold;
   border: none;
   border-radius: 6px;
   cursor: pointer;
 }
 
 .create-user-button:hover {
-  background-color: #0056b3;
+  background-color: #00772a;
 }

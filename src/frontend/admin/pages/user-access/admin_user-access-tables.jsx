@@ -109,7 +109,7 @@ const UserAccessTable = ({ category, filters }) => {
                     <>
                       <button
                         className="user-access-view-btn"
-                        onClick={() => navigate(`/admin/account-information?type=view&user=${user.companyId}`)}
+                        onClick={() => navigate(`/admin/account-details`)}
                       >
                         View
                       </button>

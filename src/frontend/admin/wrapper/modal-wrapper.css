@@ -22,3 +22,17 @@
   overflow-y: auto; /* scroll if content too tall */
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
+
+/* Existing base styles remain unchanged */
+
+.modal-content.modal-profile {
+  max-width: 600px;
+}
+
+.modal-content.modal-terms,
+.modal-content.modal-privacy {
+  max-width: 800px;
+  padding: 2rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}

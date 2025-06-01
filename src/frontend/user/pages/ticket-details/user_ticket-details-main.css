@@ -1,0 +1,57 @@
+.user-ticket-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-family: Arial, sans-serif;
+  width: 100%;           /* Added to make container full width */
+  box-sizing: border-box; /* Helps with padding/width handling */
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.section {
+  border-radius: 6px;
+}
+
+.row-two-columns {
+  display: flex;
+  gap: 16px;
+  flex-wrap: nowrap;       /* prevent wrapping for equal height */
+  align-items: stretch;    /* make children same height */
+}
+
+.column {
+  flex: 1;
+  min-width: 280px;
+}
+
+/* Responsive: stack columns vertically on narrow screens */
+@media (max-width: 768px) {
+  .row-two-columns {
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  .column {
+    min-width: auto;
+    width: 100%;
+  }
+}

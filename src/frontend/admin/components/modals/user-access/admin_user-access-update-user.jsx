@@ -1,4 +1,4 @@
-import './admin_user-access-approve-user.css';
+import './admin_user-access-update-user.css';
 
 const UpdateModal = ({ user, onClose }) => (
   <div className="modal-backdrop">

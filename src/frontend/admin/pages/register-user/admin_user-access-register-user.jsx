@@ -2,12 +2,10 @@ import { useState } from "react";
 import AdminUploadedImagePreview from "../../components/modals/admin_uploaded-image-preview.jsx";
 import './admin_user-access-register-user.css';
 
-import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
+import { Upload, X, ChevronDown } from "lucide-react";
 
 function CreateAccount() {
   // Form field states
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [email, setEmail] = useState("");
   const [companyId, setCompanyId] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -15,8 +13,6 @@ function CreateAccount() {
   const [middleName, setMiddleName] = useState("");
   
   // UI states
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedUploadedImage, setSelectedUploadedImage] = useState("");
   const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
@@ -24,6 +20,11 @@ function CreateAccount() {
   const [suffix, setSuffix] = useState('');
   const [role, setRole] = useState('');
   const [errors, setErrors] = useState({});
+
+  // NEW: Confirmation modal states
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmMessage, setConfirmMessage] = useState('');
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -73,60 +74,6 @@ function CreateAccount() {
     img.src = URL.createObjectURL(file);
   };
 
-  const getPasswordErrorMessage = (password) => {
-    const messages = [];
-  
-    const hasMinLength = password.length >= 8;
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasDigit = /[0-9]/.test(password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-  
-    const missing = {
-      upper: !hasUpper,
-      lower: !hasLower,
-      digit: !hasDigit,
-      special: !hasSpecial,
-    };
-  
-    const missingKeys = Object.entries(missing)
-      .filter(([_, isMissing]) => isMissing)
-      .map(([key]) => key);
-  
-    const descriptors = {
-      upper: "uppercase",
-      lower: "lowercase",
-      digit: "number",
-      special: "special character",
-    };
-  
-    const buildList = (items) => {
-      if (items.length === 1) return descriptors[items[0]];
-      if (items.length === 2)
-        return `${descriptors[items[0]]} and ${descriptors[items[1]]}`;
-      return (
-        items
-          .slice(0, -1)
-          .map((key) => descriptors[key])
-          .join(", ") +
-        ", and " +
-        descriptors[items[items.length - 1]]
-      );
-    };
-  
-    if (!hasMinLength && missingKeys.length) {
-      return `Password must be at least 8 characters long and include ${buildList(
-        missingKeys
-      )}.`;
-    } else if (!hasMinLength) {
-      return "Password must be at least 8 characters long.";
-    } else if (missingKeys.length) {
-      return `Password must include ${buildList(missingKeys)}.`;
-    }
-  
-    return null; // No error
-  };
-
   const validateForm = () => {
     const newErrors = {};
   
@@ -140,15 +87,6 @@ function CreateAccount() {
     
     if (!lastName) {
       newErrors.lastName = "Last name is required.";
-    }
-  
-    const passwordMessage = getPasswordErrorMessage(password);
-    if (passwordMessage) {
-      newErrors.password = passwordMessage;
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Password didn't match";
     }
   
     if (!/^\d{4}$/.test(companyId)) {
@@ -187,8 +125,6 @@ function CreateAccount() {
     formData.append("department", department);
     formData.append("role", role);
     formData.append("email", email);
-    formData.append("password", password);
-    formData.append("confirm_password", confirmPassword);
     formData.append("image", uploadedImage);
   
     try {
@@ -236,8 +172,6 @@ function CreateAccount() {
       setDepartment("");
       setRole("");
       setEmail("");
-      setPassword("");
-      setConfirmPassword("");
       setUploadedImage(null);
       setSelectedUploadedImage("");
     } catch (error) {
@@ -246,11 +180,80 @@ function CreateAccount() {
     }
   };
 
+  // NEW: Handle cancel with confirmation
+  const handleCancel = () => {
+    setConfirmMessage('All unsaved changes will be lost.');
+    setConfirmAction(() => () => {
+      // Reset form
+      setFirstName("");
+      setLastName("");
+      setMiddleName("");
+      setSuffix("");
+      setCompanyId("");
+      setDepartment("");
+      setRole("");
+      setEmail("");
+      setUploadedImage(null);
+      setSelectedUploadedImage("");
+      setErrors({});
+      setShowConfirmModal(false);
+    });
+    setShowConfirmModal(true);
+  };
+
+  // NEW: Handle register with confirmation
+  const handleRegister = (event) => {
+    event.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setConfirmMessage('Are you sure you want to register this user? Please verify all information is correct.');
+    setConfirmAction(() => () => {
+      setShowConfirmModal(false);
+      handleSubmit(event);
+    });
+    setShowConfirmModal(true);
+  };
+
+  // NEW: Confirmation Modal Component
+  const ConfirmationModal = () => {
+    if (!showConfirmModal) return null;
+
+    return (
+      <div className="confirmation-modal-overlay">
+        <div className="confirmation-modal">
+          <div className="confirmation-modal-header">
+            <h3>Save Progress?</h3>
+          </div>
+          <div className="confirmation-modal-body">
+            <p>{confirmMessage}</p>
+          </div>
+          <div className="confirmation-modal-footer">
+            <button 
+              type="button" 
+              className="btn-confirm-cancel"
+              onClick={() => setShowConfirmModal(false)}
+            >
+              Cancel
+            </button>
+            <button 
+              type="button" 
+              className="btn-confirm-proceed"
+              onClick={confirmAction}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="register-user-form-container">
-      <h2>Register New User</h2>
+      <h2>Register New User Account</h2>
       <hr />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleRegister}>
         {/* Name fields */}
         <div className="register-user-form-group">
           <label htmlFor="last-name">Last Name</label>
@@ -390,15 +393,16 @@ function CreateAccount() {
         
         <div className="register-user-form-group">
           <label htmlFor="company-id">Company ID</label>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span style={{ marginRight: "4px" }}>MA</span>
+          <div className="company-id-wrapper">
+            <span className="company-id-prefix">MA</span>
+            <div className="company-id-separator"></div>
             <input
               type="text"
               id="company-id"
               name="company_id"
-              required
-              placeholder="0001"
+              placeholder="XXXX"
               value={companyId}
+              autoComplete="off"
               onChange={(e) => {
                 const numeric = e.target.value.replace(/\D/g, "");
                 if (numeric.length <= 4) {
@@ -407,9 +411,10 @@ function CreateAccount() {
               }}
               maxLength={4}
               inputMode="numeric"
-              pattern="\d{4}"
+              className="company-id-input"
             />
           </div>
+
           {errors.companyId && <p className="error-message">{errors.companyId}</p>}
         </div>
 
@@ -427,7 +432,7 @@ function CreateAccount() {
             >
               <option value="" disabled hidden>User Role</option>
               <option value="Employee">Employee</option>
-              <option value="Ticket Agent">Ticket Agent</option>
+              <option value="Ticket Agent">Ticket Coordinator</option>
               <option value="System Admin">System Admin</option>
             </select>
 
@@ -549,68 +554,19 @@ function CreateAccount() {
           {errors.email && <p className="error-message">{errors.email}</p>}
         </div>
 
-        <div className="register-user-form-group">
-          <label htmlFor="password">Password</label>
-          <div className="register-user-password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              required
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <span
-              className="register-user-password-icon"
-              data-tooltip={showPassword ? "Hide Password" : "Show Password"}
-              onClick={() => setShowPassword(!showPassword)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") setShowPassword(!showPassword);
-              }}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </span>
-          </div>
-          {errors.password && <p className="error-message">{errors.password}</p>}
-        </div>
-
-        <div className="register-user-form-group">
-          <label htmlFor="confirm-password">Confirm Password</label>
-          <div className="register-user-password-wrapper">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              id="confirm-password"
-              name="confirm_password"
-              placeholder="Confirm Password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <span
-              className="register-user-password-icon"
-              data-tooltip={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") setShowConfirmPassword(!showConfirmPassword);
-              }}
-            >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </span>
-          </div>
-          {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
-        </div>
-
         <div className="register-user-button-group">
-          <button type="button" className="btn-cancel-register-user">Cancel</button>
-          <button type="submit" className="btn-register-user">Register</button>
+          <button type="button" className="btn-cancel-register-user" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="btn-register-user">
+            Register
+          </button>
         </div>
 
       </form>
+
+      {/* NEW: Confirmation Modal */}
+      <ConfirmationModal />
     </div>
   );
 }

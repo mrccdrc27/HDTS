@@ -1,0 +1,29 @@
+.ticket-records-search-container {
+  position: relative;
+  max-width: 400px;
+  flex: 1;
+}
+
+.ticket-records-search-input {
+  width: 100%;
+  padding: 10px 12px 10px 36px; /* space for the icon */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.ticket-records-search-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.ticket-records-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}

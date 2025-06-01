@@ -4,7 +4,7 @@ import './table-pagination.css';
 
 const TablePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Changed default to 10
 
   const totalItems = 1340;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -16,7 +16,7 @@ const TablePagination = () => {
   };
 
   const handleItemsPerPageChange = (e) => {
-    const value = parseInt(e.target.value) || 20;
+    const value = parseInt(e.target.value) || 10; // Also update fallback default here
     setItemsPerPage(value);
     setCurrentPage(1);
   };
@@ -42,7 +42,7 @@ const TablePagination = () => {
       <span className="page-jump">
         Page&nbsp;
         <input
-          type="number"
+          type="text"
           min="1"
           max={totalPages}
           value={currentPage}
@@ -55,44 +55,43 @@ const TablePagination = () => {
 
   return (
     <div className="table-controls-row">
-  <div className="items-per-page">
-    <label htmlFor="itemsPerPageInput">Show </label>
-    <input
-      type="number"
-      id="itemsPerPageInput"
-      value={itemsPerPage}
-      onChange={handleItemsPerPageChange}
-      min="1"
-      max="100"
-    />
-    <span> items per page</span>
-  </div>
+      <div className="items-per-page">
+        <label htmlFor="itemsPerPageInput">Show </label>
+        <input
+          type="text"
+          id="itemsPerPageInput"
+          value={itemsPerPage}
+          onChange={handleItemsPerPageChange}
+          min="1"
+          max="100"
+        />
+        <span> items per page</span>
+      </div>
 
-  <div className="pagination-wrapper">
-    <div className="pagination-controls">
-      <button
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="nav-btn"
-      >
-        <ChevronLeft size={16} />
-      </button>
+      <div className="pagination-wrapper">
+        <div className="pagination-controls">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="nav-btn"
+          >
+            <ChevronLeft size={16} />
+          </button>
 
-      <div className="page-numbers">{renderPageNumbers()}</div>
+          <div className="page-numbers">{renderPageNumbers()}</div>
 
-      <button
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="nav-btn"
-      >
-        <ChevronRight size={16} />
-      </button>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="nav-btn"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div className="pagination-spacer" />
     </div>
-  </div>
-
-  <div className="pagination-spacer" />
-</div>
-
   );
 };
 

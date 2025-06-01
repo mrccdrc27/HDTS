@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import Logo from '/src/frontend/assets/smartsupport-logo.svg';
-import { Bell } from 'lucide-react';
+import { Bell, ChevronDown } from 'lucide-react';
 import UserProfileImage from '../../assets/profile-management/user-profile.png';
 import './user_navbar.css';
 
@@ -12,6 +12,7 @@ const UserNavbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const toggleProfilePopup = () => setShowProfilePopup((prev) => !prev);
   const toggleNotificationPopup = () => setShowNotificationPopup((prev) => !prev);
@@ -20,10 +21,12 @@ const UserNavbar = () => {
     const handleClickOutside = (event) => {
       if (
         !event.target.closest('.profile-popup') &&
-        !event.target.closest('.notification-container')
+        !event.target.closest('.notification-container') &&
+        !event.target.closest('.userNavbar-menu-dropdown')
       ) {
         setShowProfilePopup(false);
         setShowNotificationPopup(false);
+        setActiveDropdown(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -66,12 +69,112 @@ const UserNavbar = () => {
         <NavLink to="/user/home" className="userNavbar-menu-item">
           Home
         </NavLink>
-        <NavLink to="/user/active-tickets" className="userNavbar-menu-item">
-          Active Tickets
-        </NavLink>
-        <NavLink to="/user/ticket-records" className="userNavbar-menu-item">
-          Ticket Records
-        </NavLink>
+
+        {/* Active Tickets Dropdown */}
+<div className="userNavbar-menu-dropdown">
+  <NavLink
+    to="/user/active-tickets/all-active-tickets"
+    className="userNavbar-menu-item flex items-center gap-1"
+    onClick={() => setActiveDropdown(null)} // close dropdown if open when navigating
+  >
+    Active Tickets
+  </NavLink>
+  <button
+    className="userNavbar-menu-trigger"
+    onClick={(e) => {
+      e.preventDefault(); // prevent any navigation
+      setActiveDropdown(activeDropdown === 'active' ? null : 'active');
+    }}
+    aria-label="Toggle Active Tickets dropdown"
+  >
+    <ChevronDown size={16} />
+  </button>
+  {activeDropdown === 'active' && (
+    <div className="dropdown-content">
+      <NavLink
+        to="/user/active-tickets/all-active-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        All Active Tickets
+      </NavLink>
+      <NavLink
+        to="/user/active-tickets/new-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        New Tickets
+      </NavLink>
+      <NavLink
+        to="/user/active-tickets/open-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        Open Tickets
+      </NavLink>
+      <NavLink
+        to="/user/active-tickets/on-progress-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        On Progress Tickets
+      </NavLink>
+      <NavLink
+        to="/user/active-tickets/on-hold-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        On Hold Tickets
+      </NavLink>
+      <NavLink
+        to="/user/active-tickets/pending-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        Pending Tickets
+      </NavLink>
+    </div>
+  )}
+</div>
+
+{/* Ticket Records Dropdown */}
+<div className="userNavbar-menu-dropdown">
+  <NavLink
+    to="/user/ticket-records/all-ticket-records"
+    className="userNavbar-menu-item flex items-center gap-1"
+    onClick={() => setActiveDropdown(null)}
+  >
+    Ticket Records
+  </NavLink>
+  <button
+    className="userNavbar-menu-trigger"
+    onClick={(e) => {
+      e.preventDefault();
+      setActiveDropdown(activeDropdown === 'records' ? null : 'records');
+    }}
+    aria-label="Toggle Ticket Records dropdown"
+  >
+    <ChevronDown size={16} />
+  </button>
+  {activeDropdown === 'records' && (
+    <div className="dropdown-content">
+      <NavLink
+        to="/user/ticket-records/all-ticket-records"
+        onClick={() => setActiveDropdown(null)}
+      >
+        All Ticket Records
+      </NavLink>
+      <NavLink
+        to="/user/ticket-records/closed-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        Closed Tickets
+      </NavLink>
+      <NavLink
+        to="/user/ticket-records/rejected-tickets"
+        onClick={() => setActiveDropdown(null)}
+      >
+        Rejected Tickets
+      </NavLink>
+    </div>
+  )}
+</div>
+
+
       </div>
 
       <div className="userNavbar-right">

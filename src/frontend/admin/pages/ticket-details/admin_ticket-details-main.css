@@ -1,0 +1,22 @@
+.admin-ticket-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-section {
+  border: 1px solid #ccc;
+  padding: 15px;
+  background-color: #f1f1f1;
+}
+
+.admin-row-two-columns {
+  display: flex;
+  gap: 20px;
+}
+
+.column {
+  flex: 1;
+}

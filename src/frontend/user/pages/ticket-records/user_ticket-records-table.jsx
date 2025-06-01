@@ -1,157 +1,146 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, AlertCircle, CheckCircle2, HelpCircle, PauseCircle, Eye, X } from 'lucide-react';
-// import '../../../styles/pages/user/active-tickets/user_active-tickets-table.css';
+import { Eye, X } from 'lucide-react';
 
-// Status configuration object
+import './user_ticket-records-table.css';
+
 const statusConfig = {
-  'Submitted': { class: 'status-submitted', icon: <Clock size={16} /> },
-  'Approved/Open': { class: 'status-open', icon: <CheckCircle2 size={16} /> },
-  'Open': { class: 'status-open', icon: <CheckCircle2 size={16} /> },
-  'Pending': { class: 'status-pending', icon: <HelpCircle size={16} /> },
-  'On Process': { class: 'status-progress', icon: <Clock size={16} /> },
-  'On Progress': { class: 'status-progress', icon: <Clock size={16} /> },
-  'On Hold': { class: 'status-hold', icon: <PauseCircle size={16} /> },
-  'Closed': { class: 'status-closed', icon: <CheckCircle2 size={16} /> },
-  'Resolved': { class: 'status-resolved', icon: <CheckCircle2 size={16} /> },
-  'Unknown': { class: 'status-unknown', icon: <AlertCircle size={16} /> }
+  Submitted: { class: 'ticket-management-status-submitted' },
+  'Approved/Open': { class: 'ticket-management-status-open' },
+  Open: { class: 'ticket-management-status-open' },
+  Pending: { class: 'ticket-management-status-pending' },
+  'On Process': { class: 'ticket-management-status-progress' },
+  'On Progress': { class: 'ticket-management-status-progress' },
+  'On Hold': { class: 'ticket-management-status-hold' },
+  Closed: { class: 'ticket-management-status-closed' },
+  Resolved: { class: 'ticket-management-status-resolved' },
+  Unknown: { class: 'ticket-management-status-unknown' },
 };
 
 const formatDateTime = (dateString) => {
   if (!dateString) return 'N/A';
-  try {
-    return new Date(dateString).toLocaleString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch {
-    return 'Invalid Date';
-  }
+  const date = new Date(dateString);
+  return isNaN(date)
+    ? 'Invalid Date'
+    : date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
 };
 
-const TicketRecordsTable = ({ filteredTickets }) => {
+const UserTicketRecordsTable = ({ filteredTickets }) => {
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
-  const ticketsPerPage = 5;
 
-  // Filter tickets to only show 'Closed' and 'Resolved'
-  const recordsTickets = filteredTickets.filter(ticket =>
-    ticket.status === 'Closed' || ticket.status === 'Resolved'
+  // Filter tickets to only Closed and Resolved statuses
+  const records = filteredTickets.filter(
+    (t) => t.status === 'Closed' || t.status === 'Resolved'
   );
 
-  const totalPages = Math.ceil(recordsTickets.length / ticketsPerPage);
-  const indexOfLastTicket = currentPage * ticketsPerPage;
-  const indexOfFirstTicket = indexOfLastTicket - ticketsPerPage;
-  const currentTickets = recordsTickets.slice(indexOfFirstTicket, indexOfLastTicket);
-
-  const handleTicketClick = (ticketNumber) => {
-    if (!ticketNumber) {
-      console.warn('Ticket number is undefined. Cannot navigate.');
-      return;
-    }
-    navigate(`/user/ticket-details/${ticketNumber}`);
-  };
-
-  const handleViewClick = (e, ticketNumber) => {
-    e.stopPropagation();
-    handleTicketClick(ticketNumber);
-  };
-
-  const handleCloseClick = (e, ticketNumber) => {
-    e.stopPropagation();
-    console.log('Close ticket:', ticketNumber);
-  };
-
-  const getStatusConfig = (status) => {
-    return statusConfig[status] || statusConfig['Unknown'];
-  };
-
-  const changePage = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
+  const handleView = (ticket) => {
+    const { number } = ticket;
+    if (!number) return console.warn('Missing ticket number.');
+    navigate(`/user/ticket-details/${number}`);
   };
 
   return (
-    <div className="tickets-table-container">
-      <table className="tickets-table">
-        <thead>
-          <tr>
-            <th>Ticket Number</th>
-            <th>Subject</th>
-            <th>Department</th>
-            <th>Category</th>
-            <th>Sub Category</th>
-            <th>Status</th>
-            <th>Date Created</th>
-            <th>Last Update</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentTickets.length > 0 ? (
-            currentTickets.map((ticket) => (
-              <tr key={ticket.number || ticket._id || Math.random()} className="ticket-row" onClick={() => handleTicketClick(ticket.number)}>
-                <td data-label="Ticket Number">{ticket.number || 'N/A'}</td>
-                <td data-label="Subject" className="subject-cell">{ticket.subject || 'No subject'}</td>
-                <td data-label="Department">{ticket.department || 'N/A'}</td>
-                <td data-label="Category">{ticket.category || 'N/A'}</td>
-                <td data-label="Sub Category">{ticket.subCategory || 'N/A'}</td>
-                <td data-label="Status">
-                  <span className={`status-badge ${getStatusConfig(ticket.status).class}`}>
-                    {getStatusConfig(ticket.status).icon}
-                    {ticket.status || 'Unknown'}
-                  </span>
-                </td>
-                <td data-label="Date Created">{formatDateTime(ticket.dateCreated)}</td>
-                <td data-label="Last Update">{formatDateTime(ticket.lastUpdated)}</td>
-                <td data-label="Actions" className="actions-cell">
-                  <div className="action-buttons">
-                    <button
-                      className="action-btn view-btn"
-                      onClick={(e) => handleViewClick(e, ticket.number)}
-                      title="View Ticket"
-                    >
-                      <Eye size={16} /> View
-                    </button>
-                    <button
-                      className="action-btn close-btn"
-                      onClick={(e) => handleCloseClick(e, ticket.number)}
-                      title="Close Ticket"
-                    >
-                      <X size={16} /> Close Ticket
-                    </button>
+    <div className="ticket-management-container">
+      <div className="ticket-management-table-wrapper">
+        <table className="ticket-management-table">
+          <thead>
+            <tr>
+              <th>Ticket Number</th>
+              <th>Subject</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Sub Category</th>
+              <th>Status</th>
+              <th>Date Created</th>
+              <th>Last Update</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {records.length > 0 ? (
+              records.map((ticket) => {
+                const {
+                  number,
+                  subject,
+                  department,
+                  category,
+                  subCategory,
+                  status,
+                  dateCreated,
+                  lastUpdated,
+                } = ticket;
+
+                const statusClass =
+                  statusConfig[status]?.class || statusConfig.Unknown.class;
+
+                return (
+                  <tr
+                    key={number}
+                    className="ticket-management-row"
+                    onClick={() => handleView(ticket)}
+                  >
+                    <td>{number}</td>
+                    <td>{subject}</td>
+                    <td>{department}</td>
+                    <td>{category}</td>
+                    <td>{subCategory}</td>
+                    <td>
+                      <span
+                        className={`ticket-management-status-badge ${statusClass}`}
+                      >
+                        {status}
+                      </span>
+                    </td>
+                    <td>{formatDateTime(dateCreated)}</td>
+                    <td>{formatDateTime(lastUpdated)}</td>
+                    <td>
+                      <div className="ticket-management-action-buttons">
+                        <button
+                          className="ticket-management-action-btn ticket-management-view-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleView(ticket);
+                          }}
+                          title="View Ticket"
+                        >
+                          <Eye size={16} /> View
+                        </button>
+                        <button
+                          className="ticket-management-action-btn ticket-management-close-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log('Close ticket:', number);
+                          }}
+                          title="Close Ticket"
+                        >
+                          <X size={16} /> Close Ticket
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr className="ticket-management-no-tickets-row">
+                <td colSpan="9">
+                  <div className="ticket-management-no-tickets-message">
+                    No ticket records found.
                   </div>
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr className="no-tickets-row">
-              <td colSpan="9">
-                <div className="no-tickets-message">No tickets match your current filters.</div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
 
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="pagination-controls">
-          <button onClick={() => changePage(currentPage - 1)} disabled={currentPage === 1}>
-            Prev
-          </button>
-          <span>Page {currentPage} of {totalPages}</span>
-          <button onClick={() => changePage(currentPage + 1)} disabled={currentPage === totalPages}>
-            Next
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default TicketRecordsTable;
+export default UserTicketRecordsTable;

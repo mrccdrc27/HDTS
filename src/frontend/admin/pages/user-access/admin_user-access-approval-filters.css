@@ -107,11 +107,15 @@
   cursor: pointer;
   position: relative;
   z-index: 2;
+  transition: border-color 0.3s;
 }
 
+/* Hover/focus: only change border color for sort dropdown button */
 .user-access-approval-custom-select-button:hover,
 .user-access-approval-custom-select-button:focus {
   border-color: #007bff;
+  background-color: white;
+  color: #333;
 }
 
 /* Arrow + label wrapper */
@@ -170,9 +174,13 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
+  transition: border-color 0.3s;
 }
 
+/* Hover/focus: only change border color for date filter */
 .user-access-date-filter-button:hover,
 .user-access-date-filter-button:focus {
   border-color: #007bff;
+  background-color: white;
+  color: #333;
 }

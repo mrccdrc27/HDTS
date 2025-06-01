@@ -1,217 +1,256 @@
-/* Tickets Table Container */
-.tickets-table-container {
-  background: white;
+/* User Active Tickets Table CSS - Unified with Ticket Management styles */
+
+.user-active-tickets-container {
+  background: var(--background-color);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
-  margin: 20px 0;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
 }
 
-/* Table Styles */
-.tickets-table {
+.user-active-tickets-table-wrapper {
+  overflow-x: auto;
+}
+
+.user-active-tickets-table {
   width: 100%;
-  min-width: 800px; /* Ensures all content fits */
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  text-align: center;
 }
 
 /* Table Header */
-.tickets-table thead {
-  background-color: #d32f2f;
-  color: white;
+.user-active-tickets-table thead {
+  background: linear-gradient(135deg, var(--red-light) 0%, var(--red-dark) 100%);
 }
 
-.tickets-table th {
-  padding: 10px 12px;
-  text-align: center !important; /* Center align header */
+.user-active-tickets-table th {
+  padding: 8px 12px;
   font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 12px;
+  letter-spacing: 0.4px;
   white-space: nowrap;
+  user-select: none;
+  line-height: 1.2;
+  border: none;
+  text-align: center;
+  cursor: default;
 }
 
-/* Table Body */
-.tickets-table tbody tr {
-  border-bottom: 1px solid #e0e0e0;
-  transition: background-color 0.2s ease;
-  cursor: pointer;
+.user-active-tickets-table th:first-child {
+  border-top-left-radius: 8px;
 }
 
-.tickets-table tbody tr:hover {
-  background-color: #f8f9fa;
+.user-active-tickets-table th:last-child {
+  border-top-right-radius: 8px;
 }
 
-.tickets-table td {
-  padding: 10px 12px;
+/* Table Body Rows */
+.user-active-tickets-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--neutral-light-gray);
+  position: relative;
+}
+
+.user-active-tickets-table tbody tr:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background-color: var(--neutral-light-gray);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.user-active-tickets-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Table Cells */
+.user-active-tickets-table td {
+  padding: 8px 12px;
   vertical-align: middle;
-  white-space: nowrap; /* Keep inline */
-  text-align: center; /* Center align cell content */
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-align: center;
+  border: none;
 }
 
-/* Subject Cell – show full content */
-.subject-cell {
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: break-word;
-  text-align: center; /* Center subject cell too */
+/* Left-align specific cells */
+.user-active-tickets-table .user-active-ticket-number-cell,
+.user-active-tickets-table .user-active-subject-cell {
+  text-align: left;
 }
 
 /* Status Badge */
-.status-badge {
+.user-active-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+  justify-content: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
   white-space: nowrap;
 }
 
-/* Status Colors */
-.status-pending {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeaa7;
-}
-.status-open {
-  background-color: #d1ecf1;
-  color: #0c5460;
-  border: 1px solid #bee5eb;
-}
-.status-progress {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeaa7;
-}
-.status-hold {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-.status-submitted {
-  background-color: #cce5ff;
-  color: #004085;
-  border: 1px solid #b8daff;
-}
-.status-unknown {
-  background-color: #f8f9fa;
-  color: #6c757d;
-  border: 1px solid #dee2e6;
+/* Status Colors (same system as admin-side) */
+.user-active-status-new {
+  background-color: #e0e7ff;
+  color: #3730a3;
 }
 
-/* Actions Column */
-.actions-cell {
-  min-width: 180px;
+.user-active-status-open {
+  background-color: #bbf7d0;
+  color: #166534;
 }
 
-.action-buttons {
+.user-active-status-pending {
+  background-color: #fde68a;
+  color: #92400e;
+}
+
+.user-active-status-progress {
+  background-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.user-active-status-hold {
+  background-color: #fecaca;
+  color: #b91c1c;
+}
+
+.user-active-status-resolved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.user-active-status-closed {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.user-active-status-unknown {
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+/* Action Buttons */
+.user-active-ticket-actions {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
-  justify-content: center; /* Optional: center buttons horizontally */
-}
-
-.action-btn {
-  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
-  border: none;
+}
+
+.user-active-ticket-btn {
+  padding: 4px 10px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.2s ease;
+  border: none;
   white-space: nowrap;
+  transition: all 0.2s;
+  font-family: 'Poppins', sans-serif;
 }
 
-.view-btn {
-  background-color: #007bff;
+/* View Button */
+.user-active-ticket-view-btn {
+  background-color: var(--blue-light);
+  color: var(--text-secondary);
+}
+
+.user-active-ticket-view-btn:hover {
+  background-color: var(--blue-dark);
+  color: var(--text-secondary);
+}
+
+/* Close Button */
+.user-active-ticket-close-btn {
+  background-color: var(--success-light);
+  color: var(--success-dark);
+}
+
+.user-active-ticket-close-btn:hover {
+  background-color: var(--success-dark);
   color: white;
-}
-.view-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-}
-
-.close-btn {
-  background-color: #28a745;
-  color: white;
-}
-.close-btn:hover {
-  background-color: #1e7e34;
-  transform: translateY(-1px);
-}
-
-.action-btn:active {
-  transform: translateY(0);
 }
 
 /* No Tickets Message */
-.no-tickets-row td {
+.user-active-no-tickets-row td {
   text-align: center;
-  padding: 40px 20px;
-  color: #6c757d;
-  font-style: italic;
-}
-
-.no-tickets-message {
-  font-size: 16px;
-}
-
-/* Pagination Controls */
-.pagination-controls {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-.pagination-controls button {
-  background-color: #007bff;
-  color: white;
-  padding: 6px 12px;
+  padding: 60px 16px;
   border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.pagination-controls button[disabled] {
-  background-color: #ccc;
-  cursor: not-allowed;
+  color: var(--neutral-dim-gray);
+  font-size: 16px;
+  font-weight: 600;
 }
 
-/* Responsive – horizontal scroll instead of stacked blocks */
-@media screen and (max-width: 768px) {
-  .tickets-table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .user-active-tickets-container {
+    font-size: 11.5px;
   }
 
-  .tickets-table {
-    width: 100%;
-    min-width: 800px;
+  .user-active-tickets-table th,
+  .user-active-tickets-table td {
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-active-tickets-container {
+    font-size: 11px;
   }
 
-  .action-buttons {
+  .user-active-tickets-table th,
+  .user-active-tickets-table td {
+    padding: 5px 8px;
+  }
+
+  .user-active-status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .user-active-ticket-actions {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 4px;
   }
 
-  .action-btn {
-    width: 100%;
-    justify-content: flex-start;
+  .user-active-ticket-btn {
+    font-size: 10px;
+    padding: 3px 6px;
   }
 }
 
-/* Hover & focus effects */
-.tickets-table tbody tr:hover .action-btn {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Priority Level Text Colors */
+.user-active-priority-low {
+  color: var(--success);
+  font-weight: 800;
 }
 
-.action-btn:focus {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
+.user-active-priority-medium {
+  color: var(--warning);
+  font-weight: 800;
 }
-.action-btn:focus:not(:focus-visible) {
-  outline: none;
+
+.user-active-priority-high {
+  color: var(--error-light);
+  font-weight: 800;
+}
+
+.user-active-priority-critical {
+  color: var(--error);
+  font-weight: 800;
 }

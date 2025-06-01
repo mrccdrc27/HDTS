@@ -4,8 +4,9 @@ import ModalWrapper from '../../wrapper/modal-wrapper.jsx';
 import AdminProfile from '../modals/navbar/admin_profile.jsx';
 import AdminTermsAndConditions from '../modals/navbar/admin_terms-and-conditions.jsx';
 import AdminPrivacyPolicy from '../modals/navbar/admin_privacy-policy.jsx';
+import AdminChangePassword from '../modals/navbar/admin_change-password.jsx';
 
-import './admin_navbar-profile.css'; 
+import './admin_navbar-profile.css';
 
 const AdminNavbarProfile = () => {
   const navigate = useNavigate();
@@ -33,9 +34,10 @@ const AdminNavbarProfile = () => {
   };
 
   const modalContentMap = {
-    profile: <AdminProfile />,
-    'terms-and-conditions': <AdminTermsAndConditions />,
-    'privacy-policy': <AdminPrivacyPolicy />,
+    profile: <AdminProfile onClose={closeModal} />,
+    'terms-and-conditions': <AdminTermsAndConditions onClose={closeModal} />,
+    'privacy-policy': <AdminPrivacyPolicy onClose={closeModal} />,
+    'change-password': <AdminChangePassword onClose={closeModal} />,
   };
 
   return (
@@ -45,16 +47,23 @@ const AdminNavbarProfile = () => {
           <p className="profile-name">Admin Name</p>
           <p className="profile-role">System Administrator</p>
         </div>
-        <hr className="divider"/>
+        <hr className="divider" />
+        <p className="profile-settings">Settings</p>
         <div className="profile-links">
           <button className="profile-link" onClick={() => addQueryParam('section', 'profile')}>
             Profile
+          </button>
+          <button className="profile-link" onClick={() => addQueryParam('section', 'security')}>
+            Security
           </button>
           <button className="profile-link" onClick={() => addQueryParam('section', 'terms-and-conditions')}>
             Terms and Conditions
           </button>
           <button className="profile-link" onClick={() => addQueryParam('section', 'privacy-policy')}>
             Privacy Policy
+          </button>
+          <button className="profile-link" onClick={() => addQueryParam('section', 'about')}>
+            About
           </button>
           <button className="profile-link logout" onClick={handleLogout}>
             Log Out

@@ -126,7 +126,7 @@ const TicketManagementTable = () => {
   const handleNavigate = (ticket) => {
     const { number } = ticket;
     if (!number) return console.warn('Missing ticket number.');
-    navigate(`/admin/ticket-information/`);
+    navigate(`/admin/ticket-details/`);
   };
 
   const handleView = (e, ticket) => {

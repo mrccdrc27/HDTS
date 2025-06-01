@@ -1,9 +1,12 @@
 import './modal-wrapper.css';
 
-const ModalWrapper = ({ onClose, children }) => {
+const ModalWrapper = ({ onClose, children, modalType }) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div
+        className={`modal-content${modalType ? ` modal-${modalType}` : ''}`}
+        onClick={e => e.stopPropagation()}
+      >
         {children}
       </div>
     </div>

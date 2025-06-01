@@ -1,6 +1,10 @@
+import { useState } from 'react';
+import AdminChangePassword from './admin_change-password.jsx';
 import './admin_profile.css';
 
 const AdminProfile = ({ onClose }) => {
+  const [showChangePassword, setShowChangePassword] = useState(false);
+
   const profileData = {
     lastName: 'Batumbakal',
     firstName: 'Bogart',
@@ -9,10 +13,6 @@ const AdminProfile = ({ onClose }) => {
     companyId: 'IT0001',
     department: 'IT Department',
     email: 'batumbakalbogart@gmail.com'
-  };
-
-  const handleChangePassword = () => {
-    alert('Change password functionality would open here');
   };
 
   const handleUploadImage = () => {
@@ -97,13 +97,20 @@ const AdminProfile = ({ onClose }) => {
       <hr className="profile-divider profile-divider--visible bottom-divider" />
 
       <div className="profile-buttons">
-        <button className="btn btn-change-password" onClick={handleChangePassword}>
+        <button
+          className="btn btn-change-password"
+          onClick={() => setShowChangePassword(true)}
+        >
           Change Password
         </button>
         <button className="btn btn-close" onClick={onClose}>
           Close
         </button>
       </div>
+
+      {showChangePassword && (
+        <AdminChangePassword onClose={() => setShowChangePassword(false)} />
+      )}
     </div>
   );
 };

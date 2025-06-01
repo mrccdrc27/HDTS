@@ -1,84 +1,102 @@
-import { useEffect, useState } from 'react';
-import TicketRecordsToolbar from './user-ticket-records-toolbar.jsx';
-import TicketRecordsTable from './user_ticket-records-table.jsx';
-import { loadTickets } from '../../../../utilities/ticket-data/ticketData.js';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+
+import UserTicketRecordsSearch from './user_ticket-records-search';
+import UserTicketRecordsFilterAndSort from './user_ticket-records-filter-and-sort.jsx';
+import UserTicketRecordsTable from './user_ticket-records-table';
+
+// Example mock tickets data (replace with actual data source or fetch)
+const MOCK_TICKETS = [
+  {
+    number: 'TCKT-1001',
+    subject: 'Cannot access email',
+    department: 'IT Support',
+    category: 'Software',
+    subCategory: 'Email',
+    status: 'Resolved',
+    dateCreated: '2024-04-01T08:30:00Z',
+    lastUpdated: '2024-04-02T12:45:00Z',
+  },
+  {
+    number: 'TCKT-1002',
+    subject: 'Printer not working',
+    department: 'Facilities',
+    category: 'Hardware',
+    subCategory: 'Printer',
+    status: 'Closed',
+    dateCreated: '2024-04-03T09:15:00Z',
+    lastUpdated: '2024-04-05T14:00:00Z',
+  },
+  {
+    number: 'TCKT-1003',
+    subject: 'Request for software installation',
+    department: 'IT Support',
+    category: 'Software',
+    subCategory: 'Installation',
+    status: 'Resolved',
+    dateCreated: '2024-04-04T11:00:00Z',
+    lastUpdated: '2024-04-06T10:20:00Z',
+  },
+  {
+    number: 'TCKT-1004',
+    subject: 'Network outage in building 2',
+    department: 'Network',
+    category: 'Network',
+    subCategory: 'Outage',
+    status: 'Closed',
+    dateCreated: '2024-04-02T07:50:00Z',
+    lastUpdated: '2024-04-04T13:30:00Z',
+  },
+  {
+    number: 'TCKT-1005',
+    subject: 'Password reset request',
+    department: 'IT Support',
+    category: 'Security',
+    subCategory: 'Password',
+    status: 'Resolved',
+    dateCreated: '2024-04-05T14:25:00Z',
+    lastUpdated: '2024-04-05T15:00:00Z',
+  },
+];
+
 
 const TicketRecords = () => {
-  const [tickets, setTickets] = useState([]);
-  
-  // Filters state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [subcategoryFilter, setSubcategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [sortAsc, setSortAsc] = useState(true);
+  const { category } = useParams();
 
-  // Load tickets on mount
+  const categoryTitles = {
+    'all-ticket-records': 'All Ticket Records',
+    'closed-tickets': 'Closed Tickets',
+    'rejected-tickets': 'Rejected Tickets',
+  };
+
+  // State for tickets, in real app you may fetch or get from context
+  const [tickets, setTickets] = useState([]);
+
+  // Simulate loading tickets on mount
   useEffect(() => {
-    const fetchedTickets = loadTickets();
-    if (!Array.isArray(fetchedTickets)) {
-      setTickets([]);
-    } else {
-      setTickets(fetchedTickets);
-    }
+    // Replace this with your real data loading logic
+    setTickets(MOCK_TICKETS);
   }, []);
 
-  // Filter & sort tickets based on filters
-  const filteredTickets = tickets
-    .filter(ticket => {
-      // Only show tickets with 'Closed' or 'Resolved' statuses
-      const recordStatuses = ['Closed', 'Resolved'];
-      if (!recordStatuses.includes(ticket.status)) return false;
-
-      if (searchQuery && !ticket.subject?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-      if (categoryFilter && ticket.category !== categoryFilter) return false;
-      if (subcategoryFilter && ticket.subCategory !== subcategoryFilter) return false;
-
-      if (statusFilter) {
-        // If user filters by status, normalize "Open" if needed, else filter normally
-        const normalizedStatus = statusFilter === 'Open' ? 'Approved/Open' : statusFilter;
-        if (ticket.status !== normalizedStatus) return false;
-      }
-
-      if (dateFrom && new Date(ticket.dateCreated) < new Date(dateFrom)) return false;
-      if (dateTo && new Date(ticket.dateCreated) > new Date(dateTo)) return false;
-
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortAsc) return new Date(a.dateCreated) - new Date(b.dateCreated);
-      return new Date(b.dateCreated) - new Date(a.dateCreated);
-    });
+  // Filter tickets based on category param
+  const filteredTickets = tickets.filter(ticket => {
+    if (category === 'closed-tickets') return ticket.status === 'Closed';
+    if (category === 'rejected-tickets') return ticket.status === 'Rejected';
+    if (category === 'all-ticket-records') return ticket.status === 'Closed' || ticket.status === 'Resolved';
+    return true; // fallback, show all
+  });
 
   return (
-    <div className="active-tickets-layout">
-      <div className="active-tickets-header">
-        <h2>Ticket Records</h2>
-      </div>
-      <div className="active-tickets-toolbar">
-        <TicketRecordsToolbar
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-          subcategoryFilter={subcategoryFilter}
-          setSubcategoryFilter={setSubcategoryFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          dateFrom={dateFrom}
-          setDateFrom={setDateFrom}
-          dateTo={dateTo}
-          setDateTo={setDateTo}
-          sortAsc={sortAsc}
-          setSortAsc={setSortAsc}
-          tickets={tickets} // optional, if toolbar needs for dropdown options
-        />
-      </div>
-      <div className="active-tickets-content">
-        <TicketRecordsTable filteredTickets={filteredTickets} />  
-      </div>
+    <div className="ticket-records">
+      <h1>{categoryTitles[category] || 'Ticket Records'}</h1>
+
+      <UserTicketRecordsSearch />
+      
+      <UserTicketRecordsFilterAndSort />
+
+      <UserTicketRecordsTable filteredTickets={filteredTickets} />
+
+      {/* Pagination removed as per your request */}
     </div>
   );
 };

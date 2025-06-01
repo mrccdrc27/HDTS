@@ -20,7 +20,7 @@ const UserAccessSearchAndCreateUser = () => {
         />
       </div>
       <button className="create-user-button" onClick={handleCreateUserClick}>
-        Create User
+        Add New User
       </button>
     </div>
   );
