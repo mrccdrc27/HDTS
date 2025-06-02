@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import './admin_user-access-filters.css';
-import DateFilter from '../../components/shared/date-filter.jsx';
+import DateFilter from '../../../shared/components/date-filter.jsx';
 
 const DEPARTMENTS = [
   'Finance Department',

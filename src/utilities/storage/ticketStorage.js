@@ -6,7 +6,7 @@ const sampleTickets = [
   {
     ticketNumber: 'TCK-001',
     subject: 'VPN setup request',
-    status: 'New',
+    status: 'Pending',
     priorityLevel: 'Medium',
     department: 'IT Department',
     category: 'IT Category',

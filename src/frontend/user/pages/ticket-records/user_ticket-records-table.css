@@ -1,6 +1,4 @@
-/* User Ticket Records Table CSS - Unified with Active Tickets styles */
-
-.ticket-management-container {
+.user-ticket-records-container {
   background: var(--background-color);
   border-radius: 8px;
   overflow: hidden;
@@ -9,68 +7,52 @@
   font-size: 13px;
 }
 
-.ticket-management-table-wrapper {
+.user-ticket-records-table-wrapper {
   overflow-x: auto;
 }
 
-.ticket-management-table {
+.user-ticket-records-table {
   width: 100%;
-  border-collapse: separate;
+  border-collapse: collapse;
   border-spacing: 0;
   font-size: 13px;
   text-align: center;
 }
 
-/* Header */
-.ticket-management-table thead {
-  background: linear-gradient(135deg, var(--red-light) 0%, var(--red-dark) 100%);
+.user-ticket-records-table thead {
+  background: linear-gradient(135deg, var(--red-light), var(--red-dark));
 }
 
-.ticket-management-table th {
+.user-ticket-records-table th {
   padding: 8px 12px;
   font-weight: 600;
   color: var(--text-secondary);
   font-size: 12px;
   letter-spacing: 0.4px;
   white-space: nowrap;
-  user-select: none;
   line-height: 1.2;
   border: none;
   text-align: center;
-  cursor: default;
 }
 
-.ticket-management-table th:first-child {
+.user-ticket-records-table th:first-child {
   border-top-left-radius: 8px;
 }
 
-.ticket-management-table th:last-child {
+.user-ticket-records-table th:last-child {
   border-top-right-radius: 8px;
 }
 
-/* Body Rows */
-.ticket-management-table tbody tr:not(:last-child) {
+.user-ticket-records-table tbody tr:not(:last-child) {
   border-bottom: 1px solid var(--neutral-light-gray);
-  position: relative;
 }
 
-.ticket-management-table tbody tr:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
+.user-ticket-records-table tbody tr:hover {
   background-color: var(--neutral-light-gray);
-  pointer-events: none;
-  z-index: 1;
+  cursor: pointer;
 }
 
-.ticket-management-table tbody tr:hover {
-  background-color: #f8fafc;
-}
-
-.ticket-management-table td {
+.user-ticket-records-table td {
   padding: 8px 12px;
   vertical-align: middle;
   color: var(--text-primary);
@@ -81,14 +63,7 @@
   border: none;
 }
 
-/* Left-align specific cells if needed */
-.ticket-management-table .ticket-management-number-cell,
-.ticket-management-table .ticket-management-subject-cell {
-  text-align: left;
-}
-
-/* Status Badge */
-.ticket-management-status-badge {
+.user-ticket-records-status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -100,93 +75,53 @@
   text-transform: uppercase;
   letter-spacing: 0.4px;
   white-space: nowrap;
+  color: var(--text-secondary);
 }
 
-/* Status Colors (same as active tickets) */
-.ticket-management-status-submitted {
-  background-color: #e0e7ff;
-  color: #3730a3;
+.user-ticket-records-status-rejected {
+  background-color: var(--error);
 }
 
-.ticket-management-status-open {
-  background-color: #bbf7d0;
-  color: #166534;
+.user-ticket-records-status-closed {
+  background-color: var(--neutral-dark-gray);
 }
 
-.ticket-management-status-pending {
-  background-color: #fde68a;
-  color: #92400e;
+.user-ticket-records-status-withdrawn {
+  background-color: var(--warning);
 }
 
-.ticket-management-status-progress {
-  background-color: #bfdbfe;
-  color: #1e40af;
-}
-
-.ticket-management-status-hold {
-  background-color: #fecaca;
-  color: #b91c1c;
-}
-
-.ticket-management-status-resolved {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.ticket-management-status-closed {
-  background-color: #e5e7eb;
-  color: #374151;
-}
-
-.ticket-management-status-unknown {
-  background-color: #fef2f2;
-  color: #991b1b;
-}
-
-/* Action Buttons */
-.ticket-management-action-buttons {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
+.user-ticket-records-priority-badge {
+  display: inline-flex;
   align-items: center;
-}
-
-.ticket-management-action-btn {
-  padding: 4px 10px;
-  border-radius: 4px;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 10px;
   font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
+  font-weight: 700;
   white-space: nowrap;
-  transition: all 0.2s;
-  font-family: 'Poppins', sans-serif;
 }
 
-/* View Button */
-.ticket-management-view-btn {
-  background-color: var(--blue-light);
-  color: var(--text-secondary);
+.user-ticket-records-priority-low {
+  color: var(--success-light);
 }
 
-.ticket-management-view-btn:hover {
-  background-color: var(--blue-dark);
-  color: var(--text-secondary);
+.user-ticket-records-priority-medium {
+  color: var(--warning);
 }
 
-/* Close Button */
-.ticket-management-close-btn {
-  background-color: var(--success-light);
-  color: var(--success-dark);
+.user-ticket-records-priority-high {
+  color: var(--error-light);
 }
 
-.ticket-management-close-btn:hover {
-  background-color: var(--success-dark);
-  color: white;
+.user-ticket-records-priority-critical {
+  color: var(--error);
 }
 
-/* No Tickets Message */
-.ticket-management-no-tickets-row td {
+.user-ticket-records-row {
+  transition: background-color 0.2s ease;
+}
+
+.user-ticket-records-no-tickets-row td {
   text-align: center;
   padding: 60px 16px;
   border: none;
@@ -195,70 +130,30 @@
   font-weight: 600;
 }
 
-/* Pagination */
-.ticket-management-pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  font-size: 12px;
-}
-
-.ticket-management-pagination button {
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 4px;
-  background-color: var(--neutral-light-gray);
-  color: var(--text-primary);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.ticket-management-pagination button:hover:not(:disabled) {
-  background-color: var(--neutral-gray);
-}
-
-.ticket-management-pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Responsive Styles */
 @media (max-width: 1024px) {
-  .ticket-management-container {
+  .user-ticket-records-container {
     font-size: 11.5px;
   }
 
-  .ticket-management-table th,
-  .ticket-management-table td {
+  .user-ticket-records-table th,
+  .user-ticket-records-table td {
     padding: 6px 10px;
   }
 }
 
 @media (max-width: 768px) {
-  .ticket-management-container {
+  .user-ticket-records-container {
     font-size: 11px;
   }
 
-  .ticket-management-table th,
-  .ticket-management-table td {
+  .user-ticket-records-table th,
+  .user-ticket-records-table td {
     padding: 5px 8px;
   }
 
-  .ticket-management-status-badge {
+  .user-ticket-records-status-badge,
+  .user-ticket-records-priority-badge {
     font-size: 9px;
     padding: 2px 6px;
-  }
-
-  .ticket-management-action-buttons {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .ticket-management-action-btn {
-    font-size: 10px;
-    padding: 3px 6px;
   }
 }

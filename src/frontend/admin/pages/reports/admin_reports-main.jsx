@@ -4,7 +4,7 @@ import AdminReportsSearchPrint from "./admin_reports-search-print.jsx";
 import AdminReportsFilters from "./admin_reports-filters.jsx";
 import AdminReportsTables from "./admin_reports-tables.jsx";
 
-import TablePagination from '../../components/shared/table-pagination.jsx';
+import TablePagination from '../../../shared/components/table-pagination.jsx';
 
 const AdminReports = () => {
     const { category } = useParams();

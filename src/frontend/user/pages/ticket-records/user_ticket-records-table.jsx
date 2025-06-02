@@ -1,24 +1,31 @@
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, X } from 'lucide-react';
+import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 import './user_ticket-records-table.css';
 
 const statusConfig = {
-  Submitted: { class: 'ticket-management-status-submitted' },
-  'Approved/Open': { class: 'ticket-management-status-open' },
-  Open: { class: 'ticket-management-status-open' },
-  Pending: { class: 'ticket-management-status-pending' },
-  'On Process': { class: 'ticket-management-status-progress' },
-  'On Progress': { class: 'ticket-management-status-progress' },
-  'On Hold': { class: 'ticket-management-status-hold' },
-  Closed: { class: 'ticket-management-status-closed' },
-  Resolved: { class: 'ticket-management-status-resolved' },
-  Unknown: { class: 'ticket-management-status-unknown' },
+  New: 'user-ticket-records-status-new',
+  Open: 'user-ticket-records-status-open',
+  'On Progress': 'user-ticket-records-status-progress',
+  'On Hold': 'user-ticket-records-status-hold',
+  Pending: 'user-ticket-records-status-pending',
+  Resolved: 'user-ticket-records-status-resolved',
+  Closed: 'user-ticket-records-status-closed',
+  Withdrawn: 'user-ticket-records-status-withdrawn',
+  Rejected: 'user-ticket-records-status-rejected',
 };
 
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
+const priorityClassMap = {
+  Low: 'user-ticket-records-priority-low',
+  Medium: 'user-ticket-records-priority-medium',
+  High: 'user-ticket-records-priority-high',
+  Critical: 'user-ticket-records-priority-critical',
+};
+
+const formatDateTime = (value) => {
+  if (!value) return 'N/A';
+  const date = new Date(value);
   return isNaN(date)
     ? 'Invalid Date'
     : date.toLocaleString(undefined, {
@@ -31,113 +38,200 @@ const formatDateTime = (dateString) => {
       });
 };
 
-const UserTicketRecordsTable = ({ filteredTickets }) => {
+const statusMap = {
+  'closed-withdrawn-rejected': ['Closed', 'Rejected', 'Withdrawn'],
+  closed: ['Closed'],
+  rejected: ['Rejected'],
+  withdrawn: ['Withdrawn'],
+};
+
+const noTicketsMessageMap = {
+  'closed-withdrawn-rejected': 'No closed, rejected, or withdrawn tickets.',
+  closed: 'No closed tickets.',
+  rejected: 'No rejected tickets.',
+  withdrawn: 'No withdrawn tickets.',
+};
+
+const UserTicketRecordsTable = ({
+  departmentFilter = '',
+  categoryFilter = '',
+  subcategoryFilter = '',
+  statusFilter = '',
+  priorityFilter = '',
+  sortBy = '',
+  sortDirection = 'asc',
+  startDate,
+  endDate,
+  searchTerm = '',
+  ticketStatus = 'closed-withdrawn-rejected',
+  currentPage = 1,
+  itemsPerPage = 10,
+  setTotalItems = () => {},
+}) => {
   const navigate = useNavigate();
+  const [tickets, setTickets] = useState([]);
 
-  // Filter tickets to only Closed and Resolved statuses
-  const records = filteredTickets.filter(
-    (t) => t.status === 'Closed' || t.status === 'Resolved'
-  );
+  useEffect(() => {
+    const loadedTickets = getTickets();
+    setTickets(loadedTickets);
+  }, []);
 
-  const handleView = (ticket) => {
-    const { number } = ticket;
-    if (!number) return console.warn('Missing ticket number.');
-    navigate(`/user/ticket-details/${number}`);
+  const activeStatuses = useMemo(() => statusMap[ticketStatus] || statusMap['closed-withdrawn-rejected'], [ticketStatus]);
+
+  const normalize = (str) => (str ? str.trim().toLowerCase() : '');
+
+  const normalizedStatusFilter = normalize(statusFilter);
+  const normalizedSearchTerm = normalize(searchTerm);
+  const normalizedDepartmentFilter = normalize(departmentFilter);
+  const normalizedCategoryFilter = normalize(categoryFilter);
+  const normalizedSubcategoryFilter = normalize(subcategoryFilter);
+  const normalizedPriorityFilter = normalize(priorityFilter);
+
+  const applyStatusFilter = (status) => {
+    if (!normalizedStatusFilter) return activeStatuses.includes(status);
+    return normalize(status) === normalizedStatusFilter;
   };
 
+  const applyDateRangeFilter = (dateCreated) => {
+    const created = new Date(dateCreated);
+    if (isNaN(created)) return false;
+
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+
+    return (!start || created >= start) && (!end || created <= end);
+  };
+
+  const applySearchFilter = (ticket) => {
+    if (!normalizedSearchTerm) return true;
+    return ['ticketNumber', 'subject', 'department'].some((key) =>
+      ticket[key]?.toLowerCase().includes(normalizedSearchTerm)
+    );
+  };
+
+  const filteredTickets = tickets.filter((ticket) => {
+    if (!ticket) return false;
+
+    if (!applyStatusFilter(ticket.status)) return false;
+    if (normalizedDepartmentFilter && normalize(ticket.department) !== normalizedDepartmentFilter) return false;
+    if (normalizedCategoryFilter && normalize(ticket.category) !== normalizedCategoryFilter) return false;
+    if (normalizedSubcategoryFilter && normalize(ticket.subCategory) !== normalizedSubcategoryFilter) return false;
+    if (normalizedPriorityFilter && normalize(ticket.priorityLevel) !== normalizedPriorityFilter) return false;
+    if (!applyDateRangeFilter(ticket.dateCreated)) return false;
+    if (!applySearchFilter(ticket)) return false;
+
+    return true;
+  });
+
+  // Update total items count on filtered tickets change
+  useEffect(() => {
+    setTotalItems(filteredTickets.length);
+  }, [filteredTickets, setTotalItems]);
+
+  const sortedTickets = [...filteredTickets];
+  if (sortBy) {
+    sortedTickets.sort((a, b) => {
+      let valA = a[sortBy];
+      let valB = b[sortBy];
+
+      if (['dateCreated', 'lastUpdated'].includes(sortBy)) {
+        valA = valA ? new Date(valA).getTime() : 0;
+        valB = valB ? new Date(valB).getTime() : 0;
+      }
+
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        return sortDirection === 'asc'
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      }
+
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return sortDirection === 'asc' ? valA - valB : valB - valA;
+      }
+
+      return 0;
+    });
+  }
+
+  // Pagination slice:
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleView = (ticket) => {
+    if (!ticket.ticketNumber) return console.warn('Missing ticket number.');
+    navigate(`/user/ticket-details/${ticket.ticketNumber}`);
+  };
+
+  const noTicketsMessage = noTicketsMessageMap[ticketStatus] || noTicketsMessageMap['closed-withdrawn-rejected'];
+
   return (
-    <div className="ticket-management-container">
-      <div className="ticket-management-table-wrapper">
-        <table className="ticket-management-table">
+    <div className="user-ticket-records-container">
+      <div className="user-ticket-records-table-wrapper">
+        <table className="user-ticket-records-table">
           <thead>
             <tr>
               <th>Ticket Number</th>
               <th>Subject</th>
+              <th>Status</th>
+              <th>Priority Level</th>
               <th>Department</th>
               <th>Category</th>
               <th>Sub Category</th>
-              <th>Status</th>
               <th>Date Created</th>
-              <th>Last Update</th>
-              <th>Action</th>
+              <th>Last Updated</th>
             </tr>
           </thead>
           <tbody>
-            {records.length > 0 ? (
-              records.map((ticket) => {
+            {paginatedTickets.length > 0 ? (
+              paginatedTickets.map((ticket) => {
                 const {
-                  number,
+                  ticketNumber,
                   subject,
+                  status,
+                  priorityLevel,
                   department,
                   category,
                   subCategory,
-                  status,
                   dateCreated,
                   lastUpdated,
                 } = ticket;
 
-                const statusClass =
-                  statusConfig[status]?.class || statusConfig.Unknown.class;
+                const statusClass = statusConfig[status] || 'user-ticket-records-status-default';
+                const priorityClass = priorityClassMap[priorityLevel] || 'user-ticket-records-priority-low';
 
                 return (
                   <tr
-                    key={number}
-                    className="ticket-management-row"
+                    key={ticketNumber}
+                    className="user-ticket-records-row"
                     onClick={() => handleView(ticket)}
                   >
-                    <td>{number}</td>
-                    <td>{subject}</td>
-                    <td>{department}</td>
-                    <td>{category}</td>
-                    <td>{subCategory}</td>
+                    <td className="user-ticket-records-ticket-number-cell">{ticketNumber}</td>
+                    <td className="user-ticket-records-subject-cell">{subject}</td>
                     <td>
-                      <span
-                        className={`ticket-management-status-badge ${statusClass}`}
-                      >
+                      <span className={`user-ticket-records-status-badge ${statusClass}`}>
                         {status}
                       </span>
                     </td>
+                    <td>
+                      <span className={`user-ticket-records-priority-badge ${priorityClass}`}>
+                        {priorityLevel}
+                      </span>
+                    </td>
+                    <td>{department}</td>
+                    <td>{category}</td>
+                    <td>{subCategory}</td>
                     <td>{formatDateTime(dateCreated)}</td>
                     <td>{formatDateTime(lastUpdated)}</td>
-                    <td>
-                      <div className="ticket-management-action-buttons">
-                        <button
-                          className="ticket-management-action-btn ticket-management-view-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleView(ticket);
-                          }}
-                          title="View Ticket"
-                        >
-                          <Eye size={16} /> View
-                        </button>
-                        <button
-                          className="ticket-management-action-btn ticket-management-close-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            console.log('Close ticket:', number);
-                          }}
-                          title="Close Ticket"
-                        >
-                          <X size={16} /> Close Ticket
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 );
               })
             ) : (
-              <tr className="ticket-management-no-tickets-row">
-                <td colSpan="9">
-                  <div className="ticket-management-no-tickets-message">
-                    No ticket records found.
-                  </div>
-                </td>
+              <tr className="user-ticket-records-no-tickets-row">
+                <td colSpan="9">{noTicketsMessage}</td>
               </tr>
             )}
           </tbody>
         </table>
-
       </div>
     </div>
   );

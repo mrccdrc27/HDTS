@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 import './user_active-tickets-table.css';
 
 const statusConfig = {
-  New: { class: 'user-active-status-new' },
-  Open: { class: 'user-active-status-open' },
-  'On Progress': { class: 'user-active-status-progress' },
-  'On Hold': { class: 'user-active-status-hold' },
-  Pending: { class: 'user-active-status-pending' },
-  Resolved: { class: 'user-active-status-resolved' },
-  Closed: { class: 'user-active-status-closed' },
+  New: 'user-active-status-new',
+  Open: 'user-active-status-open',
+  'On Progress': 'user-active-status-progress',
+  'On Hold': 'user-active-status-hold',
+  Pending: 'user-active-status-pending',
+  Resolved: 'user-active-status-resolved',
+  Closed: 'user-active-status-closed',
 };
 
 const priorityClassMap = {
@@ -21,9 +21,9 @@ const priorityClassMap = {
   Critical: 'user-active-priority-critical',
 };
 
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
+const formatDateTime = (value) => {
+  if (!value) return 'N/A';
+  const date = new Date(value);
   return isNaN(date)
     ? 'Invalid Date'
     : date.toLocaleString(undefined, {
@@ -36,6 +36,15 @@ const formatDateTime = (dateString) => {
       });
 };
 
+const noTicketsMessageMap = {
+  'all-active-tickets': 'No open, on progress, on hold, pending, or resolved tickets.',
+  'open-tickets': 'No open tickets.',
+  'on-progress-tickets': 'No on progress tickets.',
+  'on-hold-tickets': 'No on hold tickets.',
+  'pending-tickets': 'No pending tickets.',
+  'resolved-tickets': 'No resolved tickets.',
+};
+
 const UserActiveTicketsTable = ({
   departmentFilter = '',
   categoryFilter = '',
@@ -46,11 +55,20 @@ const UserActiveTicketsTable = ({
   sortDirection = 'asc',
   startDate,
   endDate,
-  searchTerm = '', // new prop for search input
+  searchTerm = '',
+  ticketStatus = 'all-active-tickets',
+
+  currentPage = 1,
+  itemsPerPage = 10,
+  onTotalItemsChange,
 }) => {
   const navigate = useNavigate();
-  const { ticketStatus } = useParams();
-  const [tickets] = useState(getTickets());
+  const [tickets, setTickets] = useState([]);
+
+  useEffect(() => {
+    const loadedTickets = getTickets();
+    setTickets(loadedTickets);
+  }, []);
 
   const statusMap = {
     'all-active-tickets': ['Open', 'On Progress', 'On Hold', 'Pending', 'Resolved'],
@@ -61,16 +79,13 @@ const UserActiveTicketsTable = ({
     'resolved-tickets': ['Resolved'],
   };
 
-  const activeStatuses = statusMap[ticketStatus] || statusMap['all-active-tickets'];
+  const activeStatuses = useMemo(() => statusMap[ticketStatus] || statusMap['all-active-tickets'], [ticketStatus]);
 
-  const normalizedStatusFilter = statusFilter.trim().toLowerCase();
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+  const normalize = (str) => (str ? str.trim().toLowerCase() : '');
 
-  const applyStatusFilter = (ticketStatus) => {
-    if (!normalizedStatusFilter) {
-      return activeStatuses.includes(ticketStatus);
-    }
-    return ticketStatus.toLowerCase() === normalizedStatusFilter;
+  const applyStatusFilter = (status) => {
+    const normalized = normalize(statusFilter);
+    return normalized ? normalize(status) === normalized : activeStatuses.includes(status);
   };
 
   const applyDateRangeFilter = (dateCreated) => {
@@ -80,31 +95,36 @@ const UserActiveTicketsTable = ({
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
 
-    if (start && created < start) return false;
-    if (end && created > end) return false;
-
-    return true;
+    return (!start || created >= start) && (!end || created <= end);
   };
 
   const applySearchFilter = (ticket) => {
-    if (!normalizedSearchTerm) return true;
-    return (
-      (ticket.ticketNumber && ticket.ticketNumber.toLowerCase().includes(normalizedSearchTerm)) ||
-      (ticket.subject && ticket.subject.toLowerCase().includes(normalizedSearchTerm)) ||
-      (ticket.department && ticket.department.toLowerCase().includes(normalizedSearchTerm))
+    const term = normalize(searchTerm);
+    if (!term) return true;
+    return ['ticketNumber', 'subject', 'department'].some((key) =>
+      ticket[key]?.toLowerCase().includes(term)
     );
   };
 
   const filteredTickets = tickets.filter((ticket) => {
+    if (!ticket) return false;
+
     if (!applyStatusFilter(ticket.status)) return false;
-    if (departmentFilter && ticket.department !== departmentFilter) return false;
-    if (categoryFilter && ticket.category !== categoryFilter) return false;
-    if (subcategoryFilter && ticket.subCategory !== subcategoryFilter) return false;
-    if (priorityFilter && ticket.priorityLevel !== priorityFilter) return false;
+    if (departmentFilter && normalize(ticket.department) !== normalize(departmentFilter)) return false;
+    if (categoryFilter && normalize(ticket.category) !== normalize(categoryFilter)) return false;
+    if (subcategoryFilter && normalize(ticket.subCategory) !== normalize(subcategoryFilter)) return false;
+    if (priorityFilter && normalize(ticket.priorityLevel) !== normalize(priorityFilter)) return false;
     if (!applyDateRangeFilter(ticket.dateCreated)) return false;
     if (!applySearchFilter(ticket)) return false;
+
     return true;
   });
+
+  useEffect(() => {
+    if (typeof onTotalItemsChange === 'function') {
+      onTotalItemsChange(filteredTickets.length);
+    }
+  }, [filteredTickets, onTotalItemsChange]);
 
   const sortedTickets = [...filteredTickets];
   if (sortBy) {
@@ -112,7 +132,7 @@ const UserActiveTicketsTable = ({
       let valA = a[sortBy];
       let valB = b[sortBy];
 
-      if (sortBy === 'dateCreated' || sortBy === 'lastUpdated') {
+      if (['dateCreated', 'lastUpdated'].includes(sortBy)) {
         valA = valA ? new Date(valA).getTime() : 0;
         valB = valB ? new Date(valB).getTime() : 0;
       }
@@ -131,21 +151,27 @@ const UserActiveTicketsTable = ({
     });
   }
 
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
+
   const handleView = (ticket) => {
-    const { ticketNumber } = ticket;
-    if (!ticketNumber) return console.warn('Missing ticket number.');
-    navigate(`/user/ticket-details/${ticketNumber}`);
+    if (!ticket.ticketNumber) return console.warn('Missing ticket number.');
+    navigate(`/user/ticket-details/${ticket.ticketNumber}`);
   };
 
   const handleWithdraw = (e, ticketNumber) => {
+    e.preventDefault();
     e.stopPropagation();
     console.log(`Withdraw ticket ${ticketNumber}`);
   };
 
   const handleClose = (e, ticketNumber) => {
+    e.preventDefault();
     e.stopPropagation();
     console.log(`Close ticket ${ticketNumber}`);
   };
+
+  const noTicketsMessage = noTicketsMessageMap[ticketStatus] || 'No tickets found.';
 
   return (
     <div className="user-active-tickets-container">
@@ -166,8 +192,8 @@ const UserActiveTicketsTable = ({
             </tr>
           </thead>
           <tbody>
-            {sortedTickets.length > 0 ? (
-              sortedTickets.map((ticket) => {
+            {paginatedTickets.length > 0 ? (
+              paginatedTickets.map((ticket) => {
                 const {
                   ticketNumber,
                   subject,
@@ -180,8 +206,8 @@ const UserActiveTicketsTable = ({
                   lastUpdated,
                 } = ticket;
 
-                const statusClass = statusConfig[status]?.class || 'user-active-status-default';
-                const priorityClass = priorityClassMap[priorityLevel] || priorityClassMap.Low;
+                const statusClass = statusConfig[status] || 'user-active-status-default';
+                const priorityClass = priorityClassMap[priorityLevel] || 'user-active-priority-low';
 
                 return (
                   <tr
@@ -229,7 +255,7 @@ const UserActiveTicketsTable = ({
               })
             ) : (
               <tr className="user-active-no-tickets-row">
-                <td colSpan="10">No active tickets.</td>
+                <td colSpan="10">{noTicketsMessage}</td>
               </tr>
             )}
           </tbody>

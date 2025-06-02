@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import './user_active-tickets-filter-and-sort.css';
 import {
@@ -9,7 +9,6 @@ import {
 
 const userTicketStatuses = [
   '',
-  'New',
   'Open',
   'Pending',
   'On Progress',
@@ -23,7 +22,7 @@ const sortByLabels = {
   ticketNumber: 'Ticket Number',
   subject: 'Subject',
   dateCreated: 'Date Created',
-  lastUpdated: 'Last Updated',
+  lastUpdated: 'Last Updated',  
 };
 
 const UserActiveTicketsFiltersAndSort = ({
@@ -41,20 +40,51 @@ const UserActiveTicketsFiltersAndSort = ({
   setSortBy,
   sortDirection,
   setSortDirection,
+  disableStatusFilter,
 }) => {
   const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortMenuRef = useRef(null);
 
+  // Update available subcategories when categoryFilter changes
   useEffect(() => {
     const subs = categoryFilter ? subCategoryOptions[categoryFilter] || [] : [];
     setAvailableSubcategories(subs);
+
     if (!subs.includes(subcategoryFilter)) {
       setSubcategoryFilter('');
     }
   }, [categoryFilter, subcategoryFilter, setSubcategoryFilter]);
 
+  // Close sort menu if click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        sortMenuRef.current &&
+        !sortMenuRef.current.contains(event.target)
+      ) {
+        setShowSortMenu(false);
+      }
+    }
+    if (showSortMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSortMenu]);
+
   const toggleSortDirection = () =>
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+
+  // Handle keyboard navigation for sort options (Enter key to select)
+  const handleSortKeyDown = (e, value) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setSortBy(value);
+      setShowSortMenu(false);
+    }
+  };
 
   return (
     <div className="user-active-tickets-filters-and-sort-wrapper">
@@ -132,10 +162,11 @@ const UserActiveTicketsFiltersAndSort = ({
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="user-active-tickets-filter-select"
+            disabled={disableStatusFilter}
           >
             <option value="">All Statuses</option>
             {userTicketStatuses
-              .filter((status) => status !== '') // exclude empty option already rendered
+              .filter((status) => status !== '')
               .map((status) => (
                 <option key={status} value={status}>
                   {status}
@@ -157,7 +188,7 @@ const UserActiveTicketsFiltersAndSort = ({
           >
             <option value="">All Priorities</option>
             {priorityOptions
-              .filter((priority) => priority !== '') // exclude empty option already rendered
+              .filter((priority) => priority !== '')
               .map((priority) => (
                 <option key={priority} value={priority}>
                   {priority}
@@ -188,11 +219,14 @@ const UserActiveTicketsFiltersAndSort = ({
         <div
           className="user-active-tickets-sort-dropdown"
           style={{ position: 'relative' }}
+          ref={sortMenuRef}
         >
           <button
             className="user-active-tickets-custom-select-button"
             onClick={() => setShowSortMenu((prev) => !prev)}
             type="button"
+            aria-haspopup="listbox"
+            aria-expanded={showSortMenu}
           >
             <span className="user-active-tickets-sort-with-icon">
               {sortBy ? sortByLabels[sortBy] : 'Select'}
@@ -203,6 +237,15 @@ const UserActiveTicketsFiltersAndSort = ({
                     e.stopPropagation();
                     toggleSortDirection();
                   }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleSortDirection();
+                    }
+                  }}
+                  aria-label={`Toggle sort direction, currently ${sortDirection}`}
                 >
                   {sortDirection === 'asc' ? (
                     <ArrowUp size={16} />
@@ -216,14 +259,22 @@ const UserActiveTicketsFiltersAndSort = ({
           </button>
 
           {showSortMenu && (
-            <ul className="user-active-tickets-custom-dropdown-menu">
+            <ul
+              className="user-active-tickets-custom-dropdown-menu"
+              role="listbox"
+              tabIndex={-1}
+            >
               {Object.entries(sortByLabels).map(([value, label]) => (
                 <li
                   key={value}
+                  tabIndex={0}
+                  role="option"
+                  aria-selected={sortBy === value}
                   onClick={() => {
                     setSortBy(value);
                     setShowSortMenu(false);
                   }}
+                  onKeyDown={(e) => handleSortKeyDown(e, value)}
                 >
                   {label}
                 </li>

@@ -34,9 +34,7 @@ const UserNavbar = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    const interval = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -54,6 +52,41 @@ const UserNavbar = () => {
     return `${month}/${day}/${year} | ${time}`;
   };
 
+  const renderDropdown = (label, basePath, items, dropdownKey) => (
+    <div className="userNavbar-menu-dropdown">
+      <NavLink
+        to={`${basePath}/${items[0].path}`}
+        className="userNavbar-menu-item flex items-center gap-1"
+        onClick={() => setActiveDropdown(null)}
+      >
+        {label}
+      </NavLink>
+      <button
+        className="userNavbar-menu-trigger"
+        onClick={(e) => {
+          e.preventDefault();
+          setActiveDropdown(activeDropdown === dropdownKey ? null : dropdownKey);
+        }}
+        aria-label={`Toggle ${label} dropdown`}
+      >
+        <ChevronDown size={16} />
+      </button>
+      {activeDropdown === dropdownKey && (
+        <div className="dropdown-content">
+          {items.map(({ path, label }) => (
+            <NavLink
+              key={path}
+              to={`${basePath}/${path}`}
+              onClick={() => setActiveDropdown(null)}
+            >
+              {label}
+            </NavLink>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="userNavbar">
       <div className="userNavbar-left">
@@ -70,123 +103,21 @@ const UserNavbar = () => {
           Home
         </NavLink>
 
-        {/* Active Tickets Dropdown */}
-<div className="userNavbar-menu-dropdown">
-  <NavLink
-    to="/user/active-tickets/all-active-tickets"
-    className="userNavbar-menu-item flex items-center gap-1"
-    onClick={() => setActiveDropdown(null)} // close dropdown if open when navigating
-  >
-    Active Tickets
-  </NavLink>
-  <button
-    className="userNavbar-menu-trigger"
-    onClick={(e) => {
-      e.preventDefault(); // prevent any navigation
-      setActiveDropdown(activeDropdown === 'active' ? null : 'active');
-    }}
-    aria-label="Toggle Active Tickets dropdown"
-  >
-    <ChevronDown size={16} />
-  </button>
-  {activeDropdown === 'active' && (
-    <div className="dropdown-content">
-      <NavLink
-        to="/user/active-tickets/all-active-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        All Active Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/new-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        New Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/open-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Open Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/on-progress-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        On Progress Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/on-hold-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        On Hold Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/pending-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Pending Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/resolved-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Resolved Tickets
-      </NavLink>
-    </div>
-  )}
-</div>
+        {renderDropdown('Active Tickets', '/user/active-tickets', [
+          { path: 'all-active-tickets', label: 'All Active Tickets' },
+          { path: 'open-tickets', label: 'Open Tickets' },
+          { path: 'on-progress-tickets', label: 'On Progress Tickets' },
+          { path: 'on-hold-tickets', label: 'On Hold Tickets' },
+          { path: 'pending-tickets', label: 'Pending Tickets' },
+          { path: 'resolved-tickets', label: 'Resolved Tickets' },
+        ], 'active')}
 
-{/* Ticket Records Dropdown */}
-<div className="userNavbar-menu-dropdown">
-  <NavLink
-    to="/user/ticket-records/all-ticket-records"
-    className="userNavbar-menu-item flex items-center gap-1"
-    onClick={() => setActiveDropdown(null)}
-  >
-    Ticket Records
-  </NavLink>
-  <button
-    className="userNavbar-menu-trigger"
-    onClick={(e) => {
-      e.preventDefault();
-      setActiveDropdown(activeDropdown === 'records' ? null : 'records');
-    }}
-    aria-label="Toggle Ticket Records dropdown"
-  >
-    <ChevronDown size={16} />
-  </button>
-  {activeDropdown === 'records' && (
-    <div className="dropdown-content">
-      <NavLink
-        to="/user/ticket-records/all-ticket-records"
-        onClick={() => setActiveDropdown(null)}
-      >
-        All Ticket Records
-      </NavLink>
-      <NavLink
-        to="/user/ticket-records/closed-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Closed Tickets
-      </NavLink>
-      <NavLink
-        to="/user/ticket-records/rejected-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Rejected Tickets
-      </NavLink>
-      <NavLink
-        to="/user/ticket-records/withdrawn-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Withdrawn Tickets
-      </NavLink>
-    </div>
-  )}
-</div>
-
-
+        {renderDropdown('Ticket Records', '/user/ticket-records', [
+          { path: 'all-ticket-records', label: 'All Ticket Records' },
+          { path: 'closed-tickets', label: 'Closed Tickets' },
+          { path: 'rejected-tickets', label: 'Rejected Tickets' },
+          { path: 'withdrawn-tickets', label: 'Withdrawn Tickets' },
+        ], 'records')}
       </div>
 
       <div className="userNavbar-right">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import './admin_user-access-approval-filters.css';
-import DateFilter from '../../components/shared/date-filter.jsx';
+import DateFilter from '../../../shared/components/date-filter.jsx';
 
 const SORT_OPTIONS = {
   companyId: 'Company ID',

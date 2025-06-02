@@ -1,165 +1,249 @@
-import { useState, useEffect, useRef } from 'react';
-import DateFilter from '../../../admin/components/shared/date-filter.jsx';
+import { useEffect, useState, useRef } from 'react';
 import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import './user_ticket-records-filter-and-sort.css';
-
-const ticketCategories = {
-  Technical: ['Software', 'Hardware', 'Network'],
-  HR: ['Benefits', 'Payroll', 'Leave'],
-  Facilities: ['Maintenance', 'Security', 'Cleaning'],
-};
+import {
+  departmentOptions as rawDepartments,
+  categoryOptions as rawCategories,
+  subCategoryOptions,
+} from '../../../../utilities/filters/user/shared/sharedDropdowns.js';
 
 const userTicketStatuses = [
-  'New', 'Open', 'Pending', 'On Progress', 'On Hold', 'Resolved', 'Closed',
+  '',
+  'Closed',
+  'Withdrawn',
+  'Rejected',
 ];
 
-const departments = ['IT', 'HR', 'Finance'];
+const priorityOptions = ['', 'Low', 'Medium', 'High', 'Critical'];
 
 const sortByLabels = {
   ticketNumber: 'Ticket Number',
   subject: 'Subject',
   dateCreated: 'Date Created',
-  lastUpdated: 'Last Updated',
+  lastUpdated: 'Last Updated',  
 };
 
-const UserTicketRecordsFilterAndSort = () => {
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [subcategoryFilter, setSubcategoryFilter] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [subcategories, setSubcategories] = useState([]);
-  const [showDateFilter, setShowDateFilter] = useState(false);
-  const [sortBy, setSortBy] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
+const UserTicketRecordsFiltersAndSort = ({
+  departmentFilter,
+  setDepartmentFilter,
+  categoryFilter,
+  setCategoryFilter,
+  subcategoryFilter,
+  setSubcategoryFilter,
+  statusFilter,
+  setStatusFilter,
+  priorityFilter,
+  setPriorityFilter,
+  sortBy,
+  setSortBy,
+  sortDirection,
+  setSortDirection,
+  disableStatusFilter,
+}) => {
+  const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const sortMenuRef = useRef(null);
 
-  const toggleDateFilter = () => setShowDateFilter(prev => !prev);
-  const toggleSortDirection = () =>
-    setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
-
-  const handleCategoryChange = (value) => {
-    setCategoryFilter(value);
-    setSubcategories(ticketCategories[value] || []);
-    setSubcategoryFilter('');
-  };
-
-  const handleSortSelect = (value) => {
-    setSortBy(value);
-    setShowSortMenu(false);
-  };
-
+  // Update available subcategories when categoryFilter changes
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+    const subs = categoryFilter ? subCategoryOptions[categoryFilter] || [] : [];
+    setAvailableSubcategories(subs);
+
+    if (!subs.includes(subcategoryFilter)) {
+      setSubcategoryFilter('');
+    }
+  }, [categoryFilter, subcategoryFilter, setSubcategoryFilter]);
+
+  // Close sort menu if click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        sortMenuRef.current &&
+        !sortMenuRef.current.contains(event.target)
+      ) {
         setShowSortMenu(false);
       }
+    }
+    if (showSortMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [showSortMenu]);
+
+  const toggleSortDirection = () =>
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+
+  // Handle keyboard navigation for sort options (Enter key to select)
+  const handleSortKeyDown = (e, value) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setSortBy(value);
+      setShowSortMenu(false);
+    }
+  };
 
   return (
     <div className="user-ticket-records-filters-and-sort-wrapper">
-      {/* Filter Section */}
       <div className="user-ticket-records-filter-section">
         <span className="user-ticket-records-filter-label">Filter by:</span>
-
-        {/* Category */}
-        <div className="user-ticket-records-filter-dropdown">
-          <select
-            value={categoryFilter}
-            onChange={e => handleCategoryChange(e.target.value)}
-            className="user-ticket-records-filter-select"
-          >
-            <option value="" disabled hidden>Category</option>
-            {Object.keys(ticketCategories).map(category => (
-              <option key={category} value={category}>{category}</option>
-            ))}
-          </select>
-          <ChevronDown size={16} className="user-ticket-records-filter-dropdown-icon" />
-        </div>
-
-        {/* Subcategory */}
-        <div className="user-ticket-records-filter-dropdown">
-          <select
-            value={subcategoryFilter}
-            onChange={e => setSubcategoryFilter(e.target.value)}
-            disabled={!categoryFilter}
-            className="user-ticket-records-filter-select"
-          >
-            <option value="" disabled hidden>Sub Category</option>
-            {subcategories.map(sub => (
-              <option key={sub} value={sub}>{sub}</option>
-            ))}
-          </select>
-          <ChevronDown size={16} className="user-ticket-records-filter-dropdown-icon" />
-        </div>
 
         {/* Department */}
         <div className="user-ticket-records-filter-dropdown">
           <select
             value={departmentFilter}
-            onChange={e => setDepartmentFilter(e.target.value)}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
             className="user-ticket-records-filter-select"
           >
-            <option value="" disabled hidden>Department</option>
-            {departments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
+            <option value="">All Departments</option>
+            {rawDepartments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
             ))}
           </select>
-          <ChevronDown size={16} className="user-ticket-records-filter-dropdown-icon" />
+          <ChevronDown
+            size={16}
+            className="user-ticket-records-filter-dropdown-icon"
+          />
+        </div>
+
+        {/* Category */}
+        <div className="user-ticket-records-filter-dropdown">
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="user-ticket-records-filter-select"
+          >
+            <option value="">All Categories</option>
+            {rawCategories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={16}
+            className="user-ticket-records-filter-dropdown-icon"
+          />
+        </div>
+
+        {/* Sub Category */}
+        <div className="user-ticket-records-filter-dropdown">
+          <select
+            value={subcategoryFilter}
+            onChange={(e) => setSubcategoryFilter(e.target.value)}
+            disabled={!categoryFilter || availableSubcategories.length === 0}
+            className="user-ticket-records-filter-select"
+          >
+            <option value="">
+              {availableSubcategories.length
+                ? 'All Sub Categories'
+                : 'Sub Category'}
+            </option>
+            {availableSubcategories.map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={16}
+            className="user-ticket-records-filter-dropdown-icon"
+          />
         </div>
 
         {/* Status */}
         <div className="user-ticket-records-filter-dropdown">
           <select
             value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
+            onChange={(e) => setStatusFilter(e.target.value)}
             className="user-ticket-records-filter-select"
+            disabled={disableStatusFilter}
           >
-            <option value="" disabled hidden>Status</option>
-            {userTicketStatuses.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
+            <option value="">All Statuses</option>
+            {userTicketStatuses
+              .filter((status) => status !== '')
+              .map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
           </select>
-          <ChevronDown size={16} className="user-ticket-records-filter-dropdown-icon" />
+          <ChevronDown
+            size={16}
+            className="user-ticket-records-filter-dropdown-icon"
+          />
         </div>
 
-        {/* Date Filter */}
-        <div className="date-filter-wrapper">
-          <button
-            onClick={toggleDateFilter}
-            className="user-ticket-records-date-filter-button"
+        {/* Priority */}
+        <div className="user-ticket-records-filter-dropdown">
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="user-ticket-records-filter-select"
           >
-            Date
-            <ChevronDown size={16} className="user-ticket-records-filter-date-dropdown-icon" />
-          </button>
-          {showDateFilter && (
-            <div className="user-ticket-records-date-filter-inline">
-              <DateFilter />
-            </div>
-          )}
+            <option value="">All Priorities</option>
+            {priorityOptions
+              .filter((priority) => priority !== '')
+              .map((priority) => (
+                <option key={priority} value={priority}>
+                  {priority}
+                </option>
+              ))}
+          </select>
+          <ChevronDown
+            size={16}
+            className="user-ticket-records-filter-dropdown-icon"
+          />
+        </div>
+
+        {/* Date Range placeholder */}
+        <div className="user-ticket-records-filter-dropdown">
+          <select disabled className="user-ticket-records-filter-select">
+            <option value="">Date Range</option>
+          </select>
+          <ChevronDown
+            size={16}
+            className="user-ticket-records-filter-dropdown-icon"
+          />
         </div>
       </div>
 
-      {/* Sort Section */}
-      <div className="user-ticket-records-sort-section" ref={sortMenuRef}>
+      {/* Sort by Section */}
+      <div className="user-ticket-records-sort-section">
         <span className="user-ticket-records-sort-label">Sort by:</span>
-        <div className="user-ticket-records-sort-dropdown">
+        <div
+          className="user-ticket-records-sort-dropdown"
+          style={{ position: 'relative' }}
+          ref={sortMenuRef}
+        >
           <button
             className="user-ticket-records-custom-select-button"
-            onClick={() => setShowSortMenu(prev => !prev)}
+            onClick={() => setShowSortMenu((prev) => !prev)}
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded={showSortMenu}
           >
             <span className="user-ticket-records-sort-with-icon">
               {sortBy ? sortByLabels[sortBy] : 'Select'}
               {sortBy && (
                 <span
                   className="user-ticket-records-sort-arrow-icon"
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     toggleSortDirection();
                   }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleSortDirection();
+                    }
+                  }}
+                  aria-label={`Toggle sort direction, currently ${sortDirection}`}
                 >
                   {sortDirection === 'asc' ? (
                     <ArrowUp size={16} />
@@ -171,10 +255,25 @@ const UserTicketRecordsFilterAndSort = () => {
             </span>
             <ChevronDown size={16} />
           </button>
+
           {showSortMenu && (
-            <ul className="user-ticket-records-custom-dropdown-menu">
-              {Object.entries(sortByLabels).map(([val, label]) => (
-                <li key={val} onClick={() => handleSortSelect(val)}>
+            <ul
+              className="user-ticket-records-custom-dropdown-menu"
+              role="listbox"
+              tabIndex={-1}
+            >
+              {Object.entries(sortByLabels).map(([value, label]) => (
+                <li
+                  key={value}
+                  tabIndex={0}
+                  role="option"
+                  aria-selected={sortBy === value}
+                  onClick={() => {
+                    setSortBy(value);
+                    setShowSortMenu(false);
+                  }}
+                  onKeyDown={(e) => handleSortKeyDown(e, value)}
+                >
                   {label}
                 </li>
               ))}
@@ -186,4 +285,4 @@ const UserTicketRecordsFilterAndSort = () => {
   );
 };
 
-export default UserTicketRecordsFilterAndSort;
+export default UserTicketRecordsFiltersAndSort;

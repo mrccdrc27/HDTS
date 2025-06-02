@@ -1,103 +1,125 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import UserTicketRecordsSearch from './user_ticket-records-search';
+import UserTicketRecordsSearch from './user_ticket-records-search.jsx';
 import UserTicketRecordsFilterAndSort from './user_ticket-records-filter-and-sort.jsx';
-import UserTicketRecordsTable from './user_ticket-records-table';
+import UserTicketRecordsTable from './user_ticket-records-table.jsx';
+import TablePagination from '../../../shared/components/table-pagination.jsx';
 
-// Example mock tickets data (replace with actual data source or fetch)
-const MOCK_TICKETS = [
-  {
-    number: 'TCKT-1001',
-    subject: 'Cannot access email',
-    department: 'IT Support',
-    category: 'Software',
-    subCategory: 'Email',
-    status: 'Resolved',
-    dateCreated: '2024-04-01T08:30:00Z',
-    lastUpdated: '2024-04-02T12:45:00Z',
-  },
-  {
-    number: 'TCKT-1002',
-    subject: 'Printer not working',
-    department: 'Facilities',
-    category: 'Hardware',
-    subCategory: 'Printer',
-    status: 'Closed',
-    dateCreated: '2024-04-03T09:15:00Z',
-    lastUpdated: '2024-04-05T14:00:00Z',
-  },
-  {
-    number: 'TCKT-1003',
-    subject: 'Request for software installation',
-    department: 'IT Support',
-    category: 'Software',
-    subCategory: 'Installation',
-    status: 'Resolved',
-    dateCreated: '2024-04-04T11:00:00Z',
-    lastUpdated: '2024-04-06T10:20:00Z',
-  },
-  {
-    number: 'TCKT-1004',
-    subject: 'Network outage in building 2',
-    department: 'Network',
-    category: 'Network',
-    subCategory: 'Outage',
-    status: 'Closed',
-    dateCreated: '2024-04-02T07:50:00Z',
-    lastUpdated: '2024-04-04T13:30:00Z',
-  },
-  {
-    number: 'TCKT-1005',
-    subject: 'Password reset request',
-    department: 'IT Support',
-    category: 'Security',
-    subCategory: 'Password',
-    status: 'Resolved',
-    dateCreated: '2024-04-05T14:25:00Z',
-    lastUpdated: '2024-04-05T15:00:00Z',
-  },
-];
+const categoryMap = {
+  'all-ticket-records': 'All Ticket Records',
+  'closed-tickets': 'Closed Tickets',
+  'rejected-tickets': 'Rejected Tickets',
+  'withdrawn-tickets': 'Withdrawn Tickets',
+};
 
+const capitalizeStatus = (status) => {
+  if (!status) return '';
+  return status
+    .replace('-tickets', '')
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const TicketRecords = () => {
   const { category } = useParams();
+  const normalizedCategory = category?.toLowerCase() || 'all-ticket-records';
+  const heading = categoryMap[normalizedCategory] || 'All Ticket Records';
 
-  const categoryTitles = {
-    'all-ticket-records': 'All Ticket Records',
-    'closed-tickets': 'Closed Tickets',
-    'rejected-tickets': 'Rejected Tickets',
-    'withdrawn-tickets': 'Withdrawn Tickets',
-  };
+  const [searchTerm, setSearchTerm] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [subcategoryFilter, setSubcategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [sortBy, setSortBy] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
-  // State for tickets, in real app you may fetch or get from context
-  const [tickets, setTickets] = useState([]);
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0); // This should come from your data source or table component
 
-  // Simulate loading tickets on mount
+  const isTicketRecordsCategory = Object.keys(categoryMap).includes(normalizedCategory);
+
   useEffect(() => {
-    // Replace this with your real data loading logic
-    setTickets(MOCK_TICKETS);
-  }, []);
+    if (isTicketRecordsCategory) {
+      setStatusFilter(normalizedCategory === 'all-ticket-records' ? '' : capitalizeStatus(normalizedCategory));
+    } else {
+      setStatusFilter('');
+    }
+  }, [normalizedCategory, isTicketRecordsCategory]);
 
-  // Filter tickets based on category param
-  const filteredTickets = tickets.filter(ticket => {
-    if (category === 'closed-tickets') return ticket.status === 'Closed';
-    if (category === 'rejected-tickets') return ticket.status === 'Rejected';
-    if (category === 'all-ticket-records') return ticket.status === 'Closed' || ticket.status === 'Resolved';
-    return true; // fallback, show all
-  });
+  const disableStatusFilter = isTicketRecordsCategory && normalizedCategory !== 'all-ticket-records';
+
+  // Map route category to ticketStatus expected by UserTicketRecordsTable
+  let ticketStatusProp = '';
+  if (normalizedCategory === 'closed-tickets') ticketStatusProp = 'closed';
+  else if (normalizedCategory === 'rejected-tickets') ticketStatusProp = 'rejected';
+  else if (normalizedCategory === 'withdrawn-tickets') ticketStatusProp = 'withdrawn';
+  else ticketStatusProp = ''; // for 'all-ticket-records' or others
+
+  // Here, you'd update totalItems based on filtered data from your source or table.
+  // For now, assume it's updated internally or via props from table.
 
   return (
-    <div className="ticket-records">
-      <h1>{categoryTitles[category] || 'Ticket Records'}</h1>
+    <div className="active-tickets-main">
+      <div className="active-tickets-main-header">
+        <h2>{heading}</h2>
+      </div>
 
-      <UserTicketRecordsSearch />
-      
-      <UserTicketRecordsFilterAndSort />
+      <div className="active-tickets-main-search">
+        <UserTicketRecordsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      </div>
 
-      <UserTicketRecordsTable filteredTickets={filteredTickets} />
+      <UserTicketRecordsFilterAndSort
+        departmentFilter={departmentFilter}
+        setDepartmentFilter={setDepartmentFilter}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        subcategoryFilter={subcategoryFilter}
+        setSubcategoryFilter={setSubcategoryFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        priorityFilter={priorityFilter}
+        setPriorityFilter={setPriorityFilter}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+        disableStatusFilter={disableStatusFilter}
+      />
 
-      {/* Pagination removed as per your request */}
+      <UserTicketRecordsTable
+        searchTerm={searchTerm}
+        departmentFilter={departmentFilter}
+        categoryFilter={categoryFilter}
+        subcategoryFilter={subcategoryFilter}
+        statusFilter={statusFilter}
+        priorityFilter={priorityFilter}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        ticketStatus={ticketStatusProp}
+        startDate={startDate}
+        endDate={endDate}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        setTotalItems={setTotalItems} // Optional: Pass setter to update totalItems from table data
+      />
+
+      <TablePagination
+        totalItems={totalItems}
+        currentPage={currentPage}
+        initialItemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(num) => {
+          setItemsPerPage(num);
+          setCurrentPage(1); // reset page on itemsPerPage change
+        }}
+      />
     </div>
   );
 };

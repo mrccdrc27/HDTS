@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import AdminTicketManagementSearch from './admin_ticket-management-search.jsx';
 import TicketManagementFilters from './admin_ticket-management-filters-and-sort.jsx';
 import TicketManagementTable from './admin_ticket-management-table.jsx';
-import TablePagination from '../../components/shared/table-pagination.jsx';
+import TablePagination from '../../../shared/components/table-pagination.jsx';
 import { loadTickets, updateTicketStatus } from '../../../../utilities/ticket-data/ticketData.js';
 
 const TicketManagement = () => {

@@ -1,0 +1,87 @@
+.table-controls-row {
+  display: flex;
+  align-items: center; /* vertically center all items */
+  justify-content: space-between; /* space between left and right */
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-top: 12px;
+  gap: 12px; /* add some horizontal spacing if needed */
+}
+
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+  flex: 0 0 auto; /* prevent growing */
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end; /* align pagination fully to the right */
+  flex: 1 1 auto; /* take remaining space */
+  min-width: 180px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* increased gap for better spacing */
+}
+
+.items-per-page input,
+.page-jump input {
+  width: 40px; /* slightly wider for easier input */
+  padding: 5px 6px; /* padding for vertical centering */
+  border-radius: 4px;
+  border: 1px solid #001aac80;
+  text-align: center;
+  background-color: #fff;
+  font-size: 11px;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+  height: 28px; /* fixed height to align inputs nicely */
+  box-sizing: border-box;
+}
+
+.page-jump {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* bigger gap between input and "of X" */
+  font-size: 11px;
+  font-family: 'Poppins', sans-serif;
+  color: #001aac;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 4px;
+  background-color: #033f7b;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: 32px; /* consistent button height */
+  width: 32px; /* square buttons */
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: #095ddc;
+}
+
+.nav-btn:disabled {
+  background-color: #dcd9d9;
+  color: #8e8b8b;
+  cursor: not-allowed;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}

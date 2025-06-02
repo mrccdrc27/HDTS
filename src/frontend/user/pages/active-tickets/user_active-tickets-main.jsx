@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import UserActiveTicketsSearch from './user_active-tickets-search.jsx';
 import UserActiveTicketsFiltersAndSort from './user_active-tickets-filter-and-sort.jsx';
 import UserActiveTicketsTable from './user_active-tickets-table.jsx';
-import TablePagination from '../../../admin/components/shared/table-pagination.jsx';
+import TablePagination from '../../../shared/components/table-pagination.jsx';
 
 const categoryMap = {
   all: 'All Active Tickets',
-  new: 'New Tickets',
   open: 'Open Tickets',
   'on-progress': 'On Progress Tickets',
   'on-hold': 'On Hold Tickets',
@@ -16,14 +15,21 @@ const categoryMap = {
   resolved: 'Resolved Tickets',
 };
 
+const capitalizeStatus = (status) => {
+  if (!status) return '';
+  return status
+    .split('-')
+    .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : ''))
+    .join(' ');
+};
+
 const ActiveTickets = () => {
   const { category } = useParams();
-  const normalizedCategory = category?.replace(/-tickets$/, '') || '';
+  const normalizedCategory = category?.toLowerCase().replace(/-tickets$/, '') || '';
+
   const heading = categoryMap[normalizedCategory] || 'All Active Tickets';
 
   const [searchTerm, setSearchTerm] = useState('');
-
-  // Filter & sort state
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subcategoryFilter, setSubcategoryFilter] = useState('');
@@ -31,6 +37,33 @@ const ActiveTickets = () => {
   const [priorityFilter, setPriorityFilter] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const isActiveTicketsView = Object.keys(categoryMap).includes(normalizedCategory);
+
+  useEffect(() => {
+    if (isActiveTicketsView) {
+      if (normalizedCategory === 'all') {
+        setStatusFilter('');
+      } else {
+        setStatusFilter(capitalizeStatus(normalizedCategory));
+      }
+    } else {
+      setStatusFilter('');
+    }
+    setCurrentPage(1); // Reset page when category changes
+  }, [normalizedCategory, isActiveTicketsView]);
+
+  const disableStatusFilter = isActiveTicketsView && normalizedCategory !== 'all';
+
+  const ticketStatusKey = isActiveTicketsView
+    ? `${normalizedCategory}-tickets`
+    : 'all-active-tickets';
 
   return (
     <div className="active-tickets-main">
@@ -39,7 +72,10 @@ const ActiveTickets = () => {
       </div>
 
       <div className="active-tickets-main-search">
-        <UserActiveTicketsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <UserActiveTicketsSearch
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       </div>
 
       <UserActiveTicketsFiltersAndSort
@@ -57,6 +93,7 @@ const ActiveTickets = () => {
         setSortBy={setSortBy}
         sortDirection={sortDirection}
         setSortDirection={setSortDirection}
+        disableStatusFilter={disableStatusFilter}
       />
 
       <UserActiveTicketsTable
@@ -68,10 +105,26 @@ const ActiveTickets = () => {
         priorityFilter={priorityFilter}
         sortBy={sortBy}
         sortDirection={sortDirection}
-        ticketStatus={normalizedCategory}
+        ticketStatus={ticketStatusKey}
+        startDate={startDate}
+        endDate={endDate}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onTotalItemsChange={setTotalItems}
       />
 
-      <TablePagination />
+      {/* Removed separate pagination-meta div since TablePagination handles this now */}
+
+      <TablePagination
+        totalItems={totalItems}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        onItemsPerPageChange={(count) => {
+          setItemsPerPage(count);
+          setCurrentPage(1);
+        }}
+        initialItemsPerPage={itemsPerPage}
+      />
     </div>
   );
 };
