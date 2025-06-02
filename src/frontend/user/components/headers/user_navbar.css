@@ -53,10 +53,9 @@
 .userNavbar-menu {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  flex-grow: 1;
   justify-content: center;
-  margin-left: 16rem; /* Adjust for alignment */
+  gap: 30px;
+  flex-grow: 1;
 }
 
 .userNavbar-menu-item {
@@ -65,7 +64,7 @@
   text-decoration: none;
   transition: color 0.3s;
   font-size: 0.95rem;
-  padding: 0.5rem 0;
+  padding: 10px 15px;
   position: relative;
 }
 
@@ -91,7 +90,35 @@
 
 /* Dropdown menus */
 .userNavbar-menu-dropdown {
+  flex-direction: row;
   position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.userNavbar-menu-dropdown button {
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; 
+}
+
+.userNavbar-menu-dropdown button:hover {
+  background: none;
+  border: none;
+  color: #850000;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; 
 }
 
 .userNavbar-menu-trigger {
@@ -105,7 +132,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  margin-top: 2rem; /* Consistent with admin navbar */
+  margin-top: 15px; /* Consistent with admin navbar */
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 0.375rem;

@@ -40,9 +40,8 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      <div className="approval-section">
-        <div className="approval-header">
-          
+      <div className="manageapproval-section">
+        <div className="manageapproval-header">
           <h2>Approval Requests</h2>
           <button className="manage-button" onClick={() => navigate('/admin/ticket-management-all-tickets')}>Manage Approvals</button>
         </div>

@@ -16,9 +16,9 @@ const UserTicketTimeline = () => {
         <div className="timeline-content">
           <div className="timeline-header">
             <h3 className="timeline-title">Ticket Approved</h3>
-            <span className="timeline-date">Date and Time Ticket is Updated by Status</span>
+            <span className="timeline-description">Ticket is already assigned to IT Department.</span>
           </div>
-          <p className="timeline-description">Lorem ipsum dolor sit amet...</p>
+          <p className="timeline-date">June 01, 2025 : 10:10pm</p>
         </div>
         <div className="timeline-connector"></div>
       </div>
@@ -37,10 +37,10 @@ const UserTicketTimeline = () => {
         </div>
         <div className="timeline-content">
           <div className="timeline-header">
-            <h3 className="timeline-title">Ticket Submitted</h3>
-            <span className="timeline-date">Date and Time Ticket is Updated by Status</span>
+            <h3 className="timeline-title">Delivered to IT Department</h3>
+            <span className="timeline-description">Please wait for the Ticket Agent.</span>
           </div>
-          <p className="timeline-description">Lorem ipsum dolor sit amet...</p>
+          <p className="timeline-date">June 02, 2025 : 11:50pm</p>
         </div>
       </div>
     </div>

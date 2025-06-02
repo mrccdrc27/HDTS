@@ -46,7 +46,7 @@
 }
 
 .profile-link {
-  padding: 6px 12px;
+  padding: 8px 12px;
   border: none;
   border-radius: 6px;
   font-size: 13px;
@@ -60,6 +60,7 @@
   display: block;
   /* Align text exactly with the padding-left on text */
   padding-left: 12px; 
+  margin-bottom: 5px;
 }
 
 .profile-link:hover,

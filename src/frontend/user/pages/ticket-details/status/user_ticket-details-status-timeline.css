@@ -7,32 +7,33 @@
 
 .timeline-item {
   display: flex;
-  gap: 8px;                /* smaller gap */
+  gap: 2px;                /* smaller gap */
   position: relative;
 }
 
 .timeline-icon {
   flex-shrink: 0;
-  width: 24px;             /* smaller size */
-  height: 24px;
+  width: 35px;             /* smaller size */
+  height: 35px;
 }
 
 .timeline-content {
-  background-color: #f9f9f9;
+  background-color: #dfdfdf;
   border-radius: 6px;
   padding: 8px;            /* reduced padding */
   flex-grow: 1;
 }
 
 .timeline-title {
-  margin: 0;
+  margin-left: 5px;
+  margin-top: 3px;         /* less margin */
   font-weight: 700;        /* bolder */
-  font-size: 0.95rem;      /* smaller font */
+  font-size: 14px;      /* smaller font */
 }
 
 .timeline-description {
-  margin-top: 6px;         /* less margin */
-  font-size: 13px;         /* smaller font */
+  margin-top: 2px;         /* less margin */
+  font-size: 14px;         /* smaller font */
   line-height: 1.3;        /* tighter line height */
 }
 
@@ -43,10 +44,8 @@
 }
 
 .timeline-scroll-container {
-  max-height: 280px;       /* slightly less height */
+  max-height: 300px;       /* slightly less height */
   overflow-y: auto;
-  border: 1px solid #eee;
   border-radius: 6px;
-  padding: 8px;            /* reduced padding */
-  background-color: #fff;
+  background-color: #ffffff;
 }

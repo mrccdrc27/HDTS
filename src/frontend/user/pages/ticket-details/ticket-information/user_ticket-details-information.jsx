@@ -7,7 +7,7 @@ const UserTicketDetailsInformation = () => {
       {/* Header Section */}
       <div className="ticket-header"> 
         <h1 className="ticket-id">TX0405</h1>
-        <button className="status-button">Open</button>
+        <span className="status-button">Open</span>
       </div>
       
       {/* Created Time and Assignment */}
@@ -15,14 +15,13 @@ const UserTicketDetailsInformation = () => {
         <span>Created Time: April 05, 2025 10:15 AM</span>
         <span>Assigned to: Tinkerbell</span>
       </div>
-
-      {/* Subject */}
-      <div className="form-group">
-        <label className="form-label">Subject:</label>
-        <input 
-          type="text" 
-          value="Request for personal app installation" 
-          className="form-input"
+      
+      {/* Subject Field */}
+      <div className="field-group">
+        <label className="field-label">Subject:</label>
+        <textarea
+          className="field-input"
+          value="Request for personal app installation"
           readOnly
         />
       </div>
@@ -50,8 +49,8 @@ const UserTicketDetailsInformation = () => {
       </div>
 
       {/* Description */}
-      <div className="form-group">
-        <label className="form-label">Description:</label>
+      <div className="field-group ">
+        <label className="field-label">Description:</label>
         <textarea 
           className="description-textarea"
           value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
