@@ -2,14 +2,12 @@
 
 /* Main ticket container */
 .ticket-container {
-  background-color: #a3a3a3; /* neutral gray background */
-  padding: 12px;             /* tighter padding */
+  background-color: #ffffff; /* neutral gray background */
   border-radius: 12px;
+  padding-right: 10px;
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -20,13 +18,13 @@
 .ticket-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 8px;        /* reduced margin */
+  justify-content: space-between;
+  margin-bottom: 2px;        /* reduced margin */
   gap: 8px;                  /* tighter gap */
 }
 
 .ticket-id {
-  font-size: 1.75rem;        /* smaller font size */
+  font-size: 32px;        /* smaller font size */
   font-weight: 700;
   color: #2563eb;            /* bright blue */
   margin: 0;
@@ -34,42 +32,60 @@
 
 /* Status button */
 .status-button {
-  background-color: #6b7280; /* gray-600 */
-  color: white;
+  background-color: #6b7280c7; /* gray-600 */
+  color: #272a30;
   padding: 4px 12px;         /* smaller padding */
   border-radius: 20px;
-  font-size: 12px;           /* smaller font */
-  font-weight: 500;
+  font-size: 12px;           /* smaller font */ 
+  font-weight: bold;
   border: none;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.status-button:hover {
-  background-color: #5b6370;
 }
 
 /* Metadata row */
 .ticket-metadata {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;           /* smaller font */
-  color: #4b5563;            /* gray-700 */
-  margin-bottom: 12px;       /* reduced margin */
+  font-size: 11px;           /* smaller font */
+  color: #4b5563b7;            /* gray-700 */
+  margin-bottom: 15px;       /* reduced margin */
 }
 
-/* Form group spacing */
-.form-group {
-  margin-bottom: 12px;       /* tighter spacing */
+/* Group container for form fields */
+.field-group {
+  display: relative;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+/* Label for each input */
+.field-label {
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-size: 14px;
+  color: #00000081;
+}
+
+/* Read-only textarea styling */
+.field-input {
+  resize: none; /* Prevent resizing */
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #555;
+  cursor: not-allowed;
+  margin-bottom: 2px;
 }
 
 /* Form label styles */
 .form-label {
   display: block;
-  font-size: 14px;           /* smaller font */
-  font-weight: 600;
-  color: #000;
-  margin-bottom: 4px;        /* tighter margin */
+  font-size: 14px;
+  font-weight: 600;           /* smaller font */
+  color: #00000081;
+  margin-bottom: 2px;        /* tighter margin */
 }
 
 /* Input and textarea styles */
@@ -77,21 +93,14 @@
 .description-textarea {
   width: 100%;
   padding: 8px;              /* smaller padding */
-  border: 2px solid #d1d5db; /* gray-300 */
-  border-radius: 8px;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 5px;
   background-color: white;
   color: #000;
   font-size: 13px;           /* smaller font */
   font-family: inherit;
   line-height: 1.4;
   resize: vertical;
-}
-
-.form-input:focus,
-.description-textarea:focus {
-  outline: none;
-  border-color: #2563eb;     /* blue-600 */
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .description-textarea {
@@ -102,7 +111,7 @@
 .form-row {
   display: flex;
   gap: 8px;                  /* tighter gap */
-  margin-bottom: 12px;       /* reduced margin */
+  margin-bottom: 15px;       /* reduced margin */
 }
 
 .form-column {
@@ -117,20 +126,19 @@
 .file-button {
   background-color: #1e40af; /* blue-800 */
   color: white;
-  padding: 8px 16px;         /* smaller padding */
+  padding: 8px 75px;         /* smaller padding */
   border-radius: 6px;
   font-size: 12px;           /* smaller font */
   font-weight: 500;
   border: none;
   cursor: pointer;
   display: inline-flex;
-  align-items: center;
   gap: 4px;                  /* less gap */
   transition: background-color 0.2s ease;
 }
 
 .file-button:hover {
-  background-color: #1d4ed8; /* blue-700 */
+  background-color: #0f2664; /* blue-700 */
 }
 
 .file-icon {
