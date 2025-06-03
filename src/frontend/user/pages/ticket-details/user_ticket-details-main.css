@@ -13,20 +13,6 @@
   gap: 8px;
 }
 
-.back-button {
-  background: none;
-  border: none;
-  color: #007bff;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-}
-
-.back-button:hover {
-  text-decoration: underline;
-}
-
 .section {
   border-radius: 6px;
 }

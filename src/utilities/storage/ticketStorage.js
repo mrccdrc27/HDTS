@@ -15,7 +15,11 @@ const sampleTickets = [
     lastUpdated: '2025-06-01T08:00:00Z',
     fileUploaded: null,
     description: 'Need help setting up VPN on my laptop.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-001',
+      name: 'Jane Doe'
+    }
   },
   {
     ticketNumber: 'TCK-002',
@@ -29,7 +33,11 @@ const sampleTickets = [
     lastUpdated: '2025-06-01T09:30:00Z',
     fileUploaded: 'monitor-issue.jpg',
     description: 'Office monitor stopped working after a power outage.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-002',
+      name: 'John Smith'
+    }
   },
   {
     ticketNumber: 'TCK-003',
@@ -43,7 +51,11 @@ const sampleTickets = [
     lastUpdated: '2025-06-01T10:45:00Z',
     fileUploaded: null,
     description: 'Requesting update to the latest version of MS Teams.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-001',
+      name: 'Jane Doe'
+    }
   },
   {
     ticketNumber: 'TCK-004',
@@ -57,7 +69,11 @@ const sampleTickets = [
     lastUpdated: '2025-06-01T08:30:00Z',
     fileUploaded: 'cloud-outage-report.pdf',
     description: 'Cloud backups failed last night due to outage.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-003',
+      name: 'Clara Reyes'
+    }
   },
   {
     ticketNumber: 'TCK-005',
@@ -71,7 +87,11 @@ const sampleTickets = [
     lastUpdated: '2025-05-31T09:00:00Z',
     fileUploaded: null,
     description: 'Need approval for AWS cloud certification course.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-003',
+      name: 'Clara Reyes'
+    }
   },
   {
     ticketNumber: 'TCK-006',
@@ -85,7 +105,11 @@ const sampleTickets = [
     lastUpdated: '2025-05-28T16:30:00Z',
     fileUploaded: null,
     description: 'Request for a second monitor was declined.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-002',
+      name: 'John Smith'
+    }
   },
   {
     ticketNumber: 'TCK-007',
@@ -99,7 +123,11 @@ const sampleTickets = [
     lastUpdated: '2025-05-27T15:00:00Z',
     fileUploaded: null,
     description: 'User canceled request for an external keyboard.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-002',
+      name: 'John Smith'
+    }
   },
   {
     ticketNumber: 'TCK-008',
@@ -113,7 +141,11 @@ const sampleTickets = [
     lastUpdated: '2025-05-30T17:30:00Z',
     fileUploaded: 'renewal-confirmation.pdf',
     description: 'Annual license for Zoom has been renewed.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-003',
+      name: 'Clara Reyes'
+    }
   },
   {
     ticketNumber: 'TCK-009',
@@ -127,7 +159,11 @@ const sampleTickets = [
     lastUpdated: '2025-05-26T14:45:00Z',
     fileUploaded: null,
     description: 'Laptop returned after resignation.',
-    scheduledRequest: null
+    scheduledRequest: null,
+    assignedTo: {
+      id: 'AGT-002',
+      name: 'John Smith'
+    }
   }
 ];
 
@@ -140,7 +176,13 @@ export const saveTickets = (tickets) => {
   localStorage.setItem(TICKET_STORAGE_KEY, JSON.stringify(tickets));
 };
 
+export const getTicketByNumber = (ticketNumber) => {
+  const tickets = getTickets();
+  return tickets.find(ticket => ticket.ticketNumber === ticketNumber) || null;
+};
+
 // Initialize mock data only if empty
 if (!localStorage.getItem(TICKET_STORAGE_KEY)) {
   saveTickets(sampleTickets);
 }
+

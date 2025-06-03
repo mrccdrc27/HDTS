@@ -8,7 +8,6 @@ import UserTicketDetails from '../user/pages/ticket-details/user_ticket-details-
 import ActiveTickets from '../user/pages/active-tickets/user_active-tickets-main.jsx';
 import TicketRecords from '../user/pages/ticket-records/user_ticket-records-main.jsx';
 
-// ticket details layout to be edited
 export const UserRoutes = () => {
   return (
     <Routes>
@@ -16,10 +15,12 @@ export const UserRoutes = () => {
         <Route path="home" element={<UserHome />} />
         <Route path="frequently-asked-questions" element={<FrequentlyAskedQuestions />} />
         <Route path="request-ticket" element={<RequestTicket />} />
-        <Route path="ticket-details/" element={<UserTicketDetails />} />
+
+        {/* Added :ticketNumber param to route */}
+        <Route path="ticket-details/:ticketNumber" element={<UserTicketDetails />} />
+
         <Route path="active-tickets/:category" element={<ActiveTickets />} />
         <Route path="ticket-records/:category" element={<TicketRecords />} />
-
       </Route>
     </Routes>
   );

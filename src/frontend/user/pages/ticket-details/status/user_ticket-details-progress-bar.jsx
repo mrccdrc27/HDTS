@@ -1,12 +1,19 @@
-// UserTicketProgress.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { getTicketByNumber } from "../../../../../utilities/storage/ticketStorage.js";
 import "./user_ticket-details-progress-bar.css";
 
-const UserTicketProgress = () => {
+const UserTicketProgress = ({ ticketNumber }) => {
   const wrapperRef = useRef(null);
   const cardRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const [currentStep, setCurrentStep] = useState(2); // Demo: Currently at "In Progress"
+  const [ticket, setTicket] = useState(null);
+
+  useEffect(() => {
+    if (ticketNumber) {
+      const data = getTicketByNumber(ticketNumber);
+      setTicket(data);
+    }
+  }, [ticketNumber]);
 
   useEffect(() => {
     function checkOverflow() {
@@ -19,20 +26,44 @@ const UserTicketProgress = () => {
     return () => window.removeEventListener("resize", checkOverflow);
   }, []);
 
-  const progressSteps = [
-    { label: "Submitted", icon: "📝", status: "completed" },
-    { label: "Under Review", icon: "🔍", status: "completed" },
-    { label: "In Progress", icon: "⚙️", status: "current" },
-    { label: "Awaiting Info", icon: "⏳", status: "pending" },
-    { label: "Completed", icon: "✅", status: "pending" },
-    { label: "Closed", icon: "📁", status: "pending" },
+  if (!ticket) return <div>Loading progress...</div>;
+
+  const stepOrder = [
+    "Submitted",
+    "Under Review",
+    "In Progress",
+    "Awaiting Info",
+    "Completed",
+    "Closed",
   ];
 
-  const calculateProgress = () => {
+  const currentIndex = stepOrder.indexOf(ticket.status);
+  // If status not found, default to 0 (Submitted)
+  const safeCurrentIndex = currentIndex === -1 ? 0 : currentIndex;
+
+  const progressSteps = stepOrder.map((label, idx) => ({
+    label,
+    icon: {
+      Submitted: "📝",
+      "Under Review": "🔍",
+      "In Progress": "⚙️",
+      "Awaiting Info": "⏳",
+      Completed: "✅",
+      Closed: "📁",
+    }[label],
+    status:
+      idx < safeCurrentIndex
+        ? "completed"
+        : idx === safeCurrentIndex
+        ? "current"
+        : "pending",
+  }));
+
+  const calculateProgress = useMemo(() => {
     const completedSteps = progressSteps.filter(step => step.status === "completed").length;
     const currentStepProgress = progressSteps.some(step => step.status === "current") ? 0.5 : 0;
     return ((completedSteps + currentStepProgress) / progressSteps.length) * 100;
-  };
+  }, [progressSteps]);
 
   return (
     <div className="progress-container">
@@ -48,15 +79,15 @@ const UserTicketProgress = () => {
       >
         <div className="progress-card" ref={cardRef}>
           <div className="progress-line">
-            <div 
+            <div
               className="progress-fill"
-              style={{ width: `${calculateProgress()}%` }}
+              style={{ width: `${calculateProgress}%` }}
             />
           </div>
 
           {progressSteps.map((step, index) => (
-            <div 
-              className={`step step-${step.status}`} 
+            <div
+              className={`step step-${step.status}`}
               key={index}
               role="listitem"
               aria-label={`Step ${index + 1}: ${step.label}`}
@@ -89,7 +120,7 @@ const UserTicketProgress = () => {
           </div>
         </div>
         <div className="progress-percentage">
-          {Math.round(calculateProgress())}% Complete
+          {Math.round(calculateProgress)}% Complete
         </div>
       </div>
     </div>

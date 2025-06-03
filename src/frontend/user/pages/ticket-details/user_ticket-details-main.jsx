@@ -1,35 +1,36 @@
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./user_ticket-details-main.css";
 import UserTicketDetailsInformation from "./ticket-information/user_ticket-details-information.jsx";
 import UserTicketDetailsStatus from "./status/user_ticket-details-status.jsx";
 import UserTicketDetailsMessaging from "./messaging/user_ticket-details-messaging.jsx";
 
 const UserTicketDetails = () => {
-  const navigate = useNavigate();
+  const { ticketNumber } = useParams(); // get ticketNumber from URL
 
-  const handleBack = () => {
-    navigate(-1); // Goes back to previous page
-  };
+  if (!ticketNumber) {
+    return (
+      <div className="user-ticket-details-container">
+        <p className="error-message">No ticket number specified in URL.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="user-ticket-details-container">
-      <div className="header-row">
-        <button className="back-button" onClick={handleBack}>
-          ← 
-        </button>
-      </div>
-
+      {/* Removed header-row with back button */}
       <div className="row-two-columns">
         <div className="section column">
-          <UserTicketDetailsInformation />
+          <UserTicketDetailsInformation ticketNumber={ticketNumber} />
         </div>
         <div className="section column">
-          <UserTicketDetailsStatus />
+          {/* Uncomment if you want to show status */}
+          {/* <UserTicketDetailsStatus ticketNumber={ticketNumber} /> */}
         </div>
       </div>
 
       <div className="section">
-        <UserTicketDetailsMessaging />
+        {/* Uncomment if you want to show messaging */}
+        {/* <UserTicketDetailsMessaging ticketNumber={ticketNumber} /> */}
       </div>
     </div>
   );

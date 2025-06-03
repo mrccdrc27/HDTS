@@ -50,6 +50,46 @@ html, body {
   box-sizing: border-box;
   min-height: auto;
   width: 100%;
+  position: relative;
+}
+
+/* Back button bar inside content, top with divider */
+.back-button-bar {
+  width: calc(100% + 4rem); /* override horizontal padding (2rem left + 2rem right) */
+  margin-left: -2rem;
+  margin-right: -2rem;
+  height: 36px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--container-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+
+/* Back button styling - icon only, no border */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  font-size: 1.25rem; /* bigger icon size */
+  background-color: transparent;
+  border: none; /* remove border */
+  color: var(--user-header-bg);
+  cursor: pointer;
+  border-radius: 50%; /* circular on hover */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.back-button:hover,
+.back-button:focus {
+  background-color: rgba(0, 0, 0, 0.1); /* subtle circular background */
+  outline: none;
 }
 
 /* Responsive for small screens (max-width: 768px) */
