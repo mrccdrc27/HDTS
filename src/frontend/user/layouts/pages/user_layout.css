@@ -55,20 +55,19 @@ html, body {
 
 /* Back button bar inside content, top with divider */
 .back-button-bar {
-  width: calc(100% + 4rem); /* override horizontal padding (2rem left + 2rem right) */
-  margin-left: -2rem;
-  margin-right: -2rem;
+  width: calc(100% + 4rem); /* expands to full width of container + padding */
+  margin: -2rem -2rem 1.5rem -2rem; /* move up and out horizontally */
   height: 36px;
   border-bottom: 1px solid #ddd;
   display: flex;
   align-items: center;
   padding-left: 1rem;
-  margin-bottom: 1.5rem;
   background-color: var(--container-bg);
   position: sticky;
   top: 0;
   z-index: 10;
 }
+
 
 
 /* Back button styling - icon only, no border */
