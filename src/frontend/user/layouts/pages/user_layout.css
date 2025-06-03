@@ -1,30 +1,21 @@
-:root {
-  --user-header-height: 64px;
-  --user-header-bg: var(--blue-logo);
-  --user-content-bg: #f5f7fa;
-  --container-bg: #ffffff;
-  --container-radius: 8px;
-  --container-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  --top-margin: 40px; /* Space between navbar and content */
-  --page-padding: 20px; /* Space around the entire page */
-}
-
-/* Enable full-page scroll */
+/* Base Styles */
 html, body {
   height: 100%;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  line-height: 1.6;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
-  background-color: var(--user-content-bg);
 }
 
-/* Main wrapper */
+/* Your user-layout styles, using new color vars */
 .user-layout {
   position: relative;
   min-height: 100vh;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--user-content-bg);
-  padding: var(--page-padding);
+  background-color: var(--background-color);
+  padding: 20px; /* previously --page-padding */
 }
 
 /* Navbar fixed to top */
@@ -33,8 +24,8 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: var(--user-header-height);
-  background-color: var(--user-header-bg);
+  height: 64px; /* previously --user-header-height */
+  background-color: var(--blue-logo);
   z-index: 1000;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
@@ -43,9 +34,9 @@ html, body {
 .userLayout-content {
   max-width: 1200px;
   margin: 5rem auto;
-  background-color: var(--container-bg);
-  border-radius: var(--container-radius);
-  box-shadow: var(--container-shadow);
+  background-color: #ffffff; /* You can add --container-bg if you want to add a new var */
+  border-radius: 8px; /* same as --container-radius */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 2rem;
   box-sizing: border-box;
   min-height: auto;
@@ -55,20 +46,18 @@ html, body {
 
 /* Back button bar inside content, top with divider */
 .back-button-bar {
-  width: calc(100% + 4rem); /* expands to full width of container + padding */
-  margin: -2rem -2rem 1.5rem -2rem; /* move up and out horizontally */
-  height: 36px;
+  width: calc(100% + 4rem);
+  margin: -1.5rem -2rem 1.5rem -2rem;
+  padding: 0.5rem 0 0.5rem 1rem;
+  height: auto;
   border-bottom: 1px solid #ddd;
   display: flex;
   align-items: center;
-  padding-left: 1rem;
-  background-color: var(--container-bg);
+  background-color: #ffffff;
   position: sticky;
   top: 0;
   z-index: 10;
 }
-
-
 
 /* Back button styling - icon only, no border */
 .back-button {
@@ -76,18 +65,19 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 0.4rem;
-  font-size: 1.25rem; /* bigger icon size */
+  font-size: 1.25rem;
   background-color: transparent;
-  border: none; /* remove border */
-  color: var(--user-header-bg);
+  border: none;
+  color: var(--blue-logo);
   cursor: pointer;
-  border-radius: 50%; /* circular on hover */
+  border-radius: 50%;
   transition: background-color 0.2s ease, color 0.2s ease;
+  transform: translateY(-2.5px);
 }
 
 .back-button:hover,
 .back-button:focus {
-  background-color: rgba(0, 0, 0, 0.1); /* subtle circular background */
+  background-color: rgba(0, 0, 0, 0.1);
   outline: none;
 }
 

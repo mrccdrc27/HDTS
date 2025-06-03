@@ -186,6 +186,7 @@ const UserActiveTicketsTable = ({
               <th>Department</th>
               <th>Category</th>
               <th>Sub Category</th>
+              <th>Scheduled Request</th> {/* moved here */}
               <th>Date Created</th>
               <th>Last Updated</th>
               <th>Action</th>
@@ -202,6 +203,7 @@ const UserActiveTicketsTable = ({
                   department,
                   category,
                   subCategory,
+                  scheduledRequest, // moved here
                   dateCreated,
                   lastUpdated,
                 } = ticket;
@@ -226,6 +228,9 @@ const UserActiveTicketsTable = ({
                     <td>{department}</td>
                     <td>{category}</td>
                     <td>{subCategory}</td>
+                    <td className="user-active-scheduled-request-cell">
+                      {scheduledRequest ? formatDateTime(scheduledRequest) : 'None'}
+                    </td>
                     <td>{formatDateTime(dateCreated)}</td>
                     <td>{formatDateTime(lastUpdated)}</td>
                     <td>
@@ -255,7 +260,7 @@ const UserActiveTicketsTable = ({
               })
             ) : (
               <tr className="user-active-no-tickets-row">
-                <td colSpan="10">{noTicketsMessage}</td>
+                <td colSpan="11">{noTicketsMessage}</td>
               </tr>
             )}
           </tbody>

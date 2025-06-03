@@ -1,175 +1,118 @@
-/* TicketDetails.css */
-
-/* Main ticket container */
-.ticket-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding-right: 10px;
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-/* Header with ticket ID and status button */
 .ticket-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
-  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .ticket-id {
-  font-size: 32px;
+  font-size: 1.75rem;
+  color: #1e40af;
   font-weight: 700;
-  color: #2563eb;
-  margin: 0;
 }
 
-.status-button {
-  background-color: #6b7280c7;
-  color: #272a30;
+.status-badge {
+  background-color: #e0e7ff;
+  color: #1d4ed8;
   padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: bold;
-  border: none;
-}
-
-/* Metadata row */
-.ticket-metadata {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-  font-size: 11px;
-  color: #4b5563b7;
-  margin-bottom: 15px;
-}
-
-/* Group container for fields */
-.field-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 10px;
-}
-
-.field-label {
+  border-radius: 4px;
+  font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 2px;
-  font-size: 14px;
-  color: #00000081;
+  min-width: 100px;
+  text-align: center;
 }
 
-.field-input {
-  resize: none;
-  padding: 8px 10px;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  color: #555;
-  cursor: not-allowed;
-  margin-bottom: 2px;
+.info-grid.three-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 32px;
+  margin-bottom: 12px;
 }
 
-/* Form label styles */
-.form-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #00000081;
-  margin-bottom: 2px;
+.scheduled-request-row {
+  max-width: 400px;
+  margin-bottom: 12px;
 }
 
-.form-input,
-.description-textarea {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 5px;
-  background-color: white;
-  color: #000;
-  font-size: 13px;
-  font-family: inherit;
-  line-height: 1.4;
-  resize: vertical;
-}
-
-.description-textarea {
-  min-height: 80px;
-}
-
-/* Row with two columns */
 .form-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 15px;
+  gap: 16px;
+  margin-bottom: 12px;
 }
 
 .form-column {
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-/* File upload section */
-.file-upload-section {
-  margin-bottom: 10px;
-}
-
-.file-button {
-  background-color: #1e40af;
-  color: white;
-  padding: 8px 75px;
-  border-radius: 6px;
-  font-size: 12px;
+.form-label {
   font-weight: 500;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  gap: 4px;
-  transition: background-color 0.2s ease;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #444;
 }
 
-.file-button:hover {
-  background-color: #0f2664;
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 6px;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.form-textarea {
+  height: 80px;
+  resize: none;
+}
+
+.date-info-row {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background-color: #ddd;
+  margin: 12px 0;
+}
+
+.field-group {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.file-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: #e0f2ff;
+  border: 1px solid #90cdf4;
+  border-radius: 4px;
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+
+.file-link-button:hover {
+  background-color: #bae6fd;
 }
 
 .file-icon {
-  width: 12px;
-  height: 12px;
+  margin-right: 4px;
 }
 
-/* Scheduled Request */
-.scheduled-request {
-  margin-top: 10px;
+.info-item {
+  color: #333;
 }
-
-/* Ticket Status Badge Styles */
-.ticket-status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  background-color: var(--neutral-light-gray, #E3E3E3);
-  padding: 2px 6px;
-}
-
-/* Different status text colors */
-.ticket-status-new { color: #1e40af; background-color: #E3E3E3 !important; }
-.ticket-status-open { color: #166534; background-color: #E3E3E3 !important; }
-.ticket-status-pending { color: #92400e; background-color: #E3E3E3 !important; }
-.ticket-status-progress { color: #0c4a6e; background-color: #E3E3E3 !important; }
-.ticket-status-hold { color: #991b1b; background-color: #E3E3E3 !important; }
-.ticket-status-resolved { color: #22c55e; background-color: #E3E3E3 !important; }
-.ticket-status-closed { color: #4b5563; background-color: #E3E3E3 !important; }
-.ticket-status-unknown { color: #b91c1c; background-color: #E3E3E3 !important; }

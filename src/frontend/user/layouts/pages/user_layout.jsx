@@ -8,7 +8,10 @@ const UserLayout = () => {
   const navigate = useNavigate();
 
   // Show back button only on specific routes
-  const showBackButton = location.pathname.startsWith('/user/ticket-details');
+  const showBackButton =
+    location.pathname.startsWith('/user/ticket-details') ||
+    location.pathname === '/user/request-ticket';
+
 
   return (
     <div className="user-layout">
