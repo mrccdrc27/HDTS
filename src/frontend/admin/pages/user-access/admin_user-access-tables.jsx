@@ -2,14 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import './admin_user-access-tables.css';
 
-import { ArrowDown, ArrowUp, ArrowDownUp } from 'lucide-react';
-
 import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
 import { users } from '/src/utilities/storage/userStorage.js';
 
-const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChange }) => {
+const UserAccessTable = ({
+  category,
+  filters,
+  sortBy,
+  sortDirection,
+  onSortChange,
+}) => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -44,11 +48,18 @@ const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChang
         ? user.dateCreated === filters.date
         : true;
 
+      const matchesSearch = filters.searchTerm
+        ? Object.values(user).some((val) =>
+            String(val).toLowerCase().includes(filters.searchTerm.toLowerCase())
+          )
+        : true;
+
       return (
         matchesDepartment &&
         matchesRole &&
         matchesStatus &&
-        matchesDate
+        matchesDate &&
+        matchesSearch
       );
     });
   }, [filters, category]);
@@ -93,15 +104,6 @@ const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChang
     }
   };
 
-  const renderSortIcon = (key) => {
-    if (sortBy !== key) return <ArrowDownUp size={16} className="sort-icon neutral" />;
-    return sortDirection === 'asc' ? (
-      <ArrowUp size={16} className="sort-icon active" />
-    ) : (
-      <ArrowDown size={16} className="sort-icon active" />
-    );
-  };
-
   return (
     <div className="user-access-table">
       <table className="user-access-table-element">
@@ -110,13 +112,11 @@ const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChang
             {columns.map(({ label, key }) => (
               <th
                 key={key}
-                className="user-access-th sortable"
+                className="user-access-th"
                 onClick={() => handleSort(key)}
+                style={{ cursor: 'pointer' }}
               >
-                <span className="sortable-header">
-                  {label}
-                  {renderSortIcon(key)}
-                </span>
+                {label}
               </th>
             ))}
             <th className="user-access-th">Actions</th>
@@ -134,7 +134,7 @@ const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChang
               <tr
                 key={user.companyId || user.id || user.email}
                 className="user-access-row clickable"
-                onClick={() => navigate(`/admin/account-details`)}
+                onClick={() => navigate(`/admin/account-details/${user.companyId}`)}
               >
                 <td>{user.companyId}</td>
                 <td>{user.lastName}</td>
@@ -150,23 +150,22 @@ const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChang
                 </td>
                 <td>{user.dateCreated}</td>
                 <td className="user-access-actions" onClick={(e) => e.stopPropagation()}>
-  {user.status === 'Pending' ? (
-    <button
-      className="user-access-review-btn"
-      onClick={() => openModal('review', user)}
-    >
-      Review
-    </button>
-  ) : (
-    <button
-      className="user-access-update-btn"
-      onClick={() => openModal('update', user)}
-    >
-      Update
-    </button>
-  )}
-</td>
-
+                  {user.status === 'Pending' ? (
+                    <button
+                      className="user-access-review-btn"
+                      onClick={() => openModal('review', user)}
+                    >
+                      Review
+                    </button>
+                  ) : (
+                    <button
+                      className="user-access-update-btn"
+                      onClick={() => openModal('update', user)}
+                    >
+                      Update
+                    </button>
+                  )}
+                </td>
               </tr>
             ))
           )}

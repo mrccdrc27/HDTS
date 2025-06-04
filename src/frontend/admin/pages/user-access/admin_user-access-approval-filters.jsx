@@ -12,55 +12,57 @@ const SORT_OPTIONS = {
 };
 
 const ApprovalsFilters = ({ onFilterChange }) => {
-  const [filters, setFilters] = useState({
+  const [state, setState] = useState({
     department: '',
     role: '',
     status: 'Pending',
     date: '',
+    searchTerm: '',
+    sortBy: '',
+    sortDirection: 'asc',
   });
 
-  const [sortBy, setSortBy] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
 
   useEffect(() => {
-    onFilterChange?.({ ...filters, sortBy, sortDirection });
-  }, [filters, sortBy, sortDirection]);
+    onFilterChange?.(state);
+  }, [state, onFilterChange]);
+
+  const updateState = (updates) => {
+    setState(prev => ({ ...prev, ...updates }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updated = { ...filters, [name]: value, status: 'Pending' };
-    setFilters(updated);
+    updateState({ [name]: value });
   };
 
   const handleDateChange = (value) => {
-    const updated = { ...filters, date: value, status: 'Pending' };
-    setFilters(updated);
+    updateState({ date: value });
   };
 
   const toggleSortDirection = (e) => {
     e?.stopPropagation();
-    const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-    setSortDirection(newDirection);
+    updateState({
+      sortDirection: state.sortDirection === 'asc' ? 'desc' : 'asc',
+    });
   };
 
   const handleSortSelect = (key) => {
-    setSortBy(key);
+    updateState({ sortBy: key });
     setShowSortMenu(false);
   };
 
   return (
     <div className="user-access-approval-toolbar">
-      {/* Filter Section */}
       <div className="user-access-approval-filter-section">
         <span className="user-access-approval-filter-label">Filter by:</span>
 
-        {/* Department Filter */}
         <div className="user-access-approval-filter-dropdown">
           <select
             name="department"
-            value={filters.department}
+            value={state.department}
             onChange={handleChange}
             className="user-access-approval-filter-select"
           >
@@ -75,11 +77,10 @@ const ApprovalsFilters = ({ onFilterChange }) => {
           <ChevronDown className="user-access-approval-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Role Filter */}
         <div className="user-access-approval-filter-dropdown">
           <select
             name="role"
-            value={filters.role}
+            value={state.role}
             onChange={handleChange}
             className="user-access-approval-filter-select"
           >
@@ -91,10 +92,9 @@ const ApprovalsFilters = ({ onFilterChange }) => {
           <ChevronDown className="user-access-approval-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Date Filter */}
         <div className="user-access-approval-filter-dropdown date-filter-wrapper">
           <button
-            onClick={() => setShowDateFilter((prev) => !prev)}
+            onClick={() => setShowDateFilter(prev => !prev)}
             className="user-access-date-filter-button"
           >
             <span>Date</span>
@@ -102,29 +102,28 @@ const ApprovalsFilters = ({ onFilterChange }) => {
           </button>
           {showDateFilter && (
             <DateFilter
-              value={filters.date}
+              value={state.date}
               onChange={handleDateChange}
             />
           )}
         </div>
       </div>
 
-      {/* Sort Section */}
       <div className="user-access-approval-sort-section">
         <span className="user-access-approval-sort-label">Sort by:</span>
         <div className="user-access-approval-sort-dropdown">
           <button
             className="user-access-approval-custom-select-button"
-            onClick={() => setShowSortMenu((prev) => !prev)}
+            onClick={() => setShowSortMenu(prev => !prev)}
           >
             <span>
-              {sortBy ? SORT_OPTIONS[sortBy] : 'Select'}
-              {sortBy && (
+              {state.sortBy ? SORT_OPTIONS[state.sortBy] : 'Select'}
+              {state.sortBy && (
                 <span
                   className="user-access-approval-sort-arrow-icon"
                   onClick={toggleSortDirection}
                 >
-                  {sortDirection === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
+                  {state.sortDirection === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                 </span>
               )}
             </span>

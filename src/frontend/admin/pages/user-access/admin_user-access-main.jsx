@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import UserAccessSearchAndCreateUser from "./admin_user-access-search-and-create-user.jsx";
@@ -9,111 +9,97 @@ import ApprovalsTable from "./admin_user-access-approval-table.jsx";
 import TablePagination from "../../../shared/components/table-pagination.jsx";
 
 const categoryDisplayMap = {
-  'all-users': 'All Users',
-  'users': 'Users',
-  'ticket-agents': 'Ticket Agents',
-  'system-admins': 'System Admins',
-  'for-approvals': 'For Approvals',
+  "all-users": "All Users",
+  users: "Users",
+  "ticket-agents": "Ticket Agents",
+  "system-admins": "System Admins",
+  "for-approvals": "For Approvals",
 };
 
 const formatHeading = (category) => {
-  if (!category) return 'All Users';
+  if (!category) return "All Users";
   const normalized = category.toLowerCase();
-  return categoryDisplayMap[normalized] || normalized.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return (
+    categoryDisplayMap[normalized] ||
+    normalized.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 };
 
 const UserAccess = () => {
   const { category } = useParams();
   const navigate = useNavigate();
-  const normalizedCategory = category?.toLowerCase() || 'all-users';
-  const heading = formatHeading(category);
 
-  // Filters
-  const [departmentFilter, setDepartmentFilter] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const normalizedCategory = useMemo(
+    () => category?.toLowerCase() || "all-users",
+    [category]
+  );
+  const heading = useMemo(() => formatHeading(category), [category]);
 
-  // Sorting
-  const [sortBy, setSortBy] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
+  // Centralized filters state for both UserAccessFilters and ApprovalsFilters
+  const [filters, setFilters] = useState({
+    department: "",
+    role: "",
+    status: "",
+    date: "",
+    searchTerm: "",
+    sortBy: "",
+    sortDirection: "asc",
+  });
 
-  // Search
-  const [searchTerm, setSearchTerm] = useState('');
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-
-  // Users
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load users from storage
+  // Update a single filter and reset page
+  const updateFilter = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
     setIsLoading(true);
-    import('/src/utilities/storage/userStorage.js').then(({ users: storedUsers }) => {
-      setUsers(Array.isArray(storedUsers) ? storedUsers : []);
-      setIsLoading(false);
-    }).catch((err) => {
-      console.error("Failed to load users:", err);
-      setUsers([]);
-      setIsLoading(false);
-    });
+    import("/src/utilities/storage/userStorage.js")
+      .then(({ users: storedUsers }) => {
+        setUsers(Array.isArray(storedUsers) ? storedUsers : []);
+      })
+      .catch((err) => {
+        console.error("Failed to load users:", err);
+        setUsers([]);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
-  // Reset page when filters/search/sort/category change
+  // Navigate to role-specific category when role filter changes and category doesn't match
   useEffect(() => {
-    setCurrentPage(1);
-  }, [
-    departmentFilter,
-    roleFilter,
-    statusFilter,
-    dateFrom,
-    dateTo,
-    sortBy,
-    sortDirection,
-    searchTerm,
-    normalizedCategory,
-  ]);
-
-  // Auto navigate by role
-  useEffect(() => {
-    if (normalizedCategory !== 'for-approvals') {
+    if (normalizedCategory !== "for-approvals") {
       const roleToCategory = {
-        'System Admin': 'system-admins',
-        'Ticket Agent': 'ticket-agents',
-        'User': 'users',
-        '': 'all-users',
+        "System Admin": "system-admins",
+        "Ticket Agent": "ticket-agents",
+        User: "users",
+        "": "all-users",
       };
-      if (roleFilter && roleToCategory[roleFilter] && roleToCategory[roleFilter] !== normalizedCategory) {
-        navigate(`/admin/user-access/${roleToCategory[roleFilter]}`);
+      if (
+        filters.role &&
+        roleToCategory[filters.role] &&
+        roleToCategory[filters.role] !== normalizedCategory
+      ) {
+        navigate(`/admin/user-access/${roleToCategory[filters.role]}`);
       }
     }
-  }, [roleFilter, normalizedCategory, navigate]);
+  }, [filters.role, normalizedCategory, navigate]);
 
+  // Handler for status update in ApprovalsTable
   const handleStatusUpdate = useCallback((userId, newStatus) => {
-    setUsers(prev =>
-      prev.map(user =>
+    setUsers((prev) =>
+      prev.map((user) =>
         user.id === userId ? { ...user, status: newStatus } : user
       )
     );
   }, []);
-
-  const sharedFilters = {
-    department: departmentFilter,
-    role: roleFilter,
-    status: statusFilter,
-    dateFrom,
-    dateTo,
-    sortBy,
-    sortDirection,
-    searchTerm,
-    currentPage,
-    itemsPerPage,
-  };
 
   return (
     <div className="user-access-main">
@@ -122,38 +108,39 @@ const UserAccess = () => {
       </header>
 
       <section className="user-access-search">
-        <UserAccessSearchAndCreateUser searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <UserAccessSearchAndCreateUser
+          searchTerm={filters.searchTerm}
+          setSearchTerm={(val) => updateFilter("searchTerm", val)}
+        />
       </section>
 
-      {normalizedCategory === 'for-approvals' ? (
+      {normalizedCategory === "for-approvals" ? (
         <ApprovalsFilters
-          departmentFilter={departmentFilter}
-          setDepartmentFilter={setDepartmentFilter}
-          dateFrom={dateFrom}
-          setDateFrom={setDateFrom}
-          dateTo={dateTo}
-          setDateTo={setDateTo}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortDirection={sortDirection}
-          setSortDirection={setSortDirection}
+          department={filters.department}
+          setDepartment={(val) => updateFilter("department", val)}
+          status={filters.status}
+          setStatus={(val) => updateFilter("status", val)}
+          date={filters.date}
+          setDate={(val) => updateFilter("date", val)}
+          sortBy={filters.sortBy}
+          setSortBy={(val) => updateFilter("sortBy", val)}
+          sortDirection={filters.sortDirection}
+          setSortDirection={(val) => updateFilter("sortDirection", val)}
         />
       ) : (
         <UserAccessFilters
-          departmentFilter={departmentFilter}
-          setDepartmentFilter={setDepartmentFilter}
-          roleFilter={roleFilter}
-          setRoleFilter={setRoleFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          dateFrom={dateFrom}
-          setDateFrom={setDateFrom}
-          dateTo={dateTo}
-          setDateTo={setDateTo}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortDirection={sortDirection}
-          setSortDirection={setSortDirection}
+          category={normalizedCategory}
+          department={filters.department}
+          role={filters.role}
+          status={filters.status}
+          date={filters.date}
+          sortBy={filters.sortBy}
+          sortDirection={filters.sortDirection}
+          onFilterChange={(newFilters) => {
+            Object.entries(newFilters).forEach(([key, value]) =>
+              updateFilter(key, value)
+            );
+          }}
         />
       )}
 
@@ -162,19 +149,27 @@ const UserAccess = () => {
           <div className="loading-overlay">
             <div className="spinner" />
           </div>
-        ) : normalizedCategory === 'for-approvals' ? (
+        ) : normalizedCategory === "for-approvals" ? (
           <ApprovalsTable
-            filters={sharedFilters}
+            users={users}
+            filters={filters}
             onStatusUpdate={handleStatusUpdate}
             onTotalItemsChange={setTotalItems}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
           />
         ) : (
           <UserAccessTable
+            category={normalizedCategory}
             users={users}
-            filters={sharedFilters}
-            onStatusUpdate={handleStatusUpdate}
+            filters={filters}
+            onSortChange={(key, direction) => {
+              updateFilter("sortBy", key);
+              updateFilter("sortDirection", direction);
+            }}
             onTotalItemsChange={setTotalItems}
-            normalizedCategory={normalizedCategory}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
           />
         )}
       </div>
