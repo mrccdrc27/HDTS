@@ -222,22 +222,24 @@ const TicketManagementTable = ({
                   <td>{formatDateTime(ticket.lastUpdated)}</td>
                   <td>
                     <div className="ticket-management-action-buttons">
-                      {ticket.status.toLowerCase() !== 'closed' && (
-                        <button
-                          className="ticket-management-action-btn ticket-management-close-btn"
-                          onClick={(e) => handleClose(e, ticket.ticketNumber)}
-                          title="Close Ticket"
-                        >
-                          Close
-                        </button>
+                      {ticket.status.toLowerCase() === 'new' && (
+                        <>
+                          <button
+                            className="ticket-management-action-btn ticket-management-close-btn"
+                            onClick={(e) => handleClose(e, ticket.ticketNumber)}
+                            title="Close Ticket"
+                          >
+                            Close
+                          </button>
+                          <button
+                            className="ticket-management-action-btn ticket-management-reject-btn"
+                            onClick={(e) => handleReject(e, ticket.ticketNumber)}
+                            title="Reject Ticket"
+                          >
+                            Reject
+                          </button>
+                        </>
                       )}
-                      <button
-                        className="ticket-management-action-btn ticket-management-reject-btn"
-                        onClick={(e) => handleReject(e, ticket.ticketNumber)}
-                        title="Reject Ticket"
-                      >
-                        Reject
-                      </button>
                     </div>
                   </td>
                 </tr>
