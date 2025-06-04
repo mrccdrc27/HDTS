@@ -7,14 +7,15 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Define which routes should show the back button for admin
-  const showBackButton =
-    location.pathname.startsWith('/admin/ticket-details');
+  const showBackButton = location.pathname.startsWith('/admin/ticket-details');
 
   return (
     <div className="admin-layout">
       <div className="admin-layout-header">
         <AdminNavbar />
+      </div>
+
+      <div className="admin-layout-content">
         {showBackButton && (
           <div className="back-button-bar">
             <button
@@ -26,8 +27,6 @@ const AdminLayout = () => {
             </button>
           </div>
         )}
-      </div>
-      <div className="admin-layout-content">
         <Outlet />
       </div>
     </div>

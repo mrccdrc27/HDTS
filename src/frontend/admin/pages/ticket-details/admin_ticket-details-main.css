@@ -6,6 +6,41 @@
   font-family: Arial, sans-serif;
 }
 
+.ticket-approval-buttons-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  justify-content: flex-end; /* Align buttons to right */
+}
+
+.approve-button,
+.reject-button {
+  padding: 8px 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.approve-button {
+  background-color: #22c55e;
+  color: white;
+}
+
+.approve-button:hover {
+  background-color: #16a34a;
+}
+
+.reject-button {
+  background-color: #ef4444;
+  color: white;
+}
+
+.reject-button:hover {
+  background-color: #dc2626;
+}
+
 .admin-section {
   border: 1px solid #ccc;
   padding: 15px;
