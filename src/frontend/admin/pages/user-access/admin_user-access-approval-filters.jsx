@@ -26,34 +26,37 @@ const ApprovalsFilters = ({ onFilterChange }) => {
 
   useEffect(() => {
     onFilterChange?.({ ...filters, sortBy, sortDirection });
-  }, []);
+  }, [filters, sortBy, sortDirection]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...filters, [name]: value, status: 'Pending' };
     setFilters(updated);
-    onFilterChange?.({ ...updated, sortBy, sortDirection });
   };
 
-  const toggleSortDirection = () => {
-    const newDir = sortDirection === 'asc' ? 'desc' : 'asc';
-    setSortDirection(newDir);
-    onFilterChange?.({ ...filters, sortBy, sortDirection: newDir });
+  const handleDateChange = (value) => {
+    const updated = { ...filters, date: value, status: 'Pending' };
+    setFilters(updated);
   };
 
-  const handleSortSelect = (value) => {
-    setSortBy(value);
+  const toggleSortDirection = (e) => {
+    e?.stopPropagation();
+    const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    setSortDirection(newDirection);
+  };
+
+  const handleSortSelect = (key) => {
+    setSortBy(key);
     setShowSortMenu(false);
-    onFilterChange?.({ ...filters, sortBy: value, sortDirection });
   };
 
   return (
     <div className="user-access-approval-toolbar">
-      {/* Filters */}
+      {/* Filter Section */}
       <div className="user-access-approval-filter-section">
         <span className="user-access-approval-filter-label">Filter by:</span>
 
-        {/* Department */}
+        {/* Department Filter */}
         <div className="user-access-approval-filter-dropdown">
           <select
             name="department"
@@ -72,7 +75,7 @@ const ApprovalsFilters = ({ onFilterChange }) => {
           <ChevronDown className="user-access-approval-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Role */}
+        {/* Role Filter */}
         <div className="user-access-approval-filter-dropdown">
           <select
             name="role"
@@ -88,7 +91,7 @@ const ApprovalsFilters = ({ onFilterChange }) => {
           <ChevronDown className="user-access-approval-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Date */}
+        {/* Date Filter */}
         <div className="user-access-approval-filter-dropdown date-filter-wrapper">
           <button
             onClick={() => setShowDateFilter((prev) => !prev)}
@@ -100,17 +103,13 @@ const ApprovalsFilters = ({ onFilterChange }) => {
           {showDateFilter && (
             <DateFilter
               value={filters.date}
-              onChange={(value) => {
-                const updated = { ...filters, date: value, status: 'Pending' };
-                setFilters(updated);
-                onFilterChange?.({ ...updated, sortBy, sortDirection });
-              }}
+              onChange={handleDateChange}
             />
           )}
         </div>
       </div>
 
-      {/* Sort */}
+      {/* Sort Section */}
       <div className="user-access-approval-sort-section">
         <span className="user-access-approval-sort-label">Sort by:</span>
         <div className="user-access-approval-sort-dropdown">
@@ -123,10 +122,7 @@ const ApprovalsFilters = ({ onFilterChange }) => {
               {sortBy && (
                 <span
                   className="user-access-approval-sort-arrow-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleSortDirection();
-                  }}
+                  onClick={toggleSortDirection}
                 >
                   {sortDirection === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                 </span>

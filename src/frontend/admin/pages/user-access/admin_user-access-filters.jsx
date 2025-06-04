@@ -84,47 +84,46 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
       <div className="user-access-filter-section">
         <span className="user-access-filter-label">Filter by:</span>
 
-        {/* Department & Role */}
-{[
-  ['department', 'Department', DEPARTMENTS],
-  ['role', 'Role', ROLE_OPTIONS],
-].map(([name, label, options]) => (
-  <div className="user-access-filter-dropdown" key={name}>
-    <select
-      name={name}
-      value={filters[name]}
-      onChange={handleChange}
-      className="user-access-filter-select"
-    >
-      <option value="">{label}</option>
-      {options.map((opt) => (
-        <option key={opt} value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
-    <ChevronDown className="user-access-filter-dropdown-icon" size={16} />
-  </div>
-))}
+        {[
+          ['department', 'Department', DEPARTMENTS],
+          ['role', 'Role', ROLE_OPTIONS],
+        ].map(([name, label, options]) => (
+          <div className="user-access-filter-dropdown" key={name}>
+            <select
+              name={name}
+              value={filters[name]}
+              onChange={handleChange}
+              className="user-access-filter-select"
+            >
+              <option value="">{label}</option>
+              {options.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="user-access-filter-dropdown-icon" size={16} />
+          </div>
+        ))}
 
-{showStatus && (
-  <div className="user-access-filter-dropdown">
-    <select
-      name="status"
-      value={filters.status}
-      onChange={handleChange}
-      className="user-access-filter-select"
-    >
-      <option value="">Status</option>
-      {statusOptions.map((status) => (
-        <option key={status} value={status}>
-          {status}
-        </option>
-      ))}
-    </select>
-    <ChevronDown className="user-access-filter-dropdown-icon" size={16} />
-  </div>
-)}
+        {showStatus && (
+          <div className="user-access-filter-dropdown">
+            <select
+              name="status"
+              value={filters.status}
+              onChange={handleChange}
+              className="user-access-filter-select"
+            >
+              <option value="">Status</option>
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="user-access-filter-dropdown-icon" size={16} />
+          </div>
+        )}
 
         {/* Date */}
         <div className="user-access-filter-dropdown date-filter-wrapper">

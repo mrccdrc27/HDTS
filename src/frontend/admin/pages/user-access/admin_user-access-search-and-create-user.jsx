@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import './admin_user-access-search-and-create-user.css'; 
+import './admin_user-access-search-and-create-user.css';
 
-const UserAccessSearchAndCreateUser = () => {
+const UserAccessSearchAndCreateUser = ({ searchTerm, setSearchTerm }) => {
   const navigate = useNavigate();
 
   const handleCreateUserClick = () => {
@@ -16,7 +16,9 @@ const UserAccessSearchAndCreateUser = () => {
         <input
           type="text"
           className="search-input"
-          placeholder="Search"
+          placeholder="Search users"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
       <button className="create-user-button" onClick={handleCreateUserClick}>

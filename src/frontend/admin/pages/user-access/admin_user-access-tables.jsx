@@ -2,12 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import './admin_user-access-tables.css';
 
+import { ArrowDown, ArrowUp, ArrowDownUp } from 'lucide-react';
+
 import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
 import { users } from '/src/utilities/storage/userStorage.js';
 
-const UserAccessTable = ({ category, filters }) => {
+const UserAccessTable = ({ category, filters, sortBy, sortDirection, onSortChange }) => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -51,6 +53,23 @@ const UserAccessTable = ({ category, filters }) => {
     });
   }, [filters, category]);
 
+  const sortedData = useMemo(() => {
+    if (!sortBy) return filteredData;
+
+    return [...filteredData].sort((a, b) => {
+      let valA = a[sortBy] ?? '';
+      let valB = b[sortBy] ?? '';
+
+      if (typeof valA === 'string' && typeof valB === 'string') {
+        return sortDirection === 'asc'
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      }
+
+      return 0;
+    });
+  }, [filteredData, sortBy, sortDirection]);
+
   const columns = [
     { label: 'Company ID', key: 'companyId' },
     { label: 'Last Name', key: 'lastName' },
@@ -63,27 +82,60 @@ const UserAccessTable = ({ category, filters }) => {
     { label: 'Date Created', key: 'dateCreated' },
   ];
 
+  const handleSort = (key) => {
+    if (onSortChange) {
+      if (sortBy === key) {
+        const nextDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        onSortChange(key, nextDirection);
+      } else {
+        onSortChange(key, 'asc');
+      }
+    }
+  };
+
+  const renderSortIcon = (key) => {
+    if (sortBy !== key) return <ArrowDownUp size={16} className="sort-icon neutral" />;
+    return sortDirection === 'asc' ? (
+      <ArrowUp size={16} className="sort-icon active" />
+    ) : (
+      <ArrowDown size={16} className="sort-icon active" />
+    );
+  };
+
   return (
     <div className="user-access-table">
       <table className="user-access-table-element">
         <thead>
           <tr>
             {columns.map(({ label, key }) => (
-              <th key={key} className="user-access-th">{label}</th>
+              <th
+                key={key}
+                className="user-access-th sortable"
+                onClick={() => handleSort(key)}
+              >
+                <span className="sortable-header">
+                  {label}
+                  {renderSortIcon(key)}
+                </span>
+              </th>
             ))}
             <th className="user-access-th">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filteredData.length === 0 ? (
+          {sortedData.length === 0 ? (
             <tr>
               <td colSpan={columns.length + 1} className="user-access-no-results">
                 No users match the filter.
               </td>
             </tr>
           ) : (
-            filteredData.map((user) => (
-              <tr key={user.companyId || user.id || user.email} className="user-access-row">
+            sortedData.map((user) => (
+              <tr
+                key={user.companyId || user.id || user.email}
+                className="user-access-row clickable"
+                onClick={() => navigate(`/admin/account-details`)}
+              >
                 <td>{user.companyId}</td>
                 <td>{user.lastName}</td>
                 <td>{user.firstName}</td>
@@ -97,31 +149,24 @@ const UserAccessTable = ({ category, filters }) => {
                   </span>
                 </td>
                 <td>{user.dateCreated}</td>
-                <td className="user-access-actions">
-                  {user.status === 'Pending' ? (
-                    <button
-                      className="user-access-review-btn"
-                      onClick={() => openModal('review', user)}
-                    >
-                      Review
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        className="user-access-view-btn"
-                        onClick={() => navigate(`/admin/account-details`)}
-                      >
-                        View
-                      </button>
-                      <button
-                        className="user-access-update-btn"
-                        onClick={() => openModal('update', user)}
-                      >
-                        Update
-                      </button>
-                    </>
-                  )}
-                </td>
+                <td className="user-access-actions" onClick={(e) => e.stopPropagation()}>
+  {user.status === 'Pending' ? (
+    <button
+      className="user-access-review-btn"
+      onClick={() => openModal('review', user)}
+    >
+      Review
+    </button>
+  ) : (
+    <button
+      className="user-access-update-btn"
+      onClick={() => openModal('update', user)}
+    >
+      Update
+    </button>
+  )}
+</td>
+
               </tr>
             ))
           )}

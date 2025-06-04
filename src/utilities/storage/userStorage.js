@@ -1,6 +1,7 @@
 export const users = [
   // Active (5)
   {
+    id: 'U001',
     companyId: 'IT0001',
     lastName: 'San Jose',
     firstName: 'Bonjing',
@@ -12,6 +13,7 @@ export const users = [
     dateCreated: '2025-05-23',
   },
   {
+    id: 'U002',
     companyId: 'IT0002',
     lastName: 'Garcia',
     firstName: 'Leonard',
@@ -23,6 +25,7 @@ export const users = [
     dateCreated: '2025-02-20',
   },
   {
+    id: 'U003',
     companyId: 'IT0003',
     lastName: 'Cruz',
     firstName: 'Daniel',
@@ -34,6 +37,7 @@ export const users = [
     dateCreated: '2025-03-10',
   },
   {
+    id: 'U004',
     companyId: 'IT0004',
     lastName: 'Navarro',
     firstName: 'Alyssa',
@@ -45,6 +49,7 @@ export const users = [
     dateCreated: '2025-04-05',
   },
   {
+    id: 'U005',
     companyId: 'IT0005',
     lastName: 'Santos',
     firstName: 'Marco',
@@ -58,6 +63,7 @@ export const users = [
 
   // Inactive (5)
   {
+    id: 'U006',
     companyId: 'IT0006',
     lastName: 'Dela Cruz',
     firstName: 'Anna',
@@ -69,6 +75,7 @@ export const users = [
     dateCreated: '2025-05-01',
   },
   {
+    id: 'U007',
     companyId: 'IT0007',
     lastName: 'Villanueva',
     firstName: 'Catherine',
@@ -80,6 +87,7 @@ export const users = [
     dateCreated: '2025-01-15',
   },
   {
+    id: 'U008',
     companyId: 'IT0008',
     lastName: 'Tan',
     firstName: 'Joshua',
@@ -91,6 +99,7 @@ export const users = [
     dateCreated: '2025-02-09',
   },
   {
+    id: 'U009',
     companyId: 'IT0009',
     lastName: 'Lim',
     firstName: 'Grace',
@@ -102,6 +111,7 @@ export const users = [
     dateCreated: '2025-03-12',
   },
   {
+    id: 'U010',
     companyId: 'IT0010',
     lastName: 'Morales',
     firstName: 'Ricky',
@@ -115,6 +125,7 @@ export const users = [
 
   // Pending (5)
   {
+    id: 'U011',
     companyId: 'IT0011',
     lastName: 'Reyes',
     firstName: 'Maricel',
@@ -126,6 +137,7 @@ export const users = [
     dateCreated: '2025-04-18',
   },
   {
+    id: 'U012',
     companyId: 'IT0012',
     lastName: 'Tan',
     firstName: 'Michael',
@@ -137,6 +149,7 @@ export const users = [
     dateCreated: '2025-05-20',
   },
   {
+    id: 'U013',
     companyId: 'IT0013',
     lastName: 'Ocampo',
     firstName: 'Bianca',
@@ -148,6 +161,7 @@ export const users = [
     dateCreated: '2025-03-30',
   },
   {
+    id: 'U014',
     companyId: 'IT0014',
     lastName: 'Ramos',
     firstName: 'Luis',
@@ -159,6 +173,7 @@ export const users = [
     dateCreated: '2025-02-02',
   },
   {
+    id: 'U015',
     companyId: 'IT0015',
     lastName: 'Torres',
     firstName: 'Jenny',
