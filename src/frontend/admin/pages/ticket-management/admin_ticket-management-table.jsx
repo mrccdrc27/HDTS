@@ -55,7 +55,6 @@ const TicketManagementTable = ({
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
 
-  // Load tickets from storage on mount
   useEffect(() => {
     const storedTickets = getTickets() || [];
     setTickets(storedTickets);
@@ -63,38 +62,27 @@ const TicketManagementTable = ({
 
   const normalize = (str) => (typeof str === 'string' ? str.trim().toLowerCase() : '');
 
-  // Filtering logic
   useEffect(() => {
     let filtered = tickets;
 
     if (statusFilter) {
-      filtered = filtered.filter(
-        (t) => normalize(t.status) === normalize(statusFilter)
-      );
+      filtered = filtered.filter((t) => normalize(t.status) === normalize(statusFilter));
     }
 
     if (departmentFilter) {
-      filtered = filtered.filter(
-        (t) => normalize(t.department) === normalize(departmentFilter)
-      );
+      filtered = filtered.filter((t) => normalize(t.department) === normalize(departmentFilter));
     }
 
     if (categoryFilter) {
-      filtered = filtered.filter(
-        (t) => normalize(t.category) === normalize(categoryFilter)
-      );
+      filtered = filtered.filter((t) => normalize(t.category) === normalize(categoryFilter));
     }
 
     if (subcategoryFilter) {
-      filtered = filtered.filter(
-        (t) => normalize(t.subCategory) === normalize(subcategoryFilter)
-      );
+      filtered = filtered.filter((t) => normalize(t.subCategory) === normalize(subcategoryFilter));
     }
 
     if (priorityFilter) {
-      filtered = filtered.filter(
-        (t) => normalize(t.priorityLevel) === normalize(priorityFilter)
-      );
+      filtered = filtered.filter((t) => normalize(t.priorityLevel) === normalize(priorityFilter));
     }
 
     if (searchTerm) {
@@ -117,14 +105,12 @@ const TicketManagementTable = ({
     searchTerm,
   ]);
 
-  // Notify parent of total filtered items for pagination
   useEffect(() => {
     if (onTotalItemsChange) {
       onTotalItemsChange(filteredTickets.length);
     }
   }, [filteredTickets, onTotalItemsChange]);
 
-  // Sorting logic
   const sortedTickets = useMemo(() => {
     if (!sortBy) return filteredTickets;
 
@@ -132,7 +118,6 @@ const TicketManagementTable = ({
       let valA = a[sortBy];
       let valB = b[sortBy];
 
-      // Normalize date fields for sorting
       if (['dateCreated', 'lastUpdated', 'scheduledRequest'].includes(sortBy)) {
         valA = valA ? new Date(valA).getTime() : 0;
         valB = valB ? new Date(valB).getTime() : 0;
@@ -152,12 +137,8 @@ const TicketManagementTable = ({
     });
   }, [filteredTickets, sortBy, sortDirection]);
 
-  // Pagination slice
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedTickets = sortedTickets.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
 
   const handleClose = (e, ticketNumber) => {
     e.stopPropagation();
@@ -201,7 +182,12 @@ const TicketManagementTable = ({
               </tr>
             ) : (
               paginatedTickets.map((ticket) => (
-                <tr key={ticket.ticketNumber} className="ticket-management-row">
+                <tr
+                  key={ticket.ticketNumber}
+                  className="ticket-management-row"
+                  onClick={() => navigate(`/admin/ticket-details/${ticket.ticketNumber}`)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td className="ticket-management-ticket-number-cell">
                     {ticket.ticketNumber}
                   </td>
@@ -257,7 +243,7 @@ const TicketManagementTable = ({
                 </tr>
               ))
             )}
-          </tbody>
+        </tbody>
         </table>
       </div>
     </div>

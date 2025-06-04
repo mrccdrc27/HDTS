@@ -23,7 +23,7 @@ export const AdminRoutes = () => {
         <Route path="user-access/register-user" element={<RegisterUser />} />
         
         <Route path="ticket-management/:category" element={<TicketManagement />} />
-        <Route path="ticket-details" element={<AdminTicketDetails />} />
+        <Route path="ticket-details/:ticketNumber" element={<AdminTicketDetails />} />
  
         <Route path="user-access/:category" element={<UserAccess />} />
 

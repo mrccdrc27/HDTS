@@ -1,14 +1,3 @@
-:root {
-  --admin-header-height: 64px;
-  --admin-header-bg: var(--blue-logo);
-  --admin-content-bg: #f5f7fa;
-  --admin-container-bg: #ffffff;
-  --admin-container-radius: 8px;
-  --admin-container-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  --admin-top-margin: 40px;
-  --admin-page-padding: 20px;
-}
-
 /* Base styles */
 html, body {
   height: 100%;
@@ -16,14 +5,14 @@ html, body {
   padding: 0;
   overflow-y: auto;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--admin-content-bg);
+  background-color: #f5f7fa;
 }
 
 /* Layout wrapper */
 .admin-layout {
   min-height: 100vh;
-  background-color: var(--admin-content-bg);
-  padding: var(--admin-page-padding);
+  background-color: #f5f7fa;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -33,34 +22,79 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: var(--admin-header-height);
-  background-color: var(--admin-header-bg);
+  height: 64px;
+  background-color: #1e40af; /* var(--blue-logo) */
   z-index: 1000;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Content area */
+/* Content container */
 .admin-layout-content {
   max-width: 1200px;
-  margin: calc(var(--admin-header-height) + 1.5rem) auto 0 auto;
-  background-color: var(--admin-container-bg);
-  border-radius: var(--admin-container-radius);
-  box-shadow: var(--admin-container-shadow);
-  padding: 1rem 1.25rem; /* Reduced from 2rem */
+  margin: calc(64px + 3rem) auto 0 auto; /* 64px header + 3rem */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
   box-sizing: border-box;
   width: 100%;
+  position: relative;
+}
+
+/* Back button bar inside content, top with divider */
+.back-button-bar {
+  width: calc(100% + 4rem);
+  margin: -1.5rem -2rem 1.5rem -2rem;
+  padding: 0.5rem 0 0.5rem 1rem;
+  height: auto;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Back button styling - icon only, no border */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  font-size: 1.25rem;
+  background-color: transparent;
+  border: none;
+  color: #1e40af; /* var(--blue-logo) */
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  transform: translateY(-2.5px);
+}
+
+.back-button:hover,
+.back-button:focus {
+  background-color: rgba(0, 0, 0, 0.1);
+  outline: none;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .admin-layout-content {
-    padding: 0.75rem 1rem;
-    margin-top: calc(var(--admin-header-height) + 1rem);
+    margin-top: calc(64px + 1.5rem);
+    padding: 1rem;
   }
 }
 
 @media (max-width: 1024px) {
   .admin-layout-content {
-    padding: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 1440px) {
+  .admin-layout-content {
+    margin-top: calc(64px + 3rem);
+    padding: 2rem;
   }
 }

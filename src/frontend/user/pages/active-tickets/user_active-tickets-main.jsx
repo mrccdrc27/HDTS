@@ -27,7 +27,7 @@ const ActiveTickets = () => {
   const { category } = useParams();
   const normalizedCategory = category?.toLowerCase().replace(/-tickets$/, '') || '';
 
-  const heading = categoryMap[normalizedCategory] || categoryMap.all;
+  const heading = categoryMap[normalizedCategory] || 'All Active Tickets';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
@@ -59,21 +59,6 @@ const ActiveTickets = () => {
     setCurrentPage(1); // Reset page when category changes
   }, [normalizedCategory, isActiveTicketsView]);
 
-  // Reset current page if any filter, sorting, or items per page changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [
-    searchTerm,
-    departmentFilter,
-    categoryFilter,
-    subcategoryFilter,
-    statusFilter,
-    priorityFilter,
-    sortBy,
-    sortDirection,
-    itemsPerPage,
-  ]);
-
   const disableStatusFilter = isActiveTicketsView && normalizedCategory !== 'all';
 
   const ticketStatusKey = isActiveTicketsView
@@ -87,7 +72,10 @@ const ActiveTickets = () => {
       </div>
 
       <div className="active-tickets-main-search">
-        <UserActiveTicketsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <UserActiveTicketsSearch
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       </div>
 
       <UserActiveTicketsFiltersAndSort
@@ -106,10 +94,6 @@ const ActiveTickets = () => {
         sortDirection={sortDirection}
         setSortDirection={setSortDirection}
         disableStatusFilter={disableStatusFilter}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
       />
 
       <UserActiveTicketsTable
@@ -128,6 +112,8 @@ const ActiveTickets = () => {
         itemsPerPage={itemsPerPage}
         onTotalItemsChange={setTotalItems}
       />
+
+      {/* Removed separate pagination-meta div since TablePagination handles this now */}
 
       <TablePagination
         totalItems={totalItems}
