@@ -1,21 +1,24 @@
-import { useState } from 'react';
-import DateFilter from '../../../shared/components/date-filter.jsx';
+import { useEffect, useState, useRef } from 'react';
 import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
-import './admin_ticket-management-filters-and-sort.css';
-
-const ticketCategories = {
-  'Technical': ['Software', 'Hardware', 'Network'],
-  'HR': ['Benefits', 'Payroll', 'Leave'],
-  'Facilities': ['Maintenance', 'Security', 'Cleaning']
-};
+import {
+  departmentOptions as rawDepartments,
+  categoryOptions as rawCategories,
+  subCategoryOptions,
+  priorityOptions,
+} from '../../../../utilities/filters/user/shared/sharedDropdowns.js';
+import './admin_ticket-management-filters-and-sort.css'
 
 const ticketManagementStatuses = [
+  '',
   'New',
   'Open',
   'Pending',
   'On Progress',
   'On Hold',
   'Resolved',
+  'Closed',
+  'Rejected',
+  'Withdrawn',
 ];
 
 const sortByLabels = {
@@ -25,122 +28,186 @@ const sortByLabels = {
   lastUpdated: 'Last Updated',
 };
 
-const TicketManagementFilters = () => {
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [subcategoryFilter, setSubcategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [subcategories, setSubcategories] = useState([]);
-  const [showDateFilter, setShowDateFilter] = useState(false);
-  const [sortBy, setSortBy] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
+const TicketManagementFiltersAndSort = ({
+  departmentFilter = '',
+  setDepartmentFilter,
+  categoryFilter = '',
+  setCategoryFilter,
+  subcategoryFilter = '',
+  setSubcategoryFilter,
+  statusFilter = '',
+  setStatusFilter,
+  priorityFilter = '',
+  setPriorityFilter,
+  sortBy = '',
+  setSortBy,
+  sortDirection = 'asc',
+  setSortDirection,
+  disableStatusFilter = false,
+}) => {
+  const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortMenuRef = useRef(null);
 
-  const toggleDateFilter = () => setShowDateFilter((prev) => !prev);
-  const toggleSortDirection = () => setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-
-  const handleCategoryChange = (value) => {
-    setCategoryFilter(value);
-    if (ticketCategories[value]) {
-      setSubcategories(ticketCategories[value]);
-    } else {
-      setSubcategories([]);
+  useEffect(() => {
+    const subs = categoryFilter ? subCategoryOptions[categoryFilter] || [] : [];
+    setAvailableSubcategories(subs);
+    if (subcategoryFilter && !subs.includes(subcategoryFilter)) {
+      setSubcategoryFilter('');
     }
-    setSubcategoryFilter('');
-  };
+  }, [categoryFilter, subcategoryFilter, setSubcategoryFilter]);
 
-  const handleSortSelect = (value) => {
-    setSortBy(value);
-    setShowSortMenu(false);
+  useEffect(() => {
+    if (!showSortMenu) return;
+    const handleClickOutside = (e) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
+        setShowSortMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showSortMenu]);
+
+  const toggleSortDirection = () =>
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+
+  const handleSortKeyDown = (e, value) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setSortBy(value);
+      setShowSortMenu(false);
+    }
   };
 
   return (
     <div className="ticket-management-filters-and-sort-wrapper">
-      {/* Filter Section */}
-      <div className="ticket-management-filter-section">
+
+      <div className="ticket-management-filter-section" aria-label="Ticket Filters">
         <span className="ticket-management-filter-label">Filter by:</span>
 
-        {/* Category */}
+        <div className="ticket-management-filter-dropdown">
+          <select
+            value={departmentFilter}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
+            aria-label="Filter by Department"
+            className="ticket-management-filter-select"
+          >
+            <option value="">All Departments</option>
+            {rawDepartments.map((dept) => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
+          </select>
+          <ChevronDown className="ticket-management-filter-dropdown-icon" size={16} />
+        </div>
+
         <div className="ticket-management-filter-dropdown">
           <select
             value={categoryFilter}
-            onChange={(e) => handleCategoryChange(e.target.value)}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            aria-label="Filter by Category"
             className="ticket-management-filter-select"
           >
-            <option value="" disabled hidden>Category</option>
-            {Object.keys(ticketCategories).map((category) => (
-              <option key={category} value={category}>{category}</option>
+            <option value="">All Categories</option>
+            {rawCategories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
+          <ChevronDown className="ticket-management-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Subcategory */}
         <div className="ticket-management-filter-dropdown">
           <select
             value={subcategoryFilter}
             onChange={(e) => setSubcategoryFilter(e.target.value)}
-            disabled={!categoryFilter}
+            disabled={!categoryFilter || availableSubcategories.length === 0}
+            aria-label="Filter by Subcategory"
             className="ticket-management-filter-select"
           >
-            <option value="" disabled hidden>Sub Category</option>
-            {subcategories.map((subcategory) => (
-              <option key={subcategory} value={subcategory}>{subcategory}</option>
+            <option value="">
+              {availableSubcategories.length ? 'All Sub Categories' : 'Sub Category'}
+            </option>
+            {availableSubcategories.map((sub) => (
+              <option key={sub} value={sub}>{sub}</option>
             ))}
           </select>
-          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
+          <ChevronDown className="ticket-management-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Department */}
-        <div className="ticket-management-filter-dropdown">
-          <select className="ticket-management-filter-select">
-            <option value="" disabled hidden>Department</option>
-            <option>IT</option>
-            <option>HR</option>
-            <option>Finance</option>
-          </select>
-          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
-        </div>
-
-        {/* Status */}
         <div className="ticket-management-filter-dropdown">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
+            disabled={disableStatusFilter}
+            aria-label="Filter by Status"
             className="ticket-management-filter-select"
           >
-            <option value="" disabled hidden>Status</option>
-            {ticketManagementStatuses.map((status) => (
+            <option value="">All Statuses</option>
+            {ticketManagementStatuses.filter((s) => s).map((status) => (
               <option key={status} value={status}>{status}</option>
             ))}
           </select>
-          <ChevronDown size={16} className="ticket-management-filter-dropdown-icon" />
+          <ChevronDown className="ticket-management-filter-dropdown-icon" size={16} />
         </div>
 
-        {/* Date Filter */}
-        <div className="ticket-management-filter-dropdown date-filter-wrapper">
-          <button onClick={toggleDateFilter} className="ticket-management-date-filter-button">
-            <span>Date</span>
-            <ChevronDown size={16} className="ticket-management-filter-date-dropdown-icon" />
-          </button>
-          {showDateFilter && <DateFilter />}
+        <div className="ticket-management-filter-dropdown">
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            aria-label="Filter by Priority"
+            className="ticket-management-filter-select"
+          >
+            <option value="">All Priorities</option>
+            {priorityOptions.filter((p) => p).map((priority) => (
+              <option key={priority} value={priority}>{priority}</option>
+            ))}
+          </select>
+          <ChevronDown className="ticket-management-filter-dropdown-icon" size={16} />
+        </div>
+
+        <div className="ticket-management-filter-dropdown">
+          <select
+            disabled
+            aria-label="Date Range filter (coming soon)"
+            title="Date Range filter will be implemented soon"
+            className="ticket-management-filter-select"
+          >
+            <option value="">Date Range</option>
+          </select>
+          <ChevronDown className="ticket-management-filter-dropdown-icon" size={16} />
         </div>
       </div>
 
-      {/* Sort Section */}
-      <div className="ticket-management-sort-section">
+      <div className="ticket-management-sort-section" aria-label="Ticket Sort Options">
         <span className="ticket-management-sort-label">Sort by:</span>
-        <div className="ticket-management-sort-dropdown" style={{ position: 'relative' }}>
+        <div className="ticket-management-sort-dropdown" ref={sortMenuRef}>
           <button
+            type="button"
+            aria-haspopup="listbox"
+            aria-expanded={showSortMenu}
+            onClick={() => setShowSortMenu((prev) => !prev)}
+            aria-label={`Sort by ${sortBy ? sortByLabels[sortBy] : 'Select'}. Press Enter to open menu.`}
             className="ticket-management-custom-select-button"
-            onClick={() => setShowSortMenu(prev => !prev)}
           >
             <span className="ticket-management-sort-with-icon">
               {sortBy ? sortByLabels[sortBy] : 'Select'}
               {sortBy && (
-                <span className="ticket-management-sort-arrow-icon" onClick={(e) => { e.stopPropagation(); toggleSortDirection(); }}>
-                  {sortDirection === 'asc' 
-                    ? <ArrowUp size={16} />
-                    : <ArrowDown size={16} />}
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSortDirection();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleSortDirection();
+                    }
+                  }}
+                  aria-label={`Toggle sort direction, currently ${sortDirection === 'asc' ? 'ascending' : 'descending'}`}
+                  className="ticket-management-sort-arrow-icon"
+                >
+                  {sortDirection === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                 </span>
               )}
             </span>
@@ -148,18 +215,44 @@ const TicketManagementFilters = () => {
           </button>
 
           {showSortMenu && (
-            <ul className="ticket-management-custom-dropdown-menu">
+            <ul
+              role="listbox"
+              tabIndex={-1}
+              aria-activedescendant={sortBy}
+              className="ticket-management-custom-dropdown-menu"
+            >
               {Object.entries(sortByLabels).map(([value, label]) => (
-                <li key={value} onClick={() => handleSortSelect(value)}>
+                <li
+                  key={value}
+                  role="option"
+                  tabIndex={0}
+                  id={value}
+                  aria-selected={sortBy === value}
+                  onClick={() => {
+                    setSortBy(value);
+                    setShowSortMenu(false);
+                  }}
+                  onKeyDown={(e) => handleSortKeyDown(e, value)}
+                >
                   {label}
                 </li>
               ))}
             </ul>
           )}
         </div>
+
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          style={{ position: 'absolute', left: '-9999px', height: '1px', width: '1px', overflow: 'hidden' }}
+        >
+          {sortBy
+            ? `Sorting by ${sortByLabels[sortBy]} in ${sortDirection === 'asc' ? 'ascending' : 'descending'} order`
+            : 'No sort selected'}
+        </div>
       </div>
     </div>
   );
 };
 
-export default TicketManagementFilters;
+export default TicketManagementFiltersAndSort;

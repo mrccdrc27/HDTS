@@ -1,135 +1,176 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import AdminTicketManagementSearch from './admin_ticket-management-search.jsx';
 import TicketManagementFilters from './admin_ticket-management-filters-and-sort.jsx';
 import TicketManagementTable from './admin_ticket-management-table.jsx';
 import TablePagination from '../../../shared/components/table-pagination.jsx';
-import { loadTickets, updateTicketStatus } from '../../../../utilities/ticket-data/ticketData.js';
+
+const categoryDisplayMap = {
+  'all-tickets': 'All Tickets',
+  'new-tickets': 'New Tickets',
+  'open-tickets': 'Open Tickets',
+  'on-progress-tickets': 'On Progress Tickets',
+  'pending-tickets': 'Pending Tickets',
+  'rejected-tickets': 'Rejected Tickets',
+};
+
+const formatHeading = (category) => {
+  if (!category) return 'All Tickets';
+  const normalized = category.toLowerCase();
+  return categoryDisplayMap[normalized] || normalized.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+};
 
 const TicketManagement = () => {
   const { category } = useParams();
+  const normalizedCategory = category?.toLowerCase() || 'all-tickets';
+  const heading = formatHeading(category);
 
-  const [tickets, setTickets] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
+  // Filters state
+  const [departmentFilter, setDepartmentFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subcategoryFilter, setSubcategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  // Optional date filters, you can implement UI inputs later
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [sortAsc, setSortAsc] = useState(true);
 
+  // Sorting state
+  const [sortBy, setSortBy] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
+
+  // Search term
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
-  const getFormattedCategory = (key) => {
-    const displayMap = {
-      'all-tickets': 'All Tickets',
-      'new-tickets': 'New Tickets',
-      'open-tickets': 'Open Tickets',
-      'on-progress-tickets': 'On Progress Tickets',
-      'pending-tickets': 'Pending Tickets',
-      'rejected-tickets': 'Rejected Tickets',
-    };
-    return displayMap[key] || key.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
-  };
+  // Tickets and loading
+  const [tickets, setTickets] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Fetch tickets once on mount
   useEffect(() => {
     const fetchTickets = async () => {
+      setIsLoading(true);
       try {
-        const fetchedTickets = loadTickets();
+        const fetchedTickets = await loadTickets(); // Make sure this returns Promise
         setTickets(Array.isArray(fetchedTickets) ? fetchedTickets : []);
-      } catch (error) {
-        console.error('Failed to load tickets:', error);
+      } catch (err) {
+        console.error('Failed to load tickets:', err);
+        setTickets([]);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchTickets();
   }, []);
 
-  const handleStatusUpdate = async (ticketNumber, newStatus) => {
+  // Reset page when filters/sort/search/category change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    departmentFilter,
+    categoryFilter,
+    subcategoryFilter,
+    statusFilter,
+    priorityFilter,
+    dateFrom,
+    dateTo,
+    sortBy,
+    sortDirection,
+    searchTerm,
+    normalizedCategory,
+  ]);
+
+  // Update ticket status
+  const handleStatusUpdate = useCallback(async (ticketNumber, newStatus) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       await updateTicketStatus(ticketNumber, newStatus);
       setTickets(prev =>
-        prev.map(ticket => ticket.number === ticketNumber ? { ...ticket, status: newStatus } : ticket)
+        prev.map(ticket =>
+          ticket.ticketNumber === ticketNumber ? { ...ticket, status: newStatus } : ticket
+        )
       );
-    } catch (error) {
-      console.error('Failed to update ticket status:', error);
+    } catch (err) {
+      console.error('Failed to update ticket status:', err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const filteredTickets = tickets
-    .filter(ticket => {
-      if (categoryFilter && ticket.category !== categoryFilter) return false;
-      if (subcategoryFilter && ticket.subCategory !== subcategoryFilter) return false;
-      if (statusFilter) {
-        const normalized = statusFilter === 'Open' ? 'Approved/Open' : statusFilter;
-        if (ticket.status !== normalized) return false;
-      }
-      const date = new Date(ticket.dateCreated);
-      if (dateFrom && date < new Date(dateFrom)) return false;
-      if (dateTo) {
-        const toDate = new Date(dateTo);
-        toDate.setHours(23, 59, 59);
-        if (date > toDate) return false;
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      const dA = new Date(a.dateCreated);
-      const dB = new Date(b.dateCreated);
-      return sortAsc ? dA - dB : dB - dA;
-    });
+  }, []);
 
   return (
     <div className="ticket-management-main">
-      <div className="ticket-management-main-header">
-        <h1>{getFormattedCategory(category)}</h1>
-      </div>
+      <header className="ticket-management-main-header">
+        <h2>{heading}</h2>
+      </header>
 
-      <div className="ticket-management-main-search">
-        <AdminTicketManagementSearch />
-      </div>
+      <section className="ticket-management-main-search">
+        <AdminTicketManagementSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      </section>
 
-      <div className="ticket-management-main-filters">
-        <TicketManagementFilters
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
-          subcategoryFilter={subcategoryFilter}
-          setSubcategoryFilter={setSubcategoryFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          dateFrom={dateFrom}
-          setDateFrom={setDateFrom}
-          dateTo={dateTo}
-          setDateTo={setDateTo}
-          sortAsc={sortAsc}
-          setSortAsc={setSortAsc}
-          tickets={tickets}
-        />
-      </div>
+      <TicketManagementFilters
+        departmentFilter={departmentFilter}
+        setDepartmentFilter={setDepartmentFilter}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        subcategoryFilter={subcategoryFilter}
+        setSubcategoryFilter={setSubcategoryFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        priorityFilter={priorityFilter}
+        setPriorityFilter={setPriorityFilter}
+        dateFrom={dateFrom}
+        setDateFrom={setDateFrom}
+        dateTo={dateTo}
+        setDateTo={setDateTo}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+      />
 
       <div className="ticket-management-main-table">
         {isLoading ? (
           <div className="loading-overlay">
-            <div className="spinner"></div>
+            <div className="spinner" />
           </div>
         ) : (
           <TicketManagementTable
-            filteredTickets={filteredTickets}
+            tickets={tickets}
+            searchTerm={searchTerm}
+            departmentFilter={departmentFilter}
+            categoryFilter={categoryFilter}
+            subcategoryFilter={subcategoryFilter}
+            statusFilter={statusFilter}
+            priorityFilter={priorityFilter}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
             onStatusUpdate={handleStatusUpdate}
+            onTotalItemsChange={setTotalItems}
+            normalizedCategory={normalizedCategory}
           />
         )}
       </div>
 
-      <div className="pagination">
-        <TablePagination />
-      </div>
+      <TablePagination
+        totalItems={totalItems}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={(count) => {
+          setItemsPerPage(count);
+          setCurrentPage(1);
+        }}
+      />
     </div>
   );
 };

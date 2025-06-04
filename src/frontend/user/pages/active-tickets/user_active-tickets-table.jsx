@@ -5,7 +5,6 @@ import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 import './user_active-tickets-table.css';
 
 const statusConfig = {
-  New: 'user-active-status-new',
   Open: 'user-active-status-open',
   'On Progress': 'user-active-status-progress',
   'On Hold': 'user-active-status-hold',
@@ -19,6 +18,15 @@ const priorityClassMap = {
   Medium: 'user-active-priority-medium',
   High: 'user-active-priority-high',
   Critical: 'user-active-priority-critical',
+};
+
+const displayStatusText = {
+  Open: 'Open',
+  'On Progress': 'On Progress',
+  'On Hold': 'On Hold',
+  Pending: 'Pending',
+  Resolved: 'Resolved',
+  Closed: 'Closed',
 };
 
 const formatDateTime = (value) => {
@@ -57,7 +65,6 @@ const UserActiveTicketsTable = ({
   endDate,
   searchTerm = '',
   ticketStatus = 'all-active-tickets',
-
   currentPage = 1,
   itemsPerPage = 10,
   onTotalItemsChange,
@@ -66,8 +73,7 @@ const UserActiveTicketsTable = ({
   const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
-    const loadedTickets = getTickets();
-    setTickets(loadedTickets);
+    setTickets(getTickets());
   }, []);
 
   const statusMap = {
@@ -79,22 +85,25 @@ const UserActiveTicketsTable = ({
     'resolved-tickets': ['Resolved'],
   };
 
-  const activeStatuses = useMemo(() => statusMap[ticketStatus] || statusMap['all-active-tickets'], [ticketStatus]);
+  const activeStatuses = useMemo(() => {
+    const statuses = statusMap[ticketStatus] || statusMap['all-active-tickets'];
+    return statuses.filter((status) => status !== 'New');
+  }, [ticketStatus]);
 
   const normalize = (str) => (str ? str.trim().toLowerCase() : '');
 
   const applyStatusFilter = (status) => {
     const normalized = normalize(statusFilter);
-    return normalized ? normalize(status) === normalized : activeStatuses.includes(status);
+    return !normalized || normalized === 'all'
+      ? activeStatuses.includes(status)
+      : normalize(status) === normalized;
   };
 
   const applyDateRangeFilter = (dateCreated) => {
     const created = new Date(dateCreated);
     if (isNaN(created)) return false;
-
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
-
     return (!start || created >= start) && (!end || created <= end);
   };
 
@@ -108,7 +117,6 @@ const UserActiveTicketsTable = ({
 
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
-
     if (!applyStatusFilter(ticket.status)) return false;
     if (departmentFilter && normalize(ticket.department) !== normalize(departmentFilter)) return false;
     if (categoryFilter && normalize(ticket.category) !== normalize(categoryFilter)) return false;
@@ -116,7 +124,6 @@ const UserActiveTicketsTable = ({
     if (priorityFilter && normalize(ticket.priorityLevel) !== normalize(priorityFilter)) return false;
     if (!applyDateRangeFilter(ticket.dateCreated)) return false;
     if (!applySearchFilter(ticket)) return false;
-
     return true;
   });
 
@@ -186,7 +193,7 @@ const UserActiveTicketsTable = ({
               <th>Department</th>
               <th>Category</th>
               <th>Sub Category</th>
-              <th>Scheduled Request</th> {/* moved here */}
+              <th>Scheduled Request</th>
               <th>Date Created</th>
               <th>Last Updated</th>
               <th>Action</th>
@@ -203,7 +210,7 @@ const UserActiveTicketsTable = ({
                   department,
                   category,
                   subCategory,
-                  scheduledRequest, // moved here
+                  scheduledRequest,
                   dateCreated,
                   lastUpdated,
                 } = ticket;
@@ -220,10 +227,14 @@ const UserActiveTicketsTable = ({
                     <td className="user-active-ticket-number-cell">{ticketNumber}</td>
                     <td className="user-active-subject-cell">{subject}</td>
                     <td>
-                      <span className={`user-active-status-badge ${statusClass}`}>{status}</span>
+                      <span className={`user-active-status-badge ${statusClass}`}>
+                        {displayStatusText[status] ?? status}
+                      </span>
                     </td>
                     <td>
-                      <span className={`user-active-priority-badge ${priorityClass}`}>{priorityLevel}</span>
+                      <span className={`user-active-priority-badge ${priorityClass}`}>
+                        {priorityLevel}
+                      </span>
                     </td>
                     <td>{department}</td>
                     <td>{category}</td>

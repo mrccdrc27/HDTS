@@ -48,9 +48,27 @@
   border-top-right-radius: 8px;
 }
 
+/* Sortable headers */
+.ticket-management-sortable-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.ticket-management-sortable-header svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  transition: transform 0.2s ease;
+  color: var(--text-secondary);
+}
+
 /* Body rows - EXACTLY matching user-access */
 .ticket-management-table tbody tr:not(:last-child) {
   position: relative;
+  border-bottom: 1px solid var(--neutral-light-gray);
 }
 
 .ticket-management-table tbody tr:not(:last-child)::after {
@@ -67,11 +85,6 @@
 
 .ticket-management-table tbody tr:hover {
   background-color: #f8fafc;
-}
-
-/* Line between rows - EXACTLY matching user-access */
-.ticket-management-table tbody tr:not(:last-child) {
-  border-bottom: 1px solid var(--neutral-light-gray);
 }
 
 /* Table cells - EXACTLY matching user-access */
@@ -107,48 +120,56 @@
   white-space: nowrap;
 }
 
-/* Status colors - UNIFIED system */
 /* Status colors - DISTINCT colors for each status */
 .ticket-management-status-new {
-  background-color: #e0e7ff; /* light blue */
-  color: #3730a3; /* indigo-800 */
+  background-color: #e0e7ff;
+  color: #3730a3;
 }
 
 .ticket-management-status-open {
-  background-color: #bbf7d0; /* lighter green */
-  color: #166534; /* green-800 */
+  background-color: #bbf7d0;
+  color: #166534;
 }
 
 .ticket-management-status-pending {
-  background-color: #fde68a; /* amber-300 */
-  color: #92400e; /* amber-800 */
+  background-color: #fde68a;
+  color: #92400e;
 }
 
 .ticket-management-status-progress {
-  background-color: #bfdbfe; /* light sky blue */
-  color: #1e40af; /* blue-800 */
+  background-color: #bfdbfe;
+  color: #1e40af;
 }
 
 .ticket-management-status-hold {
-  background-color: #fecaca; /* light red */
-  color: #b91c1c; /* red-700 */
+  background-color: #fecaca;
+  color: #b91c1c;
 }
 
 .ticket-management-status-resolved {
-  background-color: #d1fae5; /* mint green */
-  color: #065f46; /* teal-800 */
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .ticket-management-status-closed {
-  background-color: #e5e7eb; /* light gray */
-  color: #374151; /* gray-700 */
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.ticket-management-status-rejected {
+  background-color: #fecdd3;
+  color: #7f1d1d;
+}
+
+.ticket-management-status-withdrawn {
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 .ticket-management-status-unknown {
-  background-color: #fef2f2; /* very light red */
-  color: #991b1b; /* red-900 */
+  background-color: #fef2f2;
+  color: #991b1b;
 }
-
 
 /* Actions - EXACTLY matching user-access */
 .ticket-management-action-buttons {
@@ -191,7 +212,6 @@
   color: white;
 }
 
-/* Additional button styles to match user-access */
 .ticket-management-update-btn {
   background-color: var(--neutral-light-gray);
   color: var(--neutral-dim-gray);

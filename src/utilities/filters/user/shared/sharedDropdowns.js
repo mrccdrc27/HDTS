@@ -44,3 +44,10 @@ export const subCategoryOptions = {
     'Security Services'
   ]
 };
+
+export const priorityOptions = [
+  '', 
+  'Low', 
+  'Medium', 
+  'High', 
+  'Critical'];

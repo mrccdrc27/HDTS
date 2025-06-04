@@ -11,9 +11,9 @@ const AdminTicketDetails = () => {
         <div className="admin-section column">
           <AdminTicketDetailsInformation />
         </div>
-        <div className="admin-section column">
+        {/* <div className="admin-section column">
           <AdminTicketDetailsStatus />
-        </div>
+        </div> */}
       </div>
 
     </div>

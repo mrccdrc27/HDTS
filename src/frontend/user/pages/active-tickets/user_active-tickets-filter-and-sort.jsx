@@ -5,6 +5,7 @@ import {
   departmentOptions as rawDepartments,
   categoryOptions as rawCategories,
   subCategoryOptions,
+  priorityOptions,
 } from '../../../../utilities/filters/user/shared/sharedDropdowns.js';
 
 const userTicketStatuses = [
@@ -16,13 +17,11 @@ const userTicketStatuses = [
   'Resolved',
 ];
 
-const priorityOptions = ['', 'Low', 'Medium', 'High', 'Critical'];
-
 const sortByLabels = {
   ticketNumber: 'Ticket Number',
   subject: 'Subject',
   dateCreated: 'Date Created',
-  lastUpdated: 'Last Updated',  
+  lastUpdated: 'Last Updated',
 };
 
 const UserActiveTicketsFiltersAndSort = ({
@@ -46,38 +45,27 @@ const UserActiveTicketsFiltersAndSort = ({
   const [showSortMenu, setShowSortMenu] = useState(false);
   const sortMenuRef = useRef(null);
 
-  // Update available subcategories when categoryFilter changes
   useEffect(() => {
     const subs = categoryFilter ? subCategoryOptions[categoryFilter] || [] : [];
     setAvailableSubcategories(subs);
-
-    if (!subs.includes(subcategoryFilter)) {
-      setSubcategoryFilter('');
-    }
+    if (!subs.includes(subcategoryFilter)) setSubcategoryFilter('');
   }, [categoryFilter, subcategoryFilter, setSubcategoryFilter]);
 
-  // Close sort menu if click outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        sortMenuRef.current &&
-        !sortMenuRef.current.contains(event.target)
-      ) {
+    const handleClickOutside = (e) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(e.target)) {
         setShowSortMenu(false);
       }
-    }
+    };
     if (showSortMenu) {
       document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, [showSortMenu]);
 
   const toggleSortDirection = () =>
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
 
-  // Handle keyboard navigation for sort options (Enter key to select)
   const handleSortKeyDown = (e, value) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -100,15 +88,10 @@ const UserActiveTicketsFiltersAndSort = ({
           >
             <option value="">All Departments</option>
             {rawDepartments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
+              <option key={dept} value={dept}>{dept}</option>
             ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Category */}
@@ -120,18 +103,13 @@ const UserActiveTicketsFiltersAndSort = ({
           >
             <option value="">All Categories</option>
             {rawCategories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
+              <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
-        {/* Sub Category */}
+        {/* Subcategory */}
         <div className="user-active-tickets-filter-dropdown">
           <select
             value={subcategoryFilter}
@@ -140,20 +118,13 @@ const UserActiveTicketsFiltersAndSort = ({
             className="user-active-tickets-filter-select"
           >
             <option value="">
-              {availableSubcategories.length
-                ? 'All Sub Categories'
-                : 'Sub Category'}
+              {availableSubcategories.length ? 'All Sub Categories' : 'Sub Category'}
             </option>
             {availableSubcategories.map((sub) => (
-              <option key={sub} value={sub}>
-                {sub}
-              </option>
+              <option key={sub} value={sub}>{sub}</option>
             ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Status */}
@@ -166,17 +137,12 @@ const UserActiveTicketsFiltersAndSort = ({
           >
             <option value="">All Statuses</option>
             {userTicketStatuses
-              .filter((status) => status !== '')
+              .filter((s) => s)
               .map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
+                <option key={status} value={status}>{status}</option>
               ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Priority */}
@@ -188,17 +154,12 @@ const UserActiveTicketsFiltersAndSort = ({
           >
             <option value="">All Priorities</option>
             {priorityOptions
-              .filter((priority) => priority !== '')
+              .filter((p) => p)
               .map((priority) => (
-                <option key={priority} value={priority}>
-                  {priority}
-                </option>
+                <option key={priority} value={priority}>{priority}</option>
               ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Date Range placeholder */}
@@ -206,19 +167,15 @@ const UserActiveTicketsFiltersAndSort = ({
           <select disabled className="user-active-tickets-filter-select">
             <option value="">Date Range</option>
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
       </div>
 
-      {/* Sort by Section */}
+      {/* Sort Section */}
       <div className="user-active-tickets-sort-section">
         <span className="user-active-tickets-sort-label">Sort by:</span>
         <div
           className="user-active-tickets-sort-dropdown"
-          style={{ position: 'relative' }}
           ref={sortMenuRef}
         >
           <button
@@ -247,11 +204,7 @@ const UserActiveTicketsFiltersAndSort = ({
                   }}
                   aria-label={`Toggle sort direction, currently ${sortDirection}`}
                 >
-                  {sortDirection === 'asc' ? (
-                    <ArrowUp size={16} />
-                  ) : (
-                    <ArrowDown size={16} />
-                  )}
+                  {sortDirection === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                 </span>
               )}
             </span>
@@ -262,7 +215,6 @@ const UserActiveTicketsFiltersAndSort = ({
             <ul
               className="user-active-tickets-custom-dropdown-menu"
               role="listbox"
-              tabIndex={-1}
             >
               {Object.entries(sortByLabels).map(([value, label]) => (
                 <li
@@ -288,3 +240,4 @@ const UserActiveTicketsFiltersAndSort = ({
 };
 
 export default UserActiveTicketsFiltersAndSort;
+ 

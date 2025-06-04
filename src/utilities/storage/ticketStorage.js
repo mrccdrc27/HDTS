@@ -6,7 +6,7 @@ const sampleTickets = [
   {
     ticketNumber: 'TCK-001',
     subject: 'VPN setup request',
-    status: 'Pending',
+    status: 'new', // new ticket, coordinator approval pending
     priorityLevel: 'Medium',
     department: 'IT Department',
     category: 'IT Category',
@@ -78,7 +78,7 @@ const sampleTickets = [
   {
     ticketNumber: 'TCK-005',
     subject: 'Request for training budget',
-    status: 'Pending',
+    status: 'pending', // after coordinator approval, waiting for agent approval
     priorityLevel: 'Medium',
     department: 'Budget Department',
     category: 'Budget Category',
@@ -186,3 +186,6 @@ if (!localStorage.getItem(TICKET_STORAGE_KEY)) {
   saveTickets(sampleTickets);
 }
 
+// Remove below line after initial data load confirmed
+// localStorage.removeItem(TICKET_STORAGE_KEY);
+// saveTickets(sampleTickets);
