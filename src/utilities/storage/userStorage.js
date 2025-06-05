@@ -7,7 +7,7 @@ export const users = [
     firstName: 'Bonjing',
     middleName: 'Peralta',
     suffix: 'Jr.',
-    department: 'Finance Department',
+    department: 'Budget Department', // from Finance Department
     role: 'User',
     status: 'Active',
     dateCreated: '2025-05-23',
@@ -19,7 +19,7 @@ export const users = [
     firstName: 'Leonard',
     middleName: 'B.',
     suffix: '',
-    department: 'Technical Support',
+    department: 'IT Department', // from Technical Support mapped to IT Department
     role: 'Ticket Agent',
     status: 'Active',
     dateCreated: '2025-02-20',
@@ -43,7 +43,7 @@ export const users = [
     firstName: 'Alyssa',
     middleName: 'Reyes',
     suffix: '',
-    department: 'Human Resources',
+    department: 'Asset Department', // from Human Resources mapped to Asset Department
     role: 'User',
     status: 'Active',
     dateCreated: '2025-04-05',
@@ -55,7 +55,7 @@ export const users = [
     firstName: 'Marco',
     middleName: 'Antonio',
     suffix: '',
-    department: 'Operations',
+    department: 'Asset Department', // from Operations mapped to Asset Department
     role: 'Ticket Agent',
     status: 'Active',
     dateCreated: '2025-01-28',
@@ -69,7 +69,7 @@ export const users = [
     firstName: 'Anna',
     middleName: 'Marie',
     suffix: '',
-    department: 'Operations',
+    department: 'Asset Department', // from Operations mapped to Asset Department
     role: 'User',
     status: 'Inactive',
     dateCreated: '2025-05-01',
@@ -93,7 +93,7 @@ export const users = [
     firstName: 'Joshua',
     middleName: '',
     suffix: '',
-    department: 'Finance Department',
+    department: 'Budget Department', // from Finance Department
     role: 'User',
     status: 'Inactive',
     dateCreated: '2025-02-09',
@@ -105,7 +105,7 @@ export const users = [
     firstName: 'Grace',
     middleName: 'Yu',
     suffix: '',
-    department: 'Customer Service',
+    department: 'Asset Department', // from Customer Service mapped to Asset Department
     role: 'Ticket Agent',
     status: 'Inactive',
     dateCreated: '2025-03-12',
@@ -117,7 +117,7 @@ export const users = [
     firstName: 'Ricky',
     middleName: 'G.',
     suffix: '',
-    department: 'Human Resources',
+    department: 'Asset Department', // from Human Resources mapped to Asset Department
     role: 'System Admin',
     status: 'Inactive',
     dateCreated: '2025-04-15',
@@ -131,7 +131,7 @@ export const users = [
     firstName: 'Maricel',
     middleName: 'Gomez',
     suffix: '',
-    department: 'Human Resources',
+    department: 'Asset Department', // from Human Resources mapped to Asset Department
     role: 'Ticket Agent',
     status: 'Pending',
     dateCreated: '2025-04-18',
@@ -143,7 +143,7 @@ export const users = [
     firstName: 'Michael',
     middleName: '',
     suffix: '',
-    department: 'Customer Service',
+    department: 'Asset Department', // from Customer Service mapped to Asset Department
     role: 'User',
     status: 'Pending',
     dateCreated: '2025-05-20',
@@ -155,7 +155,7 @@ export const users = [
     firstName: 'Bianca',
     middleName: 'Cruz',
     suffix: '',
-    department: 'Technical Support',
+    department: 'IT Department', // from Technical Support mapped to IT Department
     role: 'System Admin',
     status: 'Pending',
     dateCreated: '2025-03-30',
@@ -167,7 +167,7 @@ export const users = [
     firstName: 'Luis',
     middleName: '',
     suffix: '',
-    department: 'Operations',
+    department: 'Asset Department', // from Operations mapped to Asset Department
     role: 'User',
     status: 'Pending',
     dateCreated: '2025-02-02',
@@ -179,7 +179,7 @@ export const users = [
     firstName: 'Jenny',
     middleName: 'Ann',
     suffix: '',
-    department: 'Finance Department',
+    department: 'Budget Department', // from Finance Department
     role: 'Ticket Agent',
     status: 'Pending',
     dateCreated: '2025-05-21',

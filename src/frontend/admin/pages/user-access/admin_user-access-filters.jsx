@@ -1,26 +1,20 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import './admin_user-access-filters.css';
 import DateFilter from '../../../shared/components/date-filter.jsx';
 
 const DEPARTMENTS = [
-  'Finance Department',
-  'Human Resources',
   'IT Department',
-  'Technical Support',
-  'Customer Service',
-  'Operations',
+  'Asset Department',
+  'Budget Department',
 ];
 
-const ROLE_OPTIONS = ['User', 'Ticket Agent', 'System Admin'];
-
-const ROLE_CATEGORY_MAP = {
-  'System Admin': 'system-admins',
-  'Ticket Agent': 'ticket-agents',
-  'User': 'users',
-  '': 'all-users',
-};
+const ROLE_OPTIONS = [
+  'All Roles',
+  'User',
+  'Ticket Agent',
+  'System Admin',
+];
 
 const SORT_OPTIONS = {
   companyId: 'Company ID',
@@ -31,8 +25,6 @@ const SORT_OPTIONS = {
 };
 
 const UserAccessFilters = ({ category, onFilterChange }) => {
-  const navigate = useNavigate();
-
   const [filters, setFilters] = useState({
     department: '',
     role: '',
@@ -45,25 +37,45 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
 
-  const unifiedCategories = ['all-users', 'users', 'ticket-agents', 'system-admins'];
-  const showStatus = unifiedCategories.includes(category) || category === 'for-approvals';
-  const canNavigateByRole = unifiedCategories.includes(category);
+  // Determine which filters to show based on category
+  const showRole =
+    category === 'all-users' || category === 'for-approvals';
 
+  const showStatus =
+    category === 'all-users' ||
+    category === 'users' ||
+    category === 'ticket-agents' ||
+    category === 'system-admin' ||
+    category !== 'for-approvals';
+
+  // Status options depend on category
   const statusOptions =
     category === 'for-approvals' ? ['Pending'] : ['Active', 'Inactive', 'Pending'];
 
+  // Reset role filter if not shown
+  useEffect(() => {
+    if (!showRole && filters.role !== '') {
+      setFilters((prev) => ({ ...prev, role: '' }));
+      onFilterChange?.({ ...filters, role: '', sortBy, sortDirection });
+    }
+  }, [category]);
+
+  // Handler for filter changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updatedFilters = { ...filters, [name]: value };
+    let normalizedValue = value;
+
+    if (name === 'role' && value === 'All Roles') {
+      normalizedValue = '';
+    }
+
+    const updatedFilters = {
+      ...filters,
+      [name]: normalizedValue,
+    };
+
     setFilters(updatedFilters);
     onFilterChange?.({ ...updatedFilters, sortBy, sortDirection });
-
-    if (name === 'role' && canNavigateByRole) {
-      const newCategory = ROLE_CATEGORY_MAP[value];
-      if (newCategory) {
-        navigate(`/admin/user-access/${newCategory}`);
-      }
-    }
   };
 
   const toggleSortDirection = () => {
@@ -80,32 +92,47 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
 
   return (
     <div className="user-access-toolbar">
-      {/* Filters */}
       <div className="user-access-filter-section">
         <span className="user-access-filter-label">Filter by:</span>
 
-        {[
-          ['department', 'Department', DEPARTMENTS],
-          ['role', 'Role', ROLE_OPTIONS],
-        ].map(([name, label, options]) => (
-          <div className="user-access-filter-dropdown" key={name}>
+        {/* Department Filter (always show) */}
+        <div className="user-access-filter-dropdown">
+          <select
+            name="department"
+            value={filters.department}
+            onChange={handleChange}
+            className="user-access-filter-select"
+          >
+            <option value="">Department</option>
+            {DEPARTMENTS.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="user-access-filter-dropdown-icon" size={16} />
+        </div>
+
+        {/* Role Filter (only if showRole true) */}
+        {showRole && (
+          <div className="user-access-filter-dropdown">
             <select
-              name={name}
-              value={filters[name]}
+              name="role"
+              value={filters.role}
               onChange={handleChange}
               className="user-access-filter-select"
             >
-              <option value="">{label}</option>
-              {options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
+              {ROLE_OPTIONS.map((role) => (
+                <option key={role} value={role}>
+                  {role}
                 </option>
               ))}
             </select>
             <ChevronDown className="user-access-filter-dropdown-icon" size={16} />
           </div>
-        ))}
+        )}
 
+        {/* Status Filter (if showStatus true) */}
         {showStatus && (
           <div className="user-access-filter-dropdown">
             <select
@@ -125,7 +152,7 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
           </div>
         )}
 
-        {/* Date */}
+        {/* Date Filter (always show) */}
         <div className="user-access-filter-dropdown date-filter-wrapper">
           <button
             onClick={() => setShowDateFilter((prev) => !prev)}
@@ -147,7 +174,7 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
         </div>
       </div>
 
-      {/* Sort */}
+      {/* Sort Section */}
       <div className="user-access-sort-section">
         <span className="user-access-sort-label">Sort by:</span>
         <div className="user-access-sort-dropdown">

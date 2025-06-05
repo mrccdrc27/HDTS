@@ -13,6 +13,9 @@ const UserAccessTable = ({
   sortBy,
   sortDirection,
   onSortChange,
+  currentPage,
+  itemsPerPage,
+  onTotalItemsChange,
 }) => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
@@ -28,21 +31,30 @@ const UserAccessTable = ({
     setSelectedUser(null);
   };
 
+  // Filter users based on filters and category
   const filteredData = useMemo(() => {
     return users.filter((user) => {
       const matchesDepartment = filters.department
         ? user.department.toLowerCase().includes(filters.department.toLowerCase())
         : true;
 
-      const matchesRole = filters.role
-        ? user.role.toLowerCase() === filters.role.toLowerCase()
-        : true;
+      let matchesRole = true;
+      if (category === 'users') {
+        matchesRole = user.role.toLowerCase() === 'user';
+      } else if (category === 'ticket-agents') {
+        matchesRole = user.role.toLowerCase() === 'ticket agent';
+      } else if (category === 'system-admins') {
+        matchesRole = user.role.toLowerCase() === 'system admin';
+      } else if (filters.role) {
+        matchesRole = user.role.toLowerCase() === filters.role.toLowerCase();
+      }
 
-      const matchesStatus = filters.status
-        ? user.status.toLowerCase() === filters.status.toLowerCase()
-        : category === 'for-approvals'
-        ? user.status.toLowerCase() === 'pending'
-        : true;
+      const matchesStatus =
+        category === 'for-approvals'
+          ? user.status.toLowerCase() === 'pending'
+          : filters.status
+          ? user.status.toLowerCase() === filters.status.toLowerCase()
+          : true;
 
       const matchesDate = filters.date
         ? user.dateCreated === filters.date
@@ -64,6 +76,12 @@ const UserAccessTable = ({
     });
   }, [filters, category]);
 
+  // Update total items for pagination
+  useMemo(() => {
+    onTotalItemsChange(filteredData.length);
+  }, [filteredData, onTotalItemsChange]);
+
+  // Sort filtered data
   const sortedData = useMemo(() => {
     if (!sortBy) return filteredData;
 
@@ -80,6 +98,12 @@ const UserAccessTable = ({
       return 0;
     });
   }, [filteredData, sortBy, sortDirection]);
+
+  // Paginate sorted data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return sortedData.slice(startIndex, startIndex + itemsPerPage);
+  }, [sortedData, currentPage, itemsPerPage]);
 
   const columns = [
     { label: 'Company ID', key: 'companyId' },
@@ -117,20 +141,25 @@ const UserAccessTable = ({
                 style={{ cursor: 'pointer' }}
               >
                 {label}
+                {sortBy === key && (
+                  <span className="sort-indicator">
+                    {sortDirection === 'asc' ? ' ▲' : ' ▼'}
+                  </span>
+                )}
               </th>
             ))}
             <th className="user-access-th">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {sortedData.length === 0 ? (
+          {paginatedData.length === 0 ? (
             <tr>
               <td colSpan={columns.length + 1} className="user-access-no-results">
                 No users match the filter.
               </td>
             </tr>
           ) : (
-            sortedData.map((user) => (
+            paginatedData.map((user) => (
               <tr
                 key={user.companyId || user.id || user.email}
                 className="user-access-row clickable"
@@ -149,7 +178,10 @@ const UserAccessTable = ({
                   </span>
                 </td>
                 <td>{user.dateCreated}</td>
-                <td className="user-access-actions" onClick={(e) => e.stopPropagation()}>
+                <td
+                  className="user-access-actions"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {user.status === 'Pending' ? (
                     <button
                       className="user-access-review-btn"
