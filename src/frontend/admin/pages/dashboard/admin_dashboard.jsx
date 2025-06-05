@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   const [newTickets, setNewTickets] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('adminAuthToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       setFirstName(payload.first_name || '');
@@ -23,7 +23,7 @@ const AdminDashboard = () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            Authorization: `Bearer ${localStorage.getItem('adminAuthToken')}`,
           },
         });
 
