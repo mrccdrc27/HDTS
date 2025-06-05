@@ -1,20 +1,58 @@
 import './admin_dashboard.css'; // Import the CSS file for styling
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  // Sample data for approval requests
-  const approvalRequests = [
-    { id: '14086', subject: 'Printer not working', department: 'IT Department', category: 'Hardware', subCategory: 'Printer Issue' },
-    { id: '14083', subject: 'Unable to connect to Wi-Fi', department: 'Operations', category: 'Network', subCategory: 'Wi-Fi' },
-    { id: '14081', subject: 'Request for additional RAM', department: 'Finance & Budgeting', category: 'Hardware Upgrade', subCategory: 'Memory' },
-    { id: '14076', subject: 'Incorrect budget report in system', department: 'Finance & Budgeting', category: 'Software', subCategory: 'Reporting' },
-  ];
+  const [firstName, setFirstName] = useState('');
+  const [newTickets, setNewTickets] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setFirstName(payload.first_name || '');
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchNewTickets = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        });
+
+        // Filter tickets to only show those with "New" status
+        const filteredTickets = response.data
+          .filter(ticket => ticket.status === 'New')
+          .map(ticket => ({
+            id: ticket.ticket_number,
+            subject: ticket.subject,
+            category: ticket.category,
+            subCategory: ticket.sub_category,
+          }));
+
+        setNewTickets(filteredTickets);
+      } catch (error) {
+        console.error('Error fetching new tickets:', error);
+        setError('Unable to load new tickets for approval.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNewTickets();
+  }, []);
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>Welcome <span className="user-name">Bogart</span>,</h1>
+        <h1>Welcome, <span className="user-name">{firstName}!</span></h1>
       </div>
 
       <div className="ticket-status-cards">
@@ -52,22 +90,28 @@ const AdminDashboard = () => {
               <tr>
                 <th>Ticket Number</th>
                 <th>Subject</th>
-                <th>Department</th>
                 <th>Category</th>
                 <th>Sub Category</th>
               </tr>
             </thead>
             <tbody>
-              {approvalRequests.map((request) => (
-                <tr key={request.id}>
-                  <td>{request.id}</td>
-                  <td>{request.subject}</td>
-                  <td>{request.department}</td>
-                  <td>{request.category}</td>
-                  <td>{request.subCategory}</td>
-                </tr>
-              ))}
-            </tbody>
+                {newTickets.length > 0 ? (
+                  newTickets.map((request) => (
+                    <tr key={request.id}>
+                      <td>{request.id}</td>
+                      <td>{request.subject}</td>
+                      <td>{request.category}</td>
+                      <td>{request.subCategory}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="no-tickets-message">
+                      No new tickets requiring approval.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
           </table>
         </div>
       </div>

@@ -11,39 +11,48 @@ const AdminLogin = () => {
     const [password, setPassword] = useState("");
     const [showAdminLogInPassword, setShowAdminLogInPassword] = useState(false); // ✅ Added this!
 
-    const handleLogin = async () => {
-        try {
-          const response = await fetch("http://localhost:8000/api/token/admin/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email, password }),
-          });
+    const handleLogin = async (e) => {
+      e.preventDefault(); // ✅ Prevent default form refresh
     
-          const data = await response.json();
+      try {
+        const response = await fetch("http://localhost:8000/api/token/admin/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email, password }),
+        });
     
-          if (!response.ok) {
-            alert(data.detail || "Invalid credentials.");
-            return;
-          }
+        const data = await response.json();
     
-          const token = data.access;
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const userRole = payload.role;
+        if (!response.ok) {
+              const error = await response.json();
+              
+              // Check if it's a validation error from your custom serializer
+              if (error.non_field_errors && error.non_field_errors.length > 0) {
+                  alert(error.non_field_errors[0]);
+              } else {
+                  // Fallback to generic message
+                  alert("Invalid credentials.");
+              }
+              return;
+          }  
     
-          if (userRole === "System Admin" || userRole === "Ticket Agent" || userRole === "Superuser") {
-            localStorage.setItem("token", token);
-            navigate("/admin/dashboard");
-          } else {
-            alert("Access denied. Only admins and ticket agents can log in here.");
-          }          
+        const token = data.access;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const userRole = payload.role;
     
-        } catch (error) {
-          console.error("Login error:", error);
-          alert("Something went wrong. Try again.");
+        if (userRole === "System Admin" || userRole === "Ticket Agent" || userRole === "Superuser") {
+          localStorage.setItem("adminAuthToken", token);
+          navigate("/admin/dashboard");
+        } else {
+          alert("Invalid credentials.");
         }
-      };
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Invalid credentials.");
+      }
+    };
 
     return (
         <div className="admin-login-wrapper">
@@ -58,7 +67,7 @@ const AdminLogin = () => {
                 <LoginHeader />
 
                 <div className="admin-login-container">
-                    <form>
+                    <form onSubmit={handleLogin}>
                         <div className="admin-form-group">
                             <label htmlFor="email">Email Address</label>
                             <input
@@ -82,6 +91,7 @@ const AdminLogin = () => {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                autoComplete="new-password"
                             />
                             <span
                                 className="admin-login-password-icon"
@@ -93,15 +103,13 @@ const AdminLogin = () => {
                                 if (e.key === "Enter" || e.key === " ") setShowAdminLogInPassword(!showAdminLogInPassword);
                                 }}
                             >
-                                {showAdminLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showAdminLogInPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                             </span>
                         </div>
 
                         {/* ✅ Changed type to button (if you don't want a form submission refresh) */}
                         <button
-                            type="button"
                             className="admin-login-button"
-                            onClick={handleLogin}
                         >
                             Log In
                         </button>

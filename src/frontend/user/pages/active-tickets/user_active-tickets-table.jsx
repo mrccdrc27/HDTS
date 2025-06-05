@@ -1,86 +1,90 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 import './user_active-tickets-table.css';
 
-const statusConfig = {
-  New: { class: 'user-active-status-new' },
-  Open: { class: 'user-active-status-open' },
-  'On Progress': { class: 'user-active-status-progress' },
-  'On Hold': { class: 'user-active-status-hold' },
-  Pending: { class: 'user-active-status-pending' },
-  Resolved: { class: 'user-active-status-resolved' },
-  Closed: { class: 'user-active-status-closed' },
-  Unknown: { class: 'user-active-status-unknown' },
-};
-
-const priorityClassMap = {
-  Low: 'user-active-priority-low',
-  Medium: 'user-active-priority-medium',
-  High: 'user-active-priority-high',
-  Critical: 'user-active-priority-critical',
-};
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return isNaN(date)
-    ? 'Invalid Date'
-    : date.toLocaleString(undefined, {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      });
-};
-
-const mockTickets = [
-  {
-    number: 'TCKT-1101',
-    subject: 'Laptop battery drains quickly',
-    status: 'Open',
-    priority: 'Medium',
-    department: 'IT',
-    category: 'Hardware',
-    subCategory: 'Battery',
-    dateCreated: '2025-05-10T10:00:00',
-    lastUpdated: '2025-05-10T12:00:00',
-  },
-  {
-    number: 'TCKT-1102',
-    subject: 'VPN access issue',
-    status: 'On Progress',
-    priority: 'High',
-    department: 'IT',
-    category: 'Network',
-    subCategory: 'VPN',
-    dateCreated: '2025-05-11T09:15:00',
-    lastUpdated: '2025-05-11T11:30:00',
-  },
-  {
-    number: 'TCKT-1103',
-    subject: 'Wrong payslip amount',
-    status: 'Pending',
-    priority: 'Low',
-    department: 'HR',
-    category: 'Payroll',
-    subCategory: 'Error',
-    dateCreated: '2025-05-12T08:00:00',
-    lastUpdated: '2025-05-12T09:00:00',
-  },
-];
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const UserActiveTicketsTable = () => {
   const navigate = useNavigate();
-  const [tickets] = useState(mockTickets);
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
+        });
+
+        const mapped = response.data.map(ticket => ({
+          number: ticket.ticket_number,
+          subject: ticket.subject,
+          status: ticket.status,
+          priority: ticket.priority,
+          department: ticket.department,
+          category: ticket.category,
+          subCategory: ticket.sub_category,
+          dateCreated: ticket.submit_date,
+          lastUpdated: ticket.update_date,
+        }));
+
+        setTickets(mapped);
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+        setError('Unable to load tickets.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, []);
+
+  const statusConfig = {
+    New: { class: 'user-active-status-new' },
+    Open: { class: 'user-active-status-open' },
+    'On Progress': { class: 'user-active-status-progress' },
+    'On Hold': { class: 'user-active-status-hold' },
+    Pending: { class: 'user-active-status-pending' },
+    Resolved: { class: 'user-active-status-resolved' },
+    Closed: { class: 'user-active-status-closed' },
+    Unknown: { class: 'user-active-status-unknown' },
+  };
+
+  const priorityClassMap = {
+    Low: 'user-active-priority-low',
+    Medium: 'user-active-priority-medium',
+    High: 'user-active-priority-high',
+    Critical: 'user-active-priority-critical',
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return isNaN(date)
+      ? 'Invalid Date'
+      : date.toLocaleString(undefined, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+  };
 
   const handleView = (ticket) => {
     const { number } = ticket;
     if (!number) return console.warn('Missing ticket number.');
     navigate(`/user/ticket-details/${number}`);
   };
+
+  if (loading) return <div>Loading tickets...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="user-active-tickets-container">

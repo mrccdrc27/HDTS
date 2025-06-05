@@ -15,6 +15,7 @@ const AdminNavbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [fullName, setFullName] = useState('');
 
   const toggleDropdown = (menu) => {
     setActiveDropdown(activeDropdown === menu ? null : menu);
@@ -33,6 +34,17 @@ const AdminNavbar = () => {
       setCurrentTime(new Date());
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const fName = payload.first_name || '';
+      const lName = payload.last_name || '';
+      const formattedName = `${lName.charAt(0).toUpperCase() + lName.slice(1)}, ${fName.charAt(0).toUpperCase() + fName.slice(1)}`;
+      setFullName(formattedName);
+    }
   }, []);
 
   // Handle clicking outside to close dropdowns
@@ -55,6 +67,19 @@ const AdminNavbar = () => {
     };
   }, [activeDropdown, showProfilePopup, showNotificationPopup]);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const fName = payload.first_name || '';
+      const lName = payload.last_name || '';
+  
+      const formattedFullName = `${lName.charAt(0).toUpperCase() + lName.slice(1)}, ${fName.charAt(0).toUpperCase() + fName.slice(1)}`;
+  
+      setFullName(formattedFullName);
+    }
+  }, []);
+  
   const formatDateTime = (date) => {
     const options = {
       hour: '2-digit',
@@ -153,7 +178,7 @@ const AdminNavbar = () => {
         </div>
 
         <div className="user-info">
-          <span>Admin User</span>
+          <span>{fullName}</span>
           <br />
           <span>{formatDateTime(currentTime)}</span>
         </div>

@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'group5capstone',
+        'NAME': 'group5capstone1',
         'USER': 'postgres',
         'PASSWORD': 'Oklangyan421!',
         'HOST': 'localhost',
@@ -136,6 +136,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
 ]
 
 MEDIA_URL = '/media/'
@@ -145,8 +147,10 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ),
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

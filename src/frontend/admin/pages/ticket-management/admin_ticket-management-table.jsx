@@ -31,102 +31,20 @@ const formatDateTime = (dateString) => {
       });
 };
 
-// TEMP MOCK DATA
-const mockTickets = [
-  {
-    number: 'TCKT-1001',
-    subject: 'Unable to access intranet portal',
-    department: 'IT',
-    category: 'Access Issue',
-    subCategory: 'Intranet',
-    status: 'New',
-    dateCreated: '2025-05-01T09:00:00',
-    lastUpdated: '2025-05-01T10:00:00',
-  },
-  {
-    number: 'TCKT-1002',
-    subject: 'Broken desk drawer',
-    department: 'Facilities',
-    category: 'Furniture',
-    subCategory: 'Desk',
-    status: 'Open',
-    dateCreated: '2025-05-02T08:30:00',
-    lastUpdated: '2025-05-02T09:00:00',
-  },
-  {
-    number: 'TCKT-1003',
-    subject: 'Slow internet connection',
-    department: 'IT',
-    category: 'Network',
-    subCategory: 'Speed',
-    status: 'On Progress',
-    dateCreated: '2025-05-03T11:15:00',
-    lastUpdated: '2025-05-03T12:30:00',
-  },
-  {
-    number: 'TCKT-1004',
-    subject: 'Air conditioning not working',
-    department: 'Facilities',
-    category: 'HVAC',
-    subCategory: 'Air Conditioning',
-    status: 'On Hold',
-    dateCreated: '2025-05-04T14:00:00',
-    lastUpdated: '2025-05-04T16:00:00',
-  },
-  {
-    number: 'TCKT-1005',
-    subject: 'Request for new software installation',
-    department: 'IT',
-    category: 'Software',
-    subCategory: 'Installation',
-    status: 'Pending',
-    dateCreated: '2025-05-05T09:45:00',
-    lastUpdated: '2025-05-05T10:00:00',
-  },
-  {
-    number: 'TCKT-1006',
-    subject: 'Printer not working',
-    department: 'IT',
-    category: 'Hardware',
-    subCategory: 'Printer',
-    status: 'Resolved',
-    dateCreated: '2025-05-06T13:00:00',
-    lastUpdated: '2025-05-06T15:30:00',
-  },
-  {
-    number: 'TCKT-1007',
-    subject: 'Request to close old account',
-    department: 'HR',
-    category: 'Account',
-    subCategory: 'Closure',
-    status: 'Closed',
-    dateCreated: '2025-05-07T10:30:00',
-    lastUpdated: '2025-05-07T11:00:00',
-  },
-  {
-    number: 'TCKT-1008',
-    subject: 'Unrecognized error message',
-    department: 'Support',
-    category: 'Error',
-    subCategory: 'Unknown',
-    status: 'Unknown',
-    dateCreated: '2025-05-08T12:00:00',
-    lastUpdated: '2025-05-08T12:15:00',
-  },
-];
-
-
-const TicketManagementTable = () => {
+const TicketManagementTable = ({ filteredTickets, onStatusUpdate, currentCategory }) => {
   const navigate = useNavigate();
-  const [tickets] = useState(mockTickets);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [reviewTicketId, setReviewTicketId] = useState(null);
+  const [rejectTicket, setRejectTicket] = useState(null);
 
   const handleNavigate = (ticket) => {
     const { number } = ticket;
-    if (!number) return console.warn('Missing ticket number.');
-    navigate(`/admin/ticket-details/`);
+    if (!number) {
+      console.warn('Missing ticket number.');
+      return;
+    }
+    navigate(`/admin/ticket-details/${number}`);
   };
 
   const handleView = (e, ticket) => {
@@ -136,13 +54,13 @@ const TicketManagementTable = () => {
 
   const handleReject = (e, ticket) => {
     e.stopPropagation();
-    setSelectedTicket(ticket);
+    setRejectTicket(ticket);
     setShowRejectModal(true);
   };
 
   const handleReview = (e, ticket) => {
     e.stopPropagation();
-    setSelectedTicket(ticket);
+    setReviewTicketId(ticket.id);
     setShowReviewModal(true);
   };
 
@@ -164,56 +82,28 @@ const TicketManagementTable = () => {
             </tr>
           </thead>
           <tbody>
-            {tickets.length > 0 ? (
-              tickets.map((ticket) => {
-                const {
-                  number,
-                  subject,
-                  department,
-                  category,
-                  subCategory,
-                  status,
-                  dateCreated,
-                  lastUpdated,
-                } = ticket;
-
-                const statusClass =
-                  statusConfig[status]?.class || statusConfig.Unknown.class;
-
+            {filteredTickets && filteredTickets.length > 0 ? (
+              filteredTickets.map((ticket) => {
+                const { id, number, subject, department, category, subCategory, status, dateCreated, lastUpdated } = ticket;
+                const statusClass = statusConfig[status]?.class || statusConfig.Unknown.class;
                 return (
                   <tr
-                    key={number}
+                    key={id}
                     className="ticket-management-row"
-                    onClick={() =>
-                      status !== 'New' && handleNavigate(ticket)
-                    }
+                    onClick={() => status !== 'New' && handleNavigate(ticket)}
                   >
-                    <td className="ticket-management-ticket-number-cell">
-                      {number}
-                    </td>
-                    <td className="ticket-management-subject-cell">
-                      {subject}
-                    </td>
-                    <td className="ticket-management-department-cell">
-                      {department}
-                    </td>
-                    <td className="ticket-management-category-cell">
-                      {category}
-                    </td>
-                    <td className="ticket-management-subcategory-cell">
-                      {subCategory}
-                    </td>
+                    <td className="ticket-management-ticket-number-cell">{number}</td>
+                    <td className="ticket-management-subject-cell">{subject}</td>
+                    <td className="ticket-management-department-cell">{department}</td>
+                    <td className="ticket-management-category-cell">{category}</td>
+                    <td className="ticket-management-subcategory-cell">{subCategory}</td>
                     <td className="ticket-management-status-cell">
                       <span className={`ticket-management-status-badge ${statusClass}`}>
                         {status}
                       </span>
                     </td>
-                    <td className="ticket-management-date-cell">
-                      {formatDateTime(dateCreated)}
-                    </td>
-                    <td className="ticket-management-date-cell">
-                      {formatDateTime(lastUpdated)}
-                    </td>
+                    <td className="ticket-management-date-cell">{formatDateTime(dateCreated)}</td>
+                    <td className="ticket-management-date-cell">{formatDateTime(lastUpdated)}</td>
                     <td className="ticket-management-actions-cell">
                       <div className="ticket-management-action-buttons">
                         {status === 'New' ? (
@@ -251,7 +141,9 @@ const TicketManagementTable = () => {
               <tr className="ticket-management-no-tickets-row">
                 <td colSpan="9">
                   <div className="ticket-management-no-tickets-message">
-                    No tickets available.
+                    {currentCategory === 'new-tickets'
+                      ? 'No new tickets requiring review.'
+                      : 'No tickets available.'}
                   </div>
                 </td>
               </tr>
@@ -260,17 +152,19 @@ const TicketManagementTable = () => {
         </table>
       </div>
 
-      {showReviewModal && selectedTicket && (
+      {showReviewModal && reviewTicketId && (
         <AdminTicketManagementReviewNewTicket
-          ticket={selectedTicket}
+          ticketId={reviewTicketId}
           onClose={() => setShowReviewModal(false)}
+          onStatusUpdate={onStatusUpdate}
         />
       )}
 
-      {showRejectModal && selectedTicket && (
+      {showRejectModal && rejectTicket && (
         <AdminTicketManagementRejectTicketReview
-          ticket={selectedTicket}
+          ticket={rejectTicket}
           onClose={() => setShowRejectModal(false)}
+          onStatusUpdate={onStatusUpdate}
         />
       )}
     </div>

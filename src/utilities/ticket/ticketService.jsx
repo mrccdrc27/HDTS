@@ -1,0 +1,113 @@
+import axios from 'axios';
+
+// Helper function to get CSRF token from cookies
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Create an axios instance with default configurations
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:8000/api',
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': getCookie('csrftoken'),
+  }
+});
+
+// Automatically attach authorization token to requests if available
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Ticket API functions
+const ticketService = {
+  // Create a new ticket
+  createTicket: async (ticketData) => {
+    const formData = new FormData();
+
+    formData.append('subject', ticketData.subject);
+    formData.append('category', ticketData.category);
+    formData.append('sub_category', ticketData.subCategory);
+    formData.append('description', ticketData.description);
+
+    if (ticketData.scheduleDate) {
+      formData.append('scheduled_date', ticketData.scheduleDate);
+    }
+
+    if (ticketData.files && ticketData.files.length > 0) {
+      ticketData.files.forEach(file => {
+        formData.append('files[]', file);
+      });
+    }
+
+    try {
+      const response = await api.post('/tickets/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'X-CSRFToken': getCookie('csrftoken'),
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Update an existing ticket
+  updateTicket: async (id, ticketData) => {
+    try {
+      const response = await api.patch(`/tickets/${id}/`, ticketData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Delete a ticket
+  deleteTicket: async (id) => {
+    try {
+      await api.delete(`/tickets/${id}/`);
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get all tickets for the current user
+  getUserTickets: async () => {
+    try {
+      const response = await api.get('/tickets/');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get a specific ticket by ID
+  getTicket: async (id) => {
+    try {
+      const response = await api.get(`/tickets/${id}/`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+};
+
+export default ticketService;

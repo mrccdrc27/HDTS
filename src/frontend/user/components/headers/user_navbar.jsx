@@ -12,6 +12,7 @@ const UserNavbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showProfilePopup, setShowProfilePopup] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
+  const [fullName, setFullName] = useState("Name");
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   const toggleProfilePopup = () => setShowProfilePopup((prev) => !prev);
@@ -53,6 +54,22 @@ const UserNavbar = () => {
     const year = date.getFullYear();
     return `${month}/${day}/${year} | ${time}`;
   };
+
+  const capitalizeEachWord = (str) => {
+    return str
+      .toLowerCase()
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  useEffect(() => {
+    const first = localStorage.getItem("firstName") || "";
+    const last = localStorage.getItem("lastName") || "";
+    if (first && last) {
+      setFullName(`${capitalizeEachWord(last)}, ${capitalizeEachWord(first)}`);
+    }
+  }, []);
 
   return (
     <div className="userNavbar">
@@ -192,7 +209,7 @@ const UserNavbar = () => {
 
         {/* User Info */}
         <div className="userNavbar-info">
-          <span>Name</span>
+          <span>{fullName}</span>
           <br />
           <span>{formatDateTime(currentTime)}</span>
         </div>

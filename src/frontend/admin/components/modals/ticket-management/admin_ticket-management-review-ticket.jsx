@@ -1,25 +1,71 @@
 import { useEffect, useState } from 'react';
 import './admin_ticket-management-review-ticket.css';
 
-const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
+const AdminTicketManagementReviewNewTicket = ({ ticketId, onClose, onTicketUpdated }) => {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [priority, setPriority] = useState('Low');
-  const [department, setDepartment] = useState('IT Support');
+  const [department, setDepartment] = useState('IT Department');
   const [approvalNotes, setApprovalNotes] = useState('');
+  const [ticketData, setTicketData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Sample ticket data
-  const ticketData = {
-    employeeName: 'John Smith',
-    companyId: 'EMP-2024-001',
-    employeeDepartment: 'Marketing',
-    subject: 'Request for personal app installation',
-    category: 'Software',
-    subCategory: 'Unauthorized App',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    hasFile: true
-  };
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  console.log("API_BASE_URL:", API_BASE_URL);
+
+  // Fetch ticket details
+  useEffect(() => {
+    const fetchTicketData = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('adminAuthToken');
+        console.log("Auth token:", token);
+        
+        const response = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch ticket data');
+        }
+
+        const data = await response.json();
+        console.log("Ticket detail raw data:", data);
+        
+        // Transform the data to match the expected structure
+        const transformedData = {
+          ticketNumber: data.ticket_number,
+          employeeName: data.employee ? `${data.employee.first_name} ${data.employee.last_name}` : 'Unknown',
+          companyId: data.employee?.company_id || 'N/A',
+          employeeDepartment: data.employee?.department || 'N/A',
+          subject: data.subject,
+          category: data.category,
+          subCategory: data.sub_category,
+          description: data.description,
+          attachments: data.attachments || [],
+          submitDate: new Date(data.submit_date).toLocaleDateString(),
+          status: data.status,
+        };
+
+        setTicketData(transformedData);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching ticket:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (ticketId) {
+      fetchTicketData();
+    }
+  }, [ticketId, API_BASE_URL]);
 
   const handleOpenTicket = () => {
     setShowApprovalModal(true);
@@ -41,22 +87,92 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
     onClose();
   };
 
-  const submitRejection = () => {
+  const submitRejection = async () => {
     if (!rejectionReason.trim()) {
       alert('Please provide a reason for rejection.');
       return;
     }
-    alert('Rejection Submitted:\n' + rejectionReason);
-    handleCloseAll();
+
+    try {
+      setSubmitting(true);
+      const token = localStorage.getItem('adminAuthToken');
+      
+      const response = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}/reject/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rejection_reason: rejectionReason,
+          status: 'Rejected'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reject ticket');
+      }
+
+      alert('Ticket rejected successfully!');
+      onTicketUpdated && onTicketUpdated(ticketId, 'Rejected');
+      handleCloseAll();
+    } catch (err) {
+      alert('Error rejecting ticket: ' + err.message);
+      console.error('Error rejecting ticket:', err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const submitApproval = () => {
-    alert(
-      `Approval Submitted:\nPriority: ${priority}\nDepartment: ${department}\nNotes: ${
-        approvalNotes || 'None'
-      }`
-    );
-    handleCloseAll();
+  console.log("Approving ticket ID:", ticketId);
+
+  const submitApproval = async () => {
+    try {
+      setSubmitting(true);
+      const token = localStorage.getItem('adminAuthToken');
+
+      if (!token) {
+        alert('No authentication token found. Please log in again.');
+        return;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}/approve/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          priority: priority,
+          department: department,
+          approval_notes: approvalNotes,
+          status: 'Open'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to approve ticket');
+      }
+
+      alert('Ticket approved successfully!');
+      onTicketUpdated && onTicketUpdated(ticketId, 'Open');
+      handleCloseAll();
+      
+    } catch (err) {
+      alert('Error approving ticket: ' + err.message);
+      console.error('Error approving ticket:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const viewAttachmentInNewTab = (fileUrl) => {
+    if (fileUrl) {
+      window.open(fileUrl, '_blank');
+    } else {
+      alert('Attachment file URL not available.');
+    }
   };
 
   useEffect(() => {
@@ -84,6 +200,34 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="admin-ticket-modal-overlay active">
+        <div className="admin-ticket-modal-content">
+          <div className="loading-spinner">Loading ticket details...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-ticket-modal-overlay active">
+        <div className="admin-ticket-modal-content">
+          <div className="error-message">
+            <h3>Error</h3>
+            <p>{error}</p>
+            <button onClick={onClose} className="btn secondary-btn">Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!ticketData) {
+    return null;
+  }
+
   return (
     <div>
       <div
@@ -97,7 +241,7 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
           <div className="admin-ticket-modal-content">
             <div className="admin-ticket-modal-header">
               <h2 id="review-ticket-title" className="admin-ticket-modal-title">
-                Review New Ticket
+                Review Ticket #{ticketData.ticketNumber}
               </h2>
               <button
                 className="admin-ticket-modal-close-btn"
@@ -109,7 +253,30 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
             </div>
 
             <div className="admin-ticket-modal-body">
-              <h3 className="employee-request-title"> Employee Information & Request </h3>
+              <div className="ticket-meta-info">
+                <div className="form-row">
+                  <div className="form-group half-width">
+                    <label className="form-label">Ticket Number:</label>
+                    <input
+                      type="text"
+                      value={ticketData.ticketNumber}
+                      readOnly
+                      className="form-input readonly"
+                    />
+                  </div>
+                  <div className="form-group half-width">
+                    <label className="form-label">Submit Date:</label>
+                    <input
+                      type="text"
+                      value={ticketData.submitDate}
+                      readOnly
+                      className="form-input readonly"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="employee-request-title">Employee Information & Request</h3>
 
               <div className="employee-info-section">
                 <div className="form-row">
@@ -179,20 +346,42 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
                 />
               </div>
 
-              {ticketData.hasFile && (
+              {ticketData.attachments && ticketData.attachments.length > 0 && (
                 <div className="form-group">
-                  <label className="form-label">File Upload</label>
-                  <div className="file-attachment">
-                    📎 Attached File
-                  </div>
+                  <label className="form-label">File Attachments</label>
+                  <ul className="attachment-list">
+                    {ticketData.attachments.map((attachment, index) => (
+                      <li key={index} style={{ marginBottom: '6px' }}>
+                        <span 
+                          className="file-attachment" 
+                          style={{ 
+                            cursor: 'pointer', 
+                            color: '#007bff', 
+                            textDecoration: 'underline' 
+                          }}
+                          onClick={() => viewAttachmentInNewTab(attachment.file)}
+                        >
+                          📎 {attachment.file_name || `Attachment ${index + 1}`}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
               <div className="admin-ticket-modal-actions">
-                <button className="reject-ticket-btn" onClick={handleRejectTicket}>
+                <button 
+                  className="reject-ticket-btn" 
+                  onClick={handleRejectTicket}
+                  disabled={submitting}
+                >
                   Reject
                 </button>
-                <button className="approve-ticket-btn" onClick={handleOpenTicket}>
+                <button 
+                  className="approve-ticket-btn" 
+                  onClick={handleOpenTicket}
+                  disabled={submitting}
+                >
                   Approve
                 </button>
               </div>
@@ -205,7 +394,7 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
           <div className="secondary-modal-overlay" onClick={handleOverlayClick}>
             <div className="secondary-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="secondary-modal-header">
-                <h3 className="secondary-modal-title">Reject Ticket</h3>
+                <h3 className="secondary-modal-title">Reject Ticket #{ticketData.ticketNumber}</h3>
                 <button
                   className="admin-ticket-modal-close-btn"
                   onClick={handleCloseModal}
@@ -236,11 +425,19 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
                 </div>
 
                 <div className="secondary-modal-actions">
-                  <button className="btn secondary-btn" onClick={handleCloseModal}>
+                  <button 
+                    className="btn secondary-btn" 
+                    onClick={handleCloseModal}
+                    disabled={submitting}
+                  >
                     Cancel
                   </button>
-                  <button className="btn reject-btn" onClick={submitRejection}>
-                    Submit Rejection
+                  <button 
+                    className="btn reject-btn" 
+                    onClick={submitRejection}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Submitting...' : 'Submit Rejection'}
                   </button>
                 </div>
               </div>
@@ -253,7 +450,7 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
           <div className="secondary-modal-overlay" onClick={handleOverlayClick}>
             <div className="secondary-modal-content" onClick={(e) => e.stopPropagation()}>
               <div className="secondary-modal-header">
-                <h3 className="secondary-modal-title">Approve Ticket</h3>
+                <h3 className="secondary-modal-title">Approve Ticket #{ticketData.ticketNumber}</h3>
                 <button
                   className="admin-ticket-modal-close-btn"
                   onClick={handleCloseModal}
@@ -276,10 +473,10 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
                   >
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                    <option>Critical</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
                   </select>
                 </div>
 
@@ -291,10 +488,14 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
                   >
-                    <option>IT Support</option>
-                    <option>Network</option>
-                    <option>Security</option>
-                    <option>Development</option>
+                    <option value="IT Department">IT Department</option>
+                    <option value="Asset Management">Asset Management</option>
+                    <option value="Document Control">Document Control</option>
+                    <option value="Finance & Budgeting">Finance & Budgeting</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Facilities & Maintenance">Facilities & Maintenance</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Administration">Administration</option>
                   </select>
                 </div>
 
@@ -311,11 +512,19 @@ const AdminTicketManagementReviewNewTicket = ({ onClose }) => {
                 </div>
 
                 <div className="secondary-modal-actions">
-                  <button className="btn secondary-btn" onClick={handleCloseModal}>
+                  <button 
+                    className="btn secondary-btn" 
+                    onClick={handleCloseModal}
+                    disabled={submitting}
+                  >
                     Cancel
                   </button>
-                  <button className="btn approve-btn" onClick={submitApproval}>
-                    Submit Approval
+                  <button 
+                    className="btn approve-btn" 
+                    onClick={submitApproval}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Submitting...' : 'Submit Approval'}
                   </button>
                 </div>
               </div>

@@ -5,14 +5,15 @@
   --neutral-light-gray: #E3E3E3;
   --bg-dark: #0C0C0C; 
   --neutral-dim-gray: #7E7E7E;
-
 }
 
+/* Ensure body and html allow full scrolling */
 html, body {
-  height: 100%;       /* Make sure body takes full viewport height */
-  margin: 0;          /* Remove default margins */
-  padding: 0;         /* Remove default padding */
-  overflow-y: auto;   /* Enable vertical scroll only if needed */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto;   /* Allow vertical scroll */
 }
 
 * { 
@@ -22,35 +23,46 @@ html, body {
 }
 
 .create-account-form-container {
-  max-width: 90%;
-  width: 90%;
-  margin: 3rem auto;  /* Centers the form with top/bottom margin */
+  max-width: 90%; 
+  width: 90%; 
+  margin: 3rem auto; 
   padding: 2rem;
-  background: var(--neutral-light-gray);
+  background: var(--neutral-light-gray); 
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  font-family: 'Poppins', sans-serif;
-  display: flex;
+  font-family: 'Poppins', sans-serif; 
+  display: flex; 
   flex-direction: column;
-  /* No fixed height or overflow here (let the page handle scrolling) */
+  /* Remove any height constraints that might limit scrolling */
+  min-height: auto;
+  height: auto;
+  overflow: visible; /* Ensure content can overflow and be scrollable */
 }
 
 .create-account-form-container h2 {
   color: var(--red-logo); /* Changed to blue */
-  font-size: 1.75rem; margin-bottom: 1rem; font-weight: 600;
+  font-size: 1.75rem; 
+  margin-bottom: 1rem; 
+  font-weight: 600;
 }
 
 .create-account-form-container hr { 
-  border: 0; height: 1px; background: #ccc; margin-bottom: 1rem; 
+  border: 0; 
+  height: 1px; 
+  background: #ccc; 
+  margin-bottom: 1rem; 
 }
 
 form {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 0.75rem; width: 100%;
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 0.75rem; 
+  width: 100%;
+  min-height: auto;
 }
 
 .create-account-form-group { 
-  margin-bottom: 0.5rem; 
+  margin-bottom: 1px; 
 }
 
 .create-account-form-group:nth-child(1),
@@ -61,8 +73,7 @@ form {
 }
 
 .create-account-form-group:nth-child(5),
-.create-account-form-group:nth-child(6)
- { 
+.create-account-form-group:nth-child(6) { 
   grid-column: span 2; 
 }
 
@@ -70,13 +81,21 @@ form {
 .create-account-form-group:nth-child(8),
 .create-account-form-group:nth-child(9),
 .create-account-form-group:nth-child(10) {
-  grid-column: 1 / -1; display: flex; flex-direction: column;
+  grid-column: 1 / -1; 
+  display: flex; 
+  flex-direction: column;
 }
 
-.create-account-checkbox-group { grid-column: span 2; }
+.create-account-checkbox-group { 
+  grid-column: span 2; 
+}
 
 .create-account-form-group label {
-  display: block; margin-bottom: 0.35rem; font-weight: 500; color: #333; font-size: 0.9rem;
+  display: block; 
+  margin-bottom: 0.35rem; 
+  font-weight: 500; 
+  color: #333; 
+  font-size: 14px;
 }
 
 .create-account-form-group label[for="last-name"]::after,
@@ -95,14 +114,98 @@ form {
 .create-account-form-group input[type="text"],
 .create-account-form-group input[type="email"],
 .create-account-form-group input[type="password"] {
-    width: 100%; padding: 0.6rem; font-size: 0.95rem;
-    border-radius: 6px; border: 1px solid #ddd; background: #fff;
+    width: 100%; 
+    padding: 0.6rem; 
+    font-size: 0.95rem;
+    border-radius: 6px; 
+    border: 1px solid #ddd; 
+    background: #fff;
     transition: border-color 0.3s, box-shadow 0.3s;
-    line-height: 1.4; height: calc(2.5rem + 2px); /* standardize */
+    line-height: 1.4; 
+    height: calc(2.5rem + 2px); /* standardize */
+}
+
+/* Company ID wrapper styles */
+.company-id-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: calc(2.5rem + 2px);
+  border: 1px solid var(--bg-dark);
+  border-radius: 6px;
+  background: #fff;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+}
+
+.company-id-wrapper:hover {
+  border-color: var(--blue-logo);
+  box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.15);
+}
+
+.company-id-wrapper:focus-within {
+  outline: none;
+  border-color: var(--blue-logo);
+  box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2);
+}
+
+.company-id-prefix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  background: #fff;
+  color: var(--bg-dark);
+  font-weight: 500;
+  font-size: 0.95rem;
+  user-select: none;
+  pointer-events: none;
+  border-right: none;
+}
+
+.company-id-separator {
+  width: 1px;
+  height: 60%;
+  background: var(--bg-dark);
+  flex-shrink: 0;
+}
+
+.company-id-input {
+  flex: 1;
+  height: 100%;
+  border: none !important;
+  outline: none !important;
+  padding: 0.6rem 12px;
+  margin-left: 6px;
+  font-size: 0.95rem;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.company-id-input:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .select-wrapper {
   position: relative;
+}
+
+.select-wrapper select {
+  padding: 0.6rem;
+  margin: 0;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  height: 2.5rem;       /* Consistent height */
+  background: #fff;
+  background-position: right 10px center; /* Ensures space for the chevron */
+  background-repeat: no-repeat;
+  padding-right: 2.5rem; /* Space for chevron */
+  box-sizing: border-box; 
 }
 
 .suffix-select {
@@ -128,7 +231,7 @@ form {
   position: absolute;
   top: 50%;
   right: 10px;
-  transform: translateY(-85%);
+  transform: translateY(-50%);
   pointer-events: none;
   display: flex;
   align-items: center;
@@ -141,7 +244,7 @@ form {
   top: 0px;
   right: 36px; /* same as chevron + margin */
   width: 1px;
-  height: calc(100% - 16px); /* align nicely with padding */
+  height: 100%;
   background: var(--bg-dark);
   pointer-events: none;
 }
@@ -205,7 +308,12 @@ form {
 }
 
 .create-account-form-group input[type="file"] {
-  position: absolute; width: 0.1px; height: 0.1px; opacity: 0; overflow: hidden; z-index: -1;
+  position: absolute; 
+  width: 0.1px; 
+  height: 0.1px; 
+  opacity: 0; 
+  overflow: hidden; 
+  z-index: -1;
 }
 
 .create-account-form-group select option {
@@ -292,8 +400,12 @@ form {
 }
 
 .file-upload-container input[type="file"] {
-  position: absolute; width: 0.1px; height: 0.1px;
-  opacity: 0; overflow: hidden; z-index: -1;
+  position: absolute; 
+  width: 0.1px; 
+  height: 0.1px;
+  opacity: 0; 
+  overflow: hidden; 
+  z-index: -1;
 }
 
 .file-name {
@@ -362,7 +474,9 @@ hr {
 
 .password-requirements,
 .confirm-password-container { 
-  font-size: 0.75rem; color: #666; margin-top: 0.2rem; 
+  font-size: 0.75rem; 
+  color: #666; 
+  margin-top: 0.2rem; 
 }
 
 .password-container
@@ -391,22 +505,43 @@ hr {
 }
 
 .password-wrapper input {
-  padding-right: 40px; /* space for eye icon */
+  width: 100%;
+  padding: 0.6rem;
+  padding-right: 45px; /* Increased space for eye icon */
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid var(--bg-dark);
+  background: #fff;
+  height: calc(2.5rem + 2px);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
 }
 
 .password-icon {
   position: absolute;
   top: 50%;
-  right: 12px;
-  transform: translateY(-40%);
+  right: 15px; /* Moved slightly more to the left */
+  transform: translateY(-50%); /* Changed to -50% for perfect centering */
   cursor: pointer;
   color: #7e7e7e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  z-index: 2; /* Ensure it's above the input */
 }
 
 .password-icon:hover {
   color: #333;
 }
 
+.password-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Tooltip styles */
 .password-icon::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -429,6 +564,14 @@ hr {
   opacity: 1;
 }
 
+/* Ensure input focus styles work properly */
+.password-wrapper input:hover,
+.password-wrapper input:focus {
+  border-color: var(--blue-logo);
+  box-shadow: 0 0 0 2px rgba(15, 76, 138, 0.2);
+  outline: none;
+}
+
 /* For Chrome, Edge, and Opera */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
@@ -441,19 +584,38 @@ input[type="password"]::-webkit-textfield-decoration-button {
     display: none !important;
 }
 
-.create-account-form-group a { color: var(--blue-logo); text-decoration: none; }
-.create-account-form-group a:hover { text-decoration: underline; }
+.create-account-form-group a { 
+  color: var(--blue-logo); 
+  text-decoration: none; 
+}
+
+.create-account-form-group a:hover { 
+  text-decoration: underline; 
+}
 
 .checkbox-label {
-  display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem;
-  color: #333; margin-bottom: 0.5rem;
+  display: flex; 
+  align-items: center; 
+  gap: 0.5rem; 
+  font-size: 0.95rem;
+  color: #333; 
+  margin-bottom: 0.5rem;
 }
 
 .btn-signup {
-  grid-column: 1 / -1; width: 50%; padding: 0.75rem;
-  background: var(--blue-logo); color: #fff; border: none;
-  border-radius: 6px; font-size: 1rem; font-weight: 500;
-  cursor: pointer; transition: background-color 0.3s; margin: 0.5rem auto; display: block;
+  grid-column: 1 / -1; 
+  width: 50%; 
+  padding: 0.75rem;
+  background: var(--blue-logo); 
+  color: #fff; 
+  border: none;
+  border-radius: 6px; 
+  font-size: 1rem; 
+  font-weight: 500;
+  cursor: pointer; 
+  transition: background-color 0.3s; 
+  margin: 0.5rem auto; 
+  display: block;
 }
 
 .btn-signup:hover { 
@@ -461,13 +623,25 @@ input[type="password"]::-webkit-textfield-decoration-button {
 }
 
 .login-link {
-  text-align: center; width: 100%;
-  grid-column: 1 / -1; display: flex; justify-content: center;
-  gap: 0.6rem; font-size: 0.95rem; color: #555;
+  text-align: center; 
+  width: 100%;
+  grid-column: 1 / -1; 
+  display: flex; 
+  justify-content: center;
+  gap: 0.6rem; 
+  font-size: 0.95rem; 
+  color: #555;
 }
 
-.login-link a { color: var(--blue-logo); font-weight: 500; text-decoration: none; }
-.login-link a:hover { text-decoration: underline; }
+.login-link a { 
+  color: var(--blue-logo); 
+  font-weight: 500; 
+  text-decoration: none; 
+}
+
+.login-link a:hover { 
+  text-decoration: underline; 
+}
 
 .create-account-form-group input:invalid:not(:focus),
 .create-account-form-group select:invalid:not(:focus) {
@@ -511,15 +685,26 @@ input[type="password"]::-webkit-textfield-decoration-button {
 .create-account-form-group input,
 .create-account-form-group select,
 .create-account-form-group textarea,
-.file-upload-container
-{
+.file-upload-container {
   border: 1px solid var(--bg-dark) !important; /* Using !important to override any conflicting styles */
+}
+
+.privacy-text-wrapper {
+  text-underline-offset: 2px;
 }
 
 .privacy-link {
   color: #007bff;
   text-decoration: underline;
+  text-decoration-color: #007bff;
   cursor: pointer;
+}
+
+.privacy-and {
+  color: #000; /* Black text */
+  text-decoration: underline;
+  text-decoration-color: #007bff; /* Blue underline */
+  cursor: default;
 }
 
 .privacy-link:hover {
@@ -528,19 +713,38 @@ input[type="password"]::-webkit-textfield-decoration-button {
 
 .error-message {
   color: red;
-  font-size: 0.875rem;
+  font-size: 12px;
   margin-top: 4px;
+  margin-bottom: 0px;
 }
 
-.create-account-form-group input:invalid:focus + .error-message { display: block; }
+.create-account-form-group input:invalid:focus + .error-message { 
+  display: block; 
+}
 
 @media (max-width: 768px) {
-  .create-account-form-container { margin: 1rem; padding: 1.5rem; }
-  form { grid-template-columns: 1fr; gap: 0.75rem; }
-  .create-account-form-group {
-    grid-column: 1 / -1; margin-bottom: 0.75rem;
+  .create-account-form-container { 
+    margin: 1rem; 
+    padding: 1.5rem; 
+    /* Ensure mobile container can also scroll */
+    max-height: none;
+    height: auto;
   }
-  .btn-signup { width: 100%; }
+  
+  form { 
+    grid-template-columns: 1fr; 
+    gap: 0.75rem; 
+  }
+  
+  .create-account-form-group {
+    grid-column: 1 / -1; 
+    margin-bottom: 0.75rem;
+  }
+  
+  .btn-signup { 
+    width: 100%; 
+  }
+  
   .create-account-checkbox-group {
     display: flex;
     align-items: center;
@@ -588,12 +792,19 @@ input[type="password"]::-webkit-textfield-decoration-button {
   }
   
   .file-upload-container {
-    display: flex; flex-direction: column; align-items: center;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
   }
+  
   .file-upload-btn {
-    padding: 10px 15px; font-size: 0.95rem;
+    padding: 10px 15px; 
+    font-size: 0.95rem;
   }
+  
   .upload-note {
-    font-size: 0.8rem; color: #555; margin-top: 0.4rem;
+    font-size: 0.8rem; 
+    color: #555; 
+    margin-top: 0.4rem;
   }
 }

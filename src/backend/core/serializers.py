@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import Employee
+from .models import Employee, Ticket, TicketAttachment
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,21 +26,63 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['email'] = user.email
         token['role'] = user.role
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        
         return token
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        data = super().validate(attrs)
+        try:
+            data = super().validate(attrs)
+        except AuthenticationFailed:
+            raise serializers.ValidationError("Invalid credentials.")
+
         user = self.user
 
-        # ❌ Block superusers and admin roles from this endpoint
         if user.is_superuser or user.role in ["System Admin", "Ticket Agent"]:
-            raise serializers.ValidationError("This login is for employee accounts only.")
+            raise serializers.ValidationError("Invalid credentials.")
 
-        # ❌ Block employees who are not approved
         if hasattr(user, 'status') and user.status != 'Approved':
-            raise serializers.ValidationError("Your account is pending approval.")
+            raise serializers.ValidationError("Account is pending for approval.")
 
         data['email'] = user.email
         data['role'] = user.role if hasattr(user, 'role') else 'Unknown'
+        data['first_name'] = user.first_name
+
         return data
+
+class TicketAttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketAttachment
+        fields = ['id', 'file', 'file_name', 'file_type', 'file_size', 'upload_date']
+        read_only_fields = ['id', 'upload_date', 'file_size']
+
+class EmployeeInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ['first_name', 'last_name', 'email', 'company_id', 'department', 'image']
+
+class TicketSerializer(serializers.ModelSerializer):
+    attachments = TicketAttachmentSerializer(many=True, read_only=True)
+    scheduled_date = serializers.DateField(required=False, allow_null=True)
+    assigned_to = serializers.StringRelatedField(read_only=True)
+    employee = EmployeeInfoSerializer(read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = [
+            'id', 'ticket_number', 'subject', 'category', 'sub_category',
+            'description', 'scheduled_date', 'priority', 'department',
+            'status', 'submit_date', 'update_date', 'assigned_to', 'attachments',
+            'employee'
+        ]
+        read_only_fields = [
+            'id', 'ticket_number', 'submit_date', 'update_date',
+            'response_time', 'resolution_time', 'time_closed', 'assigned_to',
+            'employee'
+        ]
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        return Ticket.objects.create(employee=user, **validated_data)

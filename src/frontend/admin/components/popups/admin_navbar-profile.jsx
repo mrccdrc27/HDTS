@@ -12,12 +12,29 @@ const AdminNavbarProfile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeSection, setActiveSection] = useState(null);
+  const [profileName, setProfileName] = useState('');
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const section = searchParams.get('section');
     setActiveSection(section);
   }, [location.search]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const fName = payload.first_name || '';
+      const lName = payload.last_name || '';
+      const role = payload.role || '';
+  
+      const formattedProfileName = `${fName.charAt(0).toUpperCase() + fName.slice(1)} ${lName.charAt(0).toUpperCase() + lName.slice(1)}`;
+  
+      setProfileName(formattedProfileName);
+      setUserRole(role);
+    }
+  }, []);
 
   const addQueryParam = (key, value) => {
     const searchParams = new URLSearchParams(location.search);
@@ -44,8 +61,8 @@ const AdminNavbarProfile = () => {
     <>
       <div className="profile-popup">
         <div className="profile-info">
-          <p className="profile-name">Admin Name</p>
-          <p className="profile-role">System Administrator</p>
+          <p className="profile-name">{profileName}</p>
+          <p className="profile-role">{userRole}</p>
         </div>
         <hr className="divider" />
         <p className="profile-settings">Settings</p>

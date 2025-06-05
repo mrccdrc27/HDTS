@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.core.mail import send_mail
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from .models import Employee, Ticket
+from .models import Employee, Ticket, TicketAttachment
 from django.utils import timezone
 
 # Custom form for creating users
@@ -46,7 +46,7 @@ class EmployeeChangeForm(forms.ModelForm):
     def clean_password(self):
         return self.initial["password"]
 
-# Register the custom admin
+# Register Employee with custom admin
 @admin.register(Employee)
 class EmployeeAdmin(UserAdmin):
     add_form = EmployeeCreationForm
@@ -91,7 +91,14 @@ class EmployeeAdmin(UserAdmin):
             ):
                 send_mail(
                     subject='Account Approved',
-                    message='Your account has been approved. You may now log in.',
+                    message=(
+                        "Dear Employee,\n\n"
+                        "We are pleased to inform you that your SmartSupport account has been successfully created.\n\n"
+                        "http://localhost:3000/login/employee\n\n"
+                        "If you have any questions or need further assistance, feel free to contact our support team.\n\n"
+                        "Respectfully,\n"
+                        "SmartSupport Help Desk Team"
+                    ),
                     from_email='sethpelagio20@gmail.com',
                     recipient_list=[obj.email],
                     fail_silently=False,
@@ -99,24 +106,21 @@ class EmployeeAdmin(UserAdmin):
                 obj.notified = True
         super().save_model(request, obj, form, change)
 
+# Ticket Admin Form
 class TicketAdminForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = '__all__'  # Correcting 'all' to '__all__'
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Limit Employee dropdown to users with role = "Employee"
         self.fields['employee'].queryset = Employee.objects.filter(role='Employee')
-
-        # Set widget attributes
         self.fields['scheduled_date'].widget.attrs.update({
             'type': 'date',
             'min': timezone.now().date().isoformat()
         })
 
-        # Make priority, department, response_time, resolution_time, time_closed read-only or disabled
         for field_name in ['priority', 'department', 'response_time', 'resolution_time', 'time_closed']:
             self.fields[field_name].widget.attrs['readonly'] = True
             self.fields[field_name].disabled = True
@@ -130,12 +134,20 @@ class TicketAdminForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if not self.instance.pk:
-            cleaned_data['status'] = 'Open'  # Set default status when created
+            cleaned_data['status'] = 'New'
         return cleaned_data
 
+# Inline attachments
+class TicketAttachmentInline(admin.TabularInline):
+    model = TicketAttachment
+    extra = 0
+    readonly_fields = ('file', 'file_name', 'file_type', 'file_size', 'uploaded_by', 'upload_date')
+
+# Register Ticket with attachment inline
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     form = TicketAdminForm
+    inlines = [TicketAttachmentInline]
 
     list_display = (
         'id', 'subject', 'employee', 'department', 'priority',
@@ -153,7 +165,7 @@ class TicketAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'employee', 'subject', 'category', 'sub_category', 'attachment',
+                'employee', 'subject', 'category', 'sub_category',
                 'description', 'scheduled_date', 'priority', 'department',
                 'status', 'assigned_to', 'response_time', 'resolution_time', 'time_closed'
             )

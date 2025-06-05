@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 import AdminTicketManagementSearch from './admin_ticket-management-search.jsx';
 import TicketManagementFilters from './admin_ticket-management-filters-and-sort.jsx';
 import TicketManagementTable from './admin_ticket-management-table.jsx';
 import TablePagination from '../../components/shared/table-pagination.jsx';
-import { loadTickets, updateTicketStatus } from '../../../../utilities/ticket-data/ticketData.js';
+import AdminTicketManagementReviewNewTicket from '../../components/modals/ticket-management/admin_ticket-management-review-ticket.jsx';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TicketManagement = () => {
   const { category } = useParams();
 
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subcategoryFilter, setSubcategoryFilter] = useState('');
@@ -19,8 +26,6 @@ const TicketManagement = () => {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [sortAsc, setSortAsc] = useState(true);
-
-  const [currentPage, setCurrentPage] = useState(1);
 
   const getFormattedCategory = (key) => {
     const displayMap = {
@@ -37,46 +42,62 @@ const TicketManagement = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const fetchedTickets = loadTickets();
-        setTickets(Array.isArray(fetchedTickets) ? fetchedTickets : []);
+        setIsLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('adminAuthToken')}`,
+          },
+        });
+
+        const mappedTickets = response.data.map(ticket => ({
+          id: ticket.id,
+          number: ticket.ticket_number,
+          subject: ticket.subject,
+          department: ticket.department,
+          category: ticket.category,
+          subCategory: ticket.sub_category,
+          status: ticket.status,
+          dateCreated: ticket.submit_date,
+          lastUpdated: ticket.update_date,
+        }));
+
+        setTickets(mappedTickets);
       } catch (error) {
         console.error('Failed to load tickets:', error);
+        setError('Unable to load tickets.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchTickets();
-  }, []);
+  }, [category]);
 
-  const handleStatusUpdate = async (ticketNumber, newStatus) => {
-    try {
-      setIsLoading(true);
-      await updateTicketStatus(ticketNumber, newStatus);
-      setTickets(prev =>
-        prev.map(ticket => ticket.number === ticketNumber ? { ...ticket, status: newStatus } : ticket)
-      );
-    } catch (error) {
-      console.error('Failed to update ticket status:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const updateTicketStatus = async (ticketId, newStatus) => {
+    setTickets(prev =>
+      prev.map(ticket =>
+        ticket.id === ticketId ? { ...ticket, status: newStatus } : ticket
+      )
+    );
   };
 
   const filteredTickets = tickets
     .filter(ticket => {
+      if (category === 'new-tickets' && ticket.status !== 'New') return false;
+      if (category === 'open-tickets' && ticket.status !== 'Open') return false;
+      if (category === 'on-progress-tickets' && ticket.status !== 'On Progress') return false;
+      if (category === 'pending-tickets' && ticket.status !== 'Pending') return false;
+      if (category === 'rejected-tickets' && ticket.status !== 'Rejected') return false;
       if (categoryFilter && ticket.category !== categoryFilter) return false;
       if (subcategoryFilter && ticket.subCategory !== subcategoryFilter) return false;
-      if (statusFilter) {
-        const normalized = statusFilter === 'Open' ? 'Approved/Open' : statusFilter;
-        if (ticket.status !== normalized) return false;
-      }
-      const date = new Date(ticket.dateCreated);
-      if (dateFrom && date < new Date(dateFrom)) return false;
+      if (statusFilter && ticket.status !== statusFilter) return false;
+
+      const created = new Date(ticket.dateCreated);
+      if (dateFrom && created < new Date(dateFrom)) return false;
       if (dateTo) {
-        const toDate = new Date(dateTo);
-        toDate.setHours(23, 59, 59);
-        if (date > toDate) return false;
+        const end = new Date(dateTo);
+        end.setHours(23, 59, 59);
+        if (created > end) return false;
       }
       return true;
     })
@@ -85,6 +106,27 @@ const TicketManagement = () => {
       const dB = new Date(b.dateCreated);
       return sortAsc ? dA - dB : dB - dA;
     });
+
+  const handleReviewClick = (ticketId) => {
+    setSelectedTicketId(ticketId);
+    setShowReviewModal(true);
+  };
+
+  const handleCloseReview = () => {
+    setSelectedTicketId(null);
+    setShowReviewModal(false);
+  };
+
+  if (error) {
+    return (
+      <div className="ticket-management-main">
+        <div className="error-message">
+          <h2>Error Loading Tickets</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ticket-management-main">
@@ -122,7 +164,9 @@ const TicketManagement = () => {
         ) : (
           <TicketManagementTable
             filteredTickets={filteredTickets}
-            onStatusUpdate={handleStatusUpdate}
+            onStatusUpdate={updateTicketStatus}
+            currentCategory={category}
+            onReviewClick={handleReviewClick}
           />
         )}
       </div>
@@ -130,6 +174,14 @@ const TicketManagement = () => {
       <div className="pagination">
         <TablePagination />
       </div>
+
+      {showReviewModal && selectedTicketId && (
+        <AdminTicketManagementReviewNewTicket
+          ticketId={selectedTicketId}
+          onClose={handleCloseReview}
+          onTicketUpdated={updateTicketStatus}
+        />
+      )}
     </div>
   );
 };
