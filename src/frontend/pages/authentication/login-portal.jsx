@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginHeader from '/src/frontend/components/headers/user_login-header.jsx';
 import LoginPortalImage from '/src/frontend/assets/login-portal/login-portal.png';

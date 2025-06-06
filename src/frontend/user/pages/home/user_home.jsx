@@ -62,11 +62,11 @@ const UserHome = () => {
         </p>
         <ul className="notice-list">
           <li>
-            Tickets submitted outside working hours will be placed in the{''} 
+            Tickets submitted outside working hours will be placed in the{' '} 
             <span className="pending">Pending</span> queue.
           </li>
           <li>
-            Once working hours resume, tickets will move to <strong>Open</strong> or{''} 
+            Once working hours resume, tickets will move to <strong>Open</strong> or{' '} 
             <strong>In Progress</strong> based on priority.
           </li>
         </ul>
@@ -103,7 +103,6 @@ const UserHome = () => {
 
       {/* Floating Button Menu */}
       <div className="floating-menu">
-        {/* Expanded Options */}
         <div className={`floating-options ${isExpanded ? "showing" : "hidden"}`}>
           <button
             className="float-button help-button"
@@ -113,16 +112,11 @@ const UserHome = () => {
             <HelpCircle size={24} />
           </button>
 
-          <button
-            className="float-button message-button"
-            onClick={openModal}
-            title="Chat"
-          >
+          <button className="float-button message-button" onClick={openModal} title="Chat">
             <Bot size={24} />
           </button>
         </div>
 
-        {/* Main Expand Button */}
         <button
           className={`float-button main-button ${isExpanded ? 'rotated' : ''}`}
           onClick={handleToggle}
@@ -131,7 +125,6 @@ const UserHome = () => {
         </button>
       </div>
 
-      {/* Show the Chat Modal */}
       {showModal && <SupportChatModal closeModal={closeModal} />}
     </div>
   );
