@@ -1,3 +1,5 @@
+const USER_STORAGE_KEY = 'users';
+
 export const users = [
   // Active (5)
   {
@@ -7,10 +9,12 @@ export const users = [
     firstName: 'Bonjing',
     middleName: 'Peralta',
     suffix: 'Jr.',
-    department: 'Budget Department', // from Finance Department
+    department: 'Budget Department',
     role: 'User',
     status: 'Active',
     dateCreated: '2025-05-23',
+    email: 'bonjing.sanjose@company.com',
+    profileImage: '/assets/profiles/U001.jpg',
   },
   {
     id: 'U002',
@@ -19,10 +23,12 @@ export const users = [
     firstName: 'Leonard',
     middleName: 'B.',
     suffix: '',
-    department: 'IT Department', // from Technical Support mapped to IT Department
+    department: 'IT Department',
     role: 'Ticket Agent',
     status: 'Active',
     dateCreated: '2025-02-20',
+    email: 'leonard.garcia@company.com',
+    profileImage: '/assets/profiles/U002.jpg',
   },
   {
     id: 'U003',
@@ -35,6 +41,8 @@ export const users = [
     role: 'System Admin',
     status: 'Active',
     dateCreated: '2025-03-10',
+    email: 'daniel.cruz@company.com',
+    profileImage: '/assets/profiles/U003.jpg',
   },
   {
     id: 'U004',
@@ -43,10 +51,12 @@ export const users = [
     firstName: 'Alyssa',
     middleName: 'Reyes',
     suffix: '',
-    department: 'Asset Department', // from Human Resources mapped to Asset Department
+    department: 'Asset Department',
     role: 'User',
     status: 'Active',
     dateCreated: '2025-04-05',
+    email: 'alyssa.navarro@company.com',
+    profileImage: '/assets/profiles/U004.jpg',
   },
   {
     id: 'U005',
@@ -55,10 +65,12 @@ export const users = [
     firstName: 'Marco',
     middleName: 'Antonio',
     suffix: '',
-    department: 'Asset Department', // from Operations mapped to Asset Department
+    department: 'Asset Department',
     role: 'Ticket Agent',
     status: 'Active',
     dateCreated: '2025-01-28',
+    email: 'marco.santos@company.com',
+    profileImage: '/assets/profiles/U005.jpg',
   },
 
   // Inactive (5)
@@ -69,10 +81,12 @@ export const users = [
     firstName: 'Anna',
     middleName: 'Marie',
     suffix: '',
-    department: 'Asset Department', // from Operations mapped to Asset Department
+    department: 'Asset Department',
     role: 'User',
     status: 'Inactive',
     dateCreated: '2025-05-01',
+    email: 'anna.delacruz@company.com',
+    profileImage: '/assets/profiles/U006.jpg',
   },
   {
     id: 'U007',
@@ -85,6 +99,8 @@ export const users = [
     role: 'System Admin',
     status: 'Inactive',
     dateCreated: '2025-01-15',
+    email: 'catherine.villanueva@company.com',
+    profileImage: '/assets/profiles/U007.jpg',
   },
   {
     id: 'U008',
@@ -93,10 +109,12 @@ export const users = [
     firstName: 'Joshua',
     middleName: '',
     suffix: '',
-    department: 'Budget Department', // from Finance Department
+    department: 'Budget Department',
     role: 'User',
     status: 'Inactive',
     dateCreated: '2025-02-09',
+    email: 'joshua.tan@company.com',
+    profileImage: '/assets/profiles/U008.jpg',
   },
   {
     id: 'U009',
@@ -105,10 +123,12 @@ export const users = [
     firstName: 'Grace',
     middleName: 'Yu',
     suffix: '',
-    department: 'Asset Department', // from Customer Service mapped to Asset Department
+    department: 'Asset Department',
     role: 'Ticket Agent',
     status: 'Inactive',
     dateCreated: '2025-03-12',
+    email: 'grace.lim@company.com',
+    profileImage: '/assets/profiles/U009.jpg',
   },
   {
     id: 'U010',
@@ -117,10 +137,12 @@ export const users = [
     firstName: 'Ricky',
     middleName: 'G.',
     suffix: '',
-    department: 'Asset Department', // from Human Resources mapped to Asset Department
+    department: 'Asset Department',
     role: 'System Admin',
     status: 'Inactive',
     dateCreated: '2025-04-15',
+    email: 'ricky.morales@company.com',
+    profileImage: '/assets/profiles/U010.jpg',
   },
 
   // Pending (5)
@@ -131,10 +153,12 @@ export const users = [
     firstName: 'Maricel',
     middleName: 'Gomez',
     suffix: '',
-    department: 'Asset Department', // from Human Resources mapped to Asset Department
+    department: 'Asset Department',
     role: 'Ticket Agent',
     status: 'Pending',
     dateCreated: '2025-04-18',
+    email: 'maricel.reyes@company.com',
+    profileImage: '/assets/profiles/U011.jpg',
   },
   {
     id: 'U012',
@@ -143,10 +167,12 @@ export const users = [
     firstName: 'Michael',
     middleName: '',
     suffix: '',
-    department: 'Asset Department', // from Customer Service mapped to Asset Department
+    department: 'Asset Department',
     role: 'User',
     status: 'Pending',
     dateCreated: '2025-05-20',
+    email: 'michael.tan@company.com',
+    profileImage: '/assets/profiles/U012.jpg',
   },
   {
     id: 'U013',
@@ -155,10 +181,12 @@ export const users = [
     firstName: 'Bianca',
     middleName: 'Cruz',
     suffix: '',
-    department: 'IT Department', // from Technical Support mapped to IT Department
+    department: 'IT Department',
     role: 'System Admin',
     status: 'Pending',
     dateCreated: '2025-03-30',
+    email: 'bianca.ocampo@company.com',
+    profileImage: '/assets/profiles/U013.jpg',
   },
   {
     id: 'U014',
@@ -167,10 +195,12 @@ export const users = [
     firstName: 'Luis',
     middleName: '',
     suffix: '',
-    department: 'Asset Department', // from Operations mapped to Asset Department
+    department: 'Asset Department',
     role: 'User',
     status: 'Pending',
     dateCreated: '2025-02-02',
+    email: 'luis.ramos@company.com',
+    profileImage: '/assets/profiles/U014.jpg',
   },
   {
     id: 'U015',
@@ -179,9 +209,34 @@ export const users = [
     firstName: 'Jenny',
     middleName: 'Ann',
     suffix: '',
-    department: 'Budget Department', // from Finance Department
+    department: 'Budget Department',
     role: 'Ticket Agent',
     status: 'Pending',
     dateCreated: '2025-05-21',
+    email: 'jenny.torres@company.com',
+    profileImage: '/assets/profiles/U015.jpg',
   },
 ];
+
+export const getUsers = () => {
+  const data = localStorage.getItem(USER_STORAGE_KEY);
+  return data ? JSON.parse(data) : [];
+};
+
+export const saveUsers = (users) => {
+  localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(users));
+};
+
+export const getUserById = (userId) => {
+  const users = getUsers();
+  return users.find(user => user.id === userId) || null;
+};
+
+// Initialize mock data only if empty
+if (!localStorage.getItem(USER_STORAGE_KEY)) {
+  saveUsers(users);
+}
+
+// Remove below lines after initial data load confirmed
+// localStorage.removeItem(USER_STORAGE_KEY);
+// saveUsers(users);

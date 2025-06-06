@@ -27,7 +27,7 @@ export const AdminRoutes = () => {
  
         <Route path="user-access/:category" element={<UserAccess />} />
 
-        <Route path="account-details" element={<AdminUserAccountDetails />} />
+        <Route path="account-details/:userId" element={<AdminUserAccountDetails />} />
 
         <Route path="reports/:category" element={<AdminReports />} />
         <Route path="report-information" element={<AdminReportInformation />} />

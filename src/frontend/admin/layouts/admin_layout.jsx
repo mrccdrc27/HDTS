@@ -7,7 +7,9 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const showBackButton = location.pathname.startsWith('/admin/ticket-details');
+  const showBackButton = 
+    location.pathname.startsWith('/admin/ticket-details') ||
+    location.pathname.startsWith('/admin/account-details');
 
   return (
     <div className="admin-layout">

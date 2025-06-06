@@ -12,7 +12,6 @@ const UserLayout = () => {
     location.pathname.startsWith('/user/ticket-details') ||
     location.pathname === '/user/request-ticket';
 
-
   return (
     <div className="user-layout">
       <UserNavbar />

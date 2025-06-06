@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import './admin_user-access-tables.css';
 
 import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
-import { users } from '/src/utilities/storage/userStorage.js';
+import { getUsers } from '/src/utilities/storage/userStorage.js';
 
 const UserAccessTable = ({
   category,
@@ -20,6 +20,7 @@ const UserAccessTable = ({
   const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
 
   const openModal = (type, user) => {
     setModalType(type);
@@ -30,6 +31,12 @@ const UserAccessTable = ({
     setModalType(null);
     setSelectedUser(null);
   };
+
+  // Load users from localStorage on mount
+  useEffect(() => {
+    const storedUsers = getUsers();
+    setUsers(storedUsers);
+  }, []);
 
   // Filter users based on filters and category
   const filteredData = useMemo(() => {
@@ -74,7 +81,7 @@ const UserAccessTable = ({
         matchesSearch
       );
     });
-  }, [filters, category]);
+  }, [filters, category, users]);
 
   // Update total items for pagination
   useMemo(() => {
@@ -161,9 +168,9 @@ const UserAccessTable = ({
           ) : (
             paginatedData.map((user) => (
               <tr
-                key={user.companyId || user.id || user.email}
+                key={user.id}
                 className="user-access-row clickable"
-                onClick={() => navigate(`/admin/account-details/${user.companyId}`)}
+                onClick={() => navigate(`/admin/account-details/${user.id}`)}
               >
                 <td>{user.companyId}</td>
                 <td>{user.lastName}</td>
