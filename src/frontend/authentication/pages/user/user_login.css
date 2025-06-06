@@ -81,7 +81,7 @@
     position: absolute;
     right: 0.75rem;
     top: 50%;
-    transform: translateY(-40%);
+    transform: translateY(-25%);
     cursor: pointer;
     color: var(--neutral-dim-gray); /* Icon color */
     transition: color 0.3s;

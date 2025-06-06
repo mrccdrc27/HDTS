@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateAccountForgotPasswordHeader from "../../components/headers/user_create-account-forgot-password-header.jsx";
 import PrivacyPolicyAndTermsAndConditions from "../../components/modals/privacy-policy-and-terms-and-conditions.jsx";
+import UserTermsAndConditions from "../../components/modals/user_terms-and-conditions.jsx";
+import UserPrivacyPolicy from "../../components/modals/user_privacy-policy.jsx";
 import UploadedImagePreview from '../../components/modals/uploaded-image-preview.jsx';
-
 import "./user_create-account.css";
 import { Eye, EyeOff, Upload, X, ChevronDown } from "lucide-react";
 

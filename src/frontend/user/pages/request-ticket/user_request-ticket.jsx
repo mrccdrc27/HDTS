@@ -4,7 +4,6 @@ import { ticketCategories } from '../../../../utilities/ticket/categoryAndSubCat
 import TicketSuccessful from './modals/user_ticket-successful.jsx';
 import FilePreviewModal from './modals/user_request-ticket-uploaded-files.jsx';
 import ticketService from '../../../../utilities/ticket/ticketService.jsx';
-
 import './user_request-ticket.css';
 
 const RequestTicket = () => {
@@ -12,7 +11,7 @@ const RequestTicket = () => {
   const [submittedTicket, setSubmittedTicket] = useState(null);
   const [fileError, setFileError] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);  // Track submission state
 
   const [formData, setFormData] = useState({
     subject: '',
@@ -46,48 +45,48 @@ const RequestTicket = () => {
   }, [formData.category, availableCategories]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
+  const { name, value, files, type } = e.target;
 
-    if (name === 'file') {
-      const validTypes = [
-        'image/png', 'image/jpeg', 'application/pdf',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel'
-      ];
-      const maxSize = 25 * 1024 * 1024;
+  if (type === 'file') {
+    const validTypes = [
+      'image/png', 'image/jpeg', 'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel'
+    ];
+    const maxSize = 25 * 1024 * 1024; // 25MB
 
-      const selectedFiles = Array.from(files);
-      const validFiles = [];
-      const errorMessages = [];
+    const selectedFiles = Array.from(files);
+    const validFiles = [];
+    const errorMessages = [];
 
-      selectedFiles.forEach(file => {
-        if (!validTypes.includes(file.type)) {
-          errorMessages.push(`${file.name}: Invalid file type.`);
-        } else if (file.size > maxSize) {
-          errorMessages.push(`${file.name}: File too large (max 25MB).`);
-        } else {
-          validFiles.push(file);
-        }
-      });
-
-      if (errorMessages.length > 0) {
-        setFileError(errorMessages.join(' '));
-        return;
+    selectedFiles.forEach(file => {
+      if (!validTypes.includes(file.type)) {
+        errorMessages.push(`${file.name}: Invalid file type.`);
+      } else if (file.size > maxSize) {
+        errorMessages.push(`${file.name}: File too large (max 25MB).`);
+      } else {
+        validFiles.push(file);
       }
+    });
 
-      setFileError('');
-      setFormData(prev => ({
-        ...prev,
-        files: [...prev.files, ...validFiles]
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+    if (errorMessages.length > 0) {
+      setFileError(errorMessages.join(' '));
+      return;
     }
-  };
+
+    setFileError('');
+    setFormData(prev => ({
+      ...prev,
+      files: [...prev.files, ...validFiles] // Append new valid files
+    }));
+  } else {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+};
 
   const handleFileRemove = (fileToRemove) => {
     setFormData(prev => ({
@@ -347,7 +346,7 @@ const RequestTicket = () => {
             id="scheduleDate"
             name="scheduleDate"
             value={formData.scheduleDate}
-            min={today}
+            min={today} 
             onChange={handleChange}
           />
         </div>

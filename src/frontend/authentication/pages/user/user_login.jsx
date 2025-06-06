@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import "./user_login.css"; // Import the CSS file for styling
+import "./user_login.css";
 import LoginImage from "/src/frontend/authentication/assets/login/login-image.png";
 import LoginHeader from "../../components/headers/login-header";
 import { Eye, EyeOff } from "lucide-react";
@@ -83,6 +83,7 @@ const UserLogin = () => {
                                  id="email"
                                  name="email"
                                  placeholder="Email address"
+                                 required
                                  value={email}
                                  onChange={(e) => setEmail(e.target.value)}
                             />
@@ -95,6 +96,7 @@ const UserLogin = () => {
                                  id="password"
                                  name="password"
                                  placeholder="Password"
+                                 required
                                  value={password}
                                  onChange={(e) => setPassword(e.target.value)}
                                  autoComplete="new-password"
