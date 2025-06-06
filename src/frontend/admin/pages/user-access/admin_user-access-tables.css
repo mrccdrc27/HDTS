@@ -15,17 +15,21 @@
 }
 
 .user-access-table-element thead {
-  background: linear-gradient(135deg, #b22222 0%, #8b0000 100%);
+  background: linear-gradient(135deg, #b22222, #8b0000);
+}
+
+.user-access-th,
+.user-access-row td {
+  padding: 8px 12px;
+  white-space: nowrap;
 }
 
 .user-access-th {
-  padding: 8px 12px;
   font-weight: 600;
   color: var(--text-secondary, #f0f0f0);
   user-select: none;
   cursor: default;
   letter-spacing: 0.4px;
-  white-space: nowrap;
 }
 
 .user-access-th:first-child {
@@ -40,21 +44,14 @@
   transition: background-color 0.2s;
   cursor: pointer;
 }
-
+.user-access-row:hover {
+  background-color: #f8fafc;
+}
 .user-access-table-element tbody tr:not(:last-child) td {
   border-bottom: 1px solid var(--neutral-light-gray, #e0e0e0);
 }
 
-.user-access-row:hover {
-  background-color: #f8fafc;
-}
-
-.user-access-row td {
-  padding: 8px 12px;
-  white-space: nowrap;
-}
-
-/* Status badges */
+/* Status */
 .user-access-status {
   display: inline-flex;
   align-items: center;
@@ -68,29 +65,28 @@
   letter-spacing: 0.4px;
   white-space: nowrap;
 }
-
 .user-access-status.pending {
-  background-color: var(--warning-light, #fff3cd);
+  background: var(--warning-light, #fff3cd);
   color: var(--warning-dark, #856404);
 }
 .user-access-status.active {
-  background-color: var(--success-light, #d1fae5);
+  background: var(--success-light, #d1fae5);
   color: var(--success-dark, #157347);
 }
 .user-access-status.inactive {
-  background-color: var(--neutral-light-gray, #e0e0e0);
+  background: var(--neutral-light-gray, #e0e0e0);
   color: var(--neutral-dark-gray, #666);
 }
 .user-access-status.approved {
-  background-color: var(--success-bg, #e6ffed);
+  background: var(--success-bg, #e6ffed);
   color: var(--success-dark, #2e7d32);
 }
 .user-access-status.rejected {
-  background-color: var(--danger-light, #fdecea);
+  background: var(--danger-light, #fdecea);
   color: var(--danger-dark, #b00020);
 }
 .user-access-status.archived {
-  background-color: var(--neutral-light, #f5f5f5);
+  background: var(--neutral-light, #f5f5f5);
   color: var(--neutral-medium, #999);
 }
 
@@ -111,43 +107,39 @@
   font-weight: 500;
   cursor: pointer;
   border: none;
+  font-family: 'Poppins', sans-serif;
   transition: background-color 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
-  font-family: 'Poppins', sans-serif;
 }
 
-/* View button */
 .user-access-view-btn {
-  background-color: var(--blue-light, #0d6efd);
+  background: var(--blue-light, #0d6efd);
   color: var(--text-secondary, #fff);
 }
 .user-access-view-btn:hover,
 .user-access-view-btn:focus {
-  background-color: var(--blue-dark, #0b5ed7);
+  background: var(--blue-dark, #0b5ed7);
   transform: scale(1.05);
 }
 
-/* Update button */
 .user-access-update-btn {
-  background-color: var(--neutral-light-gray, #e0e0e0);
+  background: var(--neutral-light-gray, #e0e0e0);
   color: var(--neutral-dark-gray, #555);
 }
 .user-access-update-btn:hover,
 .user-access-update-btn:focus {
-  background-color: var(--neutral-dark-gray, #bbb);
+  background: var(--neutral-dark-gray, #bbb);
   color: var(--text-secondary, #fff);
   transform: scale(1.05);
 }
 
-/* Review button (new) */
 .user-access-review-btn {
-  background-color: var(--warning);
+  background: var(--warning);
   color: var(--text-secondary, #fff);
 }
 .user-access-review-btn:hover,
 .user-access-review-btn:focus {
-  background-color: var(--warning-dark);
-  color: #fff;
+  background: var(--warning-dark);
   transform: scale(1.05);
 }
 
@@ -160,7 +152,7 @@
   font-weight: 600;
 }
 
-/* Responsive tweaks */
+/* Responsive */
 @media (max-width: 768px) {
   .user-access-table {
     font-size: 11px;

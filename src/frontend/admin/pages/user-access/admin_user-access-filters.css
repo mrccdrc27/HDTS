@@ -4,8 +4,9 @@
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
-  padding-top: 12px;
+  padding-top: 8px;
   width: 100%;
+  gap: 6px;
 }
 
 /* Filter Section */
@@ -13,28 +14,29 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
 }
 
 /* Sort Section */
 .user-access-sort-section {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   white-space: nowrap;
 }
 
 /* Labels */
 .user-access-filter-label,
 .user-access-sort-label {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   color: #333;
-  margin-right: 4px;
+  margin-right: 3px;
+  user-select: none;
 }
 
 .user-access-sort-label {
-  transform: translateY(7px);
+  transform: translateY(5px);
 }
 
 /* Dropdown Wrapper */
@@ -45,13 +47,13 @@
 
 /* Shared Dropdown Select Styles */
 .user-access-filter-select {
-  width: 150px;
-  height: 36px;
-  padding: 0 28px 0 10px;
-  background: white;
+  width: 120px;
+  height: 30px;
+  padding: 0 24px 0 6px;
+  background: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 3px;
+  font-size: 12px;
   color: #333;
   outline: none;
   appearance: none;
@@ -62,30 +64,22 @@
 }
 
 .user-access-filter-select:disabled {
-  background-color: #f5f5f5;
+  background-color: #f1f1f1;
   color: #999;
+  cursor: not-allowed;
 }
 
 /* Dropdown Icon Styles */
 .user-access-filter-dropdown-icon,
 .user-access-filter-date-dropdown-icon {
   position: absolute;
-  right: 10px;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
   pointer-events: none;
   color: #666;
-  height: 16px;
-  width: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-access-filter-dropdown-icon {
-  transform: translateY(-40px);
-}
-
-.user-access-filter-date-dropdown-icon {
-  top: 30%;
+  font-size: 12px;
+  user-select: none;
 }
 
 /* Date Filter Wrapper */
@@ -97,92 +91,111 @@
 
 /* Date Button */
 .user-access-date-filter-button {
-  width: 150px;
-  height: 36px;
-  padding: 0 28px 0 10px;
-  background: white;
+  width: 120px;
+  height: 30px;
+  padding: 0 24px 0 6px;
+  background: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 3px;
+  font-size: 12px;
   color: #333;
   text-align: left;
   cursor: pointer;
   outline: none;
-  transform: translateY(-8px);
+  transform: translateY(-6px);
+  transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-access-date-filter-button:hover {
+  border-color: #4a90e2;
+  color: #2a4abf;
 }
 
 .user-access-date-filter-button:focus {
-  border-color: #007bff;
+  border-color: #2a4abf;
+  color: #1a3080;
 }
 
 /* Inline Date Filter Styles */
 .user-access-date-filter-inline {
-  margin-top: 8px;
-  padding: 12px;
+  margin-top: 6px;
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fafafa;
-  width: 100%;
-  max-width: 400px;
+  border-radius: 3px;
+  background: #fff;
+  max-width: 360px;
 }
 
-/* Sort Dropdown Styles */
+/* Sort Dropdown */
 .user-access-sort-dropdown {
   position: relative;
 }
 
-/* Button to mimic dropdown look */
+/* Custom Sort Button */
 .user-access-custom-select-button {
-  width: 180px;
-  height: 36px;
-  padding: 0 10px;
-  background: white;
+  width: 140px;
+  height: 30px;
+  padding: 0 6px;
+  background: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 3px;
+  font-size: 12px;
   color: #333;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  position: relative;
+  transition: 0.2s ease;
+  user-select: none;
 }
 
-.user-access-custom-select-button:hover,
+.user-access-custom-select-button:hover {
+  border-color: #4a90e2;
+  color: #2a4abf;
+}
+
 .user-access-custom-select-button:focus {
-  border-color: #007bff;
+  border-color: #2a4abf;
+  color: #1a3080;
 }
 
-/* Arrow + label wrapper */
+/* Sort Icon + Label */
 .user-access-sort-with-icon {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .user-access-sort-arrow-icon {
-  transform: translateY(3px);
+  transform: translateY(2px);
+  user-select: none;
 }
 
-/* Dropdown menu below the button */
+/* Sort Dropdown Menu */
 .user-access-custom-dropdown-menu {
-  list-style: none;
   position: absolute;
   top: 100%;
   left: 0;
-  width: 180px;
-  background: white;
+  width: 140px;
+  background: #fff;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  margin-top: 3px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   z-index: 10;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .user-access-custom-dropdown-menu li {
-  width: 180px;
-  padding: 5px 10px;
-  font-size: 14px;
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 12px;
   color: #333;
   cursor: pointer;
 }
