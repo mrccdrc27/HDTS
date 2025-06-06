@@ -14,6 +14,8 @@ const UserNavbar = () => {
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [fullName, setFullName] = useState("Name");
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileName, setProfileName] = useState('');
 
   const toggleProfilePopup = () => setShowProfilePopup((prev) => !prev);
   const toggleNotificationPopup = () => setShowNotificationPopup((prev) => !prev);
@@ -71,6 +73,28 @@ const UserNavbar = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/employee/profile/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        setProfileName(`${data.first_name} ${data.last_name}`);
+        setProfileImage(`http://localhost:8000${data.image}`);
+      } catch (error) {
+        console.error("Failed to fetch profile info:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   return (
     <div className="userNavbar">
       <div className="userNavbar-left">
@@ -87,109 +111,109 @@ const UserNavbar = () => {
           Home
         </NavLink>
 
-        {/* Active Tickets Dropdown */}
-<div className="userNavbar-menu-dropdown">
-  <NavLink
-    to="/user/active-tickets/all-active-tickets"
-    className="userNavbar-menu-item flex items-center gap-1"
-    onClick={() => setActiveDropdown(null)} // close dropdown if open when navigating
-  >
-    Active Tickets
-  </NavLink>
-  <button
-    className="userNavbar-menu-trigger"
-    onClick={(e) => {
-      e.preventDefault(); // prevent any navigation
-      setActiveDropdown(activeDropdown === 'active' ? null : 'active');
-    }}
-    aria-label="Toggle Active Tickets dropdown"
-  >
-    <ChevronDown size={16} />
-  </button>
-  {activeDropdown === 'active' && (
-    <div className="dropdown-content">
-      <NavLink
-        to="/user/active-tickets/all-active-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        All Active Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/new-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        New Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/open-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Open Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/on-progress-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        On Progress Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/on-hold-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        On Hold Tickets
-      </NavLink>
-      <NavLink
-        to="/user/active-tickets/pending-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Pending Tickets
-      </NavLink>
-    </div>
-  )}
-</div>
+      {/* Active Tickets Dropdown */}
+      <div className="userNavbar-menu-dropdown">
+        <NavLink
+          to="/user/active-tickets/all-active-tickets"
+          className="userNavbar-menu-item flex items-center gap-1"
+          onClick={() => setActiveDropdown(null)} // close dropdown if open when navigating
+        >
+          Active Tickets
+        </NavLink>
+        <button
+          className="userNavbar-menu-trigger"
+          onClick={(e) => {
+            e.preventDefault(); // prevent any navigation
+            setActiveDropdown(activeDropdown === 'active' ? null : 'active');
+          }}
+          aria-label="Toggle Active Tickets dropdown"
+        >
+          <ChevronDown size={16} />
+        </button>
+        {activeDropdown === 'active' && (
+          <div className="dropdown-content">
+            <NavLink
+              to="/user/active-tickets/all-active-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              All Active Tickets
+            </NavLink>
+            <NavLink
+              to="/user/active-tickets/new-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              New Tickets
+            </NavLink>
+            <NavLink
+              to="/user/active-tickets/open-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              Open Tickets
+            </NavLink>
+            <NavLink
+              to="/user/active-tickets/on-progress-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              On Progress Tickets
+            </NavLink>
+            <NavLink
+              to="/user/active-tickets/on-hold-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              On Hold Tickets
+            </NavLink>
+            <NavLink
+              to="/user/active-tickets/pending-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              Pending Tickets
+            </NavLink>
+          </div>
+        )}
+      </div>
 
-{/* Ticket Records Dropdown */}
-<div className="userNavbar-menu-dropdown">
-  <NavLink
-    to="/user/ticket-records/all-ticket-records"
-    className="userNavbar-menu-item flex items-center gap-1"
-    onClick={() => setActiveDropdown(null)}
-  >
-    Ticket Records
-  </NavLink>
-  <button
-    className="userNavbar-menu-trigger"
-    onClick={(e) => {
-      e.preventDefault();
-      setActiveDropdown(activeDropdown === 'records' ? null : 'records');
-    }}
-    aria-label="Toggle Ticket Records dropdown"
-  >
-    <ChevronDown size={16} />
-  </button>
-  {activeDropdown === 'records' && (
-    <div className="dropdown-content">
-      <NavLink
-        to="/user/ticket-records/all-ticket-records"
-        onClick={() => setActiveDropdown(null)}
-      >
-        All Ticket Records
-      </NavLink>
-      <NavLink
-        to="/user/ticket-records/closed-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Closed Tickets
-      </NavLink>
-      <NavLink
-        to="/user/ticket-records/rejected-tickets"
-        onClick={() => setActiveDropdown(null)}
-      >
-        Rejected Tickets
-      </NavLink>
-    </div>
-  )}
-</div>
+      {/* Ticket Records Dropdown */}
+      <div className="userNavbar-menu-dropdown">
+        <NavLink
+          to="/user/ticket-records/all-ticket-records"
+          className="userNavbar-menu-item flex items-center gap-1"
+          onClick={() => setActiveDropdown(null)}
+        >
+          Ticket Records
+        </NavLink>
+        <button
+          className="userNavbar-menu-trigger"
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveDropdown(activeDropdown === 'records' ? null : 'records');
+          }}
+          aria-label="Toggle Ticket Records dropdown"
+        >
+          <ChevronDown size={16} />
+        </button>
+        {activeDropdown === 'records' && (
+          <div className="dropdown-content">
+            <NavLink
+              to="/user/ticket-records/all-ticket-records"
+              onClick={() => setActiveDropdown(null)}
+            >
+              All Ticket Records
+            </NavLink>
+            <NavLink
+              to="/user/ticket-records/closed-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              Closed Tickets
+            </NavLink>
+            <NavLink
+              to="/user/ticket-records/rejected-tickets"
+              onClick={() => setActiveDropdown(null)}
+            >
+              Rejected Tickets
+            </NavLink>
+          </div>
+        )}
+      </div>
 
 
       </div>
@@ -217,7 +241,7 @@ const UserNavbar = () => {
         {/* Profile Avatar */}
         <div className="relative">
           <img
-            src={UserProfileImage}
+            src={profileImage || UserProfileImage}
             alt="Employee Profile"
             className="userNavbar-menu-item cursor-pointer"
             onClick={toggleProfilePopup}

@@ -8,18 +8,60 @@ import UserTicketDetails from '../user/pages/ticket-details/user_ticket-details-
 import ActiveTickets from '../user/pages/active-tickets/user_active-tickets-main.jsx';
 import TicketRecords from '../user/pages/ticket-records/user_ticket-records-main.jsx';
 
-// ticket details layout to be edited
+import ProtectedRoute from '../routes/ProtectedRoute';
+
 export const UserRoutes = () => {
   return (
     <Routes>
       <Route path="/user" element={<UserLayout />}>
-        <Route path="home" element={<UserHome />} />
-        <Route path="frequently-asked-questions" element={<FrequentlyAskedQuestions />} />
-        <Route path="request-ticket" element={<RequestTicket />} />
-        <Route path="ticket-details/" element={<UserTicketDetails />} />
-        <Route path="active-tickets/:category" element={<ActiveTickets />} />
-        <Route path="ticket-records/:category" element={<TicketRecords />} />
-
+        <Route
+          path="home"
+          element={
+            <ProtectedRoute>
+              <UserHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="frequently-asked-questions"
+          element={
+            <ProtectedRoute>
+              <FrequentlyAskedQuestions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="request-ticket"
+          element={
+            <ProtectedRoute>
+              <RequestTicket />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="ticket-details/"
+          element={
+            <ProtectedRoute>
+              <UserTicketDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="active-tickets/:category"
+          element={
+            <ProtectedRoute>
+              <ActiveTickets />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="ticket-records/:category"
+          element={
+            <ProtectedRoute>
+              <TicketRecords />
+            </ProtectedRoute>
+          }
+        />
       </Route>
     </Routes>
   );
