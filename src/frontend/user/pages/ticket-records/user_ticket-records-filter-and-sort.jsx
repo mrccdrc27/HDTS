@@ -6,7 +6,7 @@ import {
   categoryOptions as rawCategories,
   subCategoryOptions,
 } from '../../../../utilities/filters/sharedDropdowns.js';
-
+import DateFilter from '../../../shared/components/date-filter.jsx'; // <-- import your DateFilter component
 
 const userTicketStatuses = [
   '',
@@ -21,7 +21,7 @@ const sortByLabels = {
   ticketNumber: 'Ticket Number',
   subject: 'Subject',
   dateCreated: 'Date Created',
-  lastUpdated: 'Last Updated',  
+  lastUpdated: 'Last Updated',
 };
 
 const UserTicketRecordsFiltersAndSort = ({
@@ -40,10 +40,17 @@ const UserTicketRecordsFiltersAndSort = ({
   sortDirection,
   setSortDirection,
   disableStatusFilter,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
 }) => {
   const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const [showDateFilter, setShowDateFilter] = useState(false);
+
   const sortMenuRef = useRef(null);
+  const dateFilterRef = useRef(null);
 
   // Update available subcategories when categoryFilter changes
   useEffect(() => {
@@ -73,10 +80,28 @@ const UserTicketRecordsFiltersAndSort = ({
     };
   }, [showSortMenu]);
 
+  // Close date filter if click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dateFilterRef.current &&
+        !dateFilterRef.current.contains(event.target)
+      ) {
+        setShowDateFilter(false);
+      }
+    }
+    if (showDateFilter) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDateFilter]);
+
   const toggleSortDirection = () =>
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
 
-  // Handle keyboard navigation for sort options (Enter key to select)
+  // Handle keyboard navigation for sort options (Enter or Space key to select)
   const handleSortKeyDown = (e, value) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -84,6 +109,26 @@ const UserTicketRecordsFiltersAndSort = ({
       setShowSortMenu(false);
     }
   };
+
+  const handleDateApply = ({ startDate: sDate, endDate: eDate }) => {
+    onStartDateChange(sDate);
+    onEndDateChange(eDate);
+    setShowDateFilter(false);
+  };
+
+  const handleDateClear = () => {
+    onStartDateChange('');
+    onEndDateChange('');
+    setShowDateFilter(false);
+  };
+
+  const formatDateLabel = () => {
+  if (!startDate && !endDate) return 'Date';
+  return startDate && endDate
+    ? `${startDate} to ${endDate}`
+    : startDate || endDate || 'Date';
+};
+
 
   return (
     <div className="user-ticket-records-filters-and-sort-wrapper">
@@ -200,15 +245,36 @@ const UserTicketRecordsFiltersAndSort = ({
           />
         </div>
 
-        {/* Date Range placeholder */}
-        <div className="user-ticket-records-filter-dropdown">
-          <select disabled className="user-ticket-records-filter-select">
-            <option value="">Date Range</option>
-          </select>
-          <ChevronDown
-            size={16}
-            className="user-ticket-records-filter-dropdown-icon"
-          />
+        {/* Date Filter */}
+        <div
+          className="user-ticket-records-filter-dropdown date-filter-wrapper"
+          ref={dateFilterRef}
+        >
+          <button
+            type="button"
+            className="user-ticket-records-date-filter-button"
+            onClick={() => setShowDateFilter((prev) => !prev)}
+            aria-haspopup="dialog"
+            aria-expanded={showDateFilter}
+          >
+            <span>{formatDateLabel()}</span>
+            <ChevronDown
+              size={16}
+              className="user-ticket-records-filter-dropdown-icon"
+            />
+          </button>
+
+          {showDateFilter && (
+            <DateFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={onStartDateChange}
+              onEndDateChange={onEndDateChange}
+              onApply={handleDateApply}
+              onClear={handleDateClear}
+              onClose={() => setShowDateFilter(false)}
+            />
+          )}
         </div>
       </div>
 

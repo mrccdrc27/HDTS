@@ -38,6 +38,7 @@ const formatDateTime = (value) => {
       });
 };
 
+// Map ticketStatus prop values to arrays of statuses
 const statusMap = {
   'closed-withdrawn-rejected': ['Closed', 'Rejected', 'Withdrawn'],
   closed: ['Closed'],
@@ -60,26 +61,33 @@ const UserTicketRecordsTable = ({
   priorityFilter = '',
   sortBy = '',
   sortDirection = 'asc',
-  startDate,
-  endDate,
+  startDate = null,
+  endDate = null,
   searchTerm = '',
   ticketStatus = 'closed-withdrawn-rejected',
   currentPage = 1,
   itemsPerPage = 10,
-  setTotalItems = () => {},
+  onTotalItemsChange = () => {},
 }) => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
 
+  // Load tickets once on mount
   useEffect(() => {
     const loadedTickets = getTickets();
     setTickets(loadedTickets);
   }, []);
 
-  const activeStatuses = useMemo(() => statusMap[ticketStatus] || statusMap['closed-withdrawn-rejected'], [ticketStatus]);
+  // Determine active statuses for filtering based on ticketStatus prop
+  const activeStatuses = useMemo(
+    () => statusMap[ticketStatus] || statusMap['closed-withdrawn-rejected'],
+    [ticketStatus]
+  );
 
+  // Normalize utility
   const normalize = (str) => (str ? str.trim().toLowerCase() : '');
 
+  // Normalized filter inputs
   const normalizedStatusFilter = normalize(statusFilter);
   const normalizedSearchTerm = normalize(searchTerm);
   const normalizedDepartmentFilter = normalize(departmentFilter);
@@ -87,21 +95,28 @@ const UserTicketRecordsTable = ({
   const normalizedSubcategoryFilter = normalize(subcategoryFilter);
   const normalizedPriorityFilter = normalize(priorityFilter);
 
+  // Status filter logic: if no explicit status filter, allow all active statuses
   const applyStatusFilter = (status) => {
     if (!normalizedStatusFilter) return activeStatuses.includes(status);
     return normalize(status) === normalizedStatusFilter;
   };
 
+  // Date range filter with startDate at 00:00:00 and endDate at 23:59:59 for inclusiveness
   const applyDateRangeFilter = (dateCreated) => {
+    if (!dateCreated) return false;
     const created = new Date(dateCreated);
     if (isNaN(created)) return false;
 
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
+    let start = startDate ? new Date(startDate) : null;
+    let end = endDate ? new Date(endDate) : null;
+
+    if (start) start.setHours(0, 0, 0, 0);
+    if (end) end.setHours(23, 59, 59, 999);
 
     return (!start || created >= start) && (!end || created <= end);
   };
 
+  // Search filter across ticketNumber, subject, department
   const applySearchFilter = (ticket) => {
     if (!normalizedSearchTerm) return true;
     return ['ticketNumber', 'subject', 'department'].some((key) =>
@@ -109,25 +124,29 @@ const UserTicketRecordsTable = ({
     );
   };
 
+  // Apply all filters to tickets
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
-
     if (!applyStatusFilter(ticket.status)) return false;
-    if (normalizedDepartmentFilter && normalize(ticket.department) !== normalizedDepartmentFilter) return false;
+    if (normalizedDepartmentFilter && normalize(ticket.department) !== normalizedDepartmentFilter)
+      return false;
     if (normalizedCategoryFilter && normalize(ticket.category) !== normalizedCategoryFilter) return false;
-    if (normalizedSubcategoryFilter && normalize(ticket.subCategory) !== normalizedSubcategoryFilter) return false;
+    if (normalizedSubcategoryFilter && normalize(ticket.subCategory) !== normalizedSubcategoryFilter)
+      return false;
     if (normalizedPriorityFilter && normalize(ticket.priorityLevel) !== normalizedPriorityFilter) return false;
     if (!applyDateRangeFilter(ticket.dateCreated)) return false;
     if (!applySearchFilter(ticket)) return false;
-
     return true;
   });
 
-  // Update total items count on filtered tickets change
+  // Notify parent component on total filtered tickets change
   useEffect(() => {
-    setTotalItems(filteredTickets.length);
-  }, [filteredTickets, setTotalItems]);
+    if (typeof onTotalItemsChange === 'function') {
+      onTotalItemsChange(filteredTickets.length);
+    }
+  }, [filteredTickets, onTotalItemsChange]);
 
+  // Sort filtered tickets
   const sortedTickets = [...filteredTickets];
   if (sortBy) {
     sortedTickets.sort((a, b) => {
@@ -140,9 +159,7 @@ const UserTicketRecordsTable = ({
       }
 
       if (typeof valA === 'string' && typeof valB === 'string') {
-        return sortDirection === 'asc'
-          ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
+        return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
       if (typeof valA === 'number' && typeof valB === 'number') {
@@ -153,10 +170,11 @@ const UserTicketRecordsTable = ({
     });
   }
 
-  // Pagination slice:
+  // Pagination: slice sorted tickets for current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
 
+  // Handle row click to navigate to ticket details
   const handleView = (ticket) => {
     if (!ticket.ticketNumber) return console.warn('Missing ticket number.');
     navigate(`/user/ticket-details/${ticket.ticketNumber}`);
@@ -208,9 +226,7 @@ const UserTicketRecordsTable = ({
                     <td className="user-ticket-records-ticket-number-cell">{ticketNumber}</td>
                     <td className="user-ticket-records-subject-cell">{subject}</td>
                     <td>
-                      <span className={`user-ticket-records-status-badge ${statusClass}`}>
-                        {status}
-                      </span>
+                      <span className={`user-ticket-records-status-badge ${statusClass}`}>{status}</span>
                     </td>
                     <td>
                       <span className={`user-ticket-records-priority-badge ${priorityClass}`}>
@@ -226,8 +242,10 @@ const UserTicketRecordsTable = ({
                 );
               })
             ) : (
-              <tr className="user-ticket-records-no-tickets-row">
-                <td colSpan="9">{noTicketsMessage}</td>
+              <tr>
+                <td colSpan={9} className="user-ticket-records-no-tickets">
+                  {noTicketsMessage}
+                </td>
               </tr>
             )}
           </tbody>

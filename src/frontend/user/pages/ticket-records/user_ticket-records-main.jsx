@@ -35,13 +35,13 @@ const TicketRecords = () => {
   const [priorityFilter, setPriorityFilter] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0); // This should come from your data source or table component
+  const [totalItems, setTotalItems] = useState(0);
 
   const isTicketRecordsCategory = Object.keys(categoryMap).includes(normalizedCategory);
 
@@ -60,10 +60,7 @@ const TicketRecords = () => {
   if (normalizedCategory === 'closed-tickets') ticketStatusProp = 'closed';
   else if (normalizedCategory === 'rejected-tickets') ticketStatusProp = 'rejected';
   else if (normalizedCategory === 'withdrawn-tickets') ticketStatusProp = 'withdrawn';
-  else ticketStatusProp = ''; // for 'all-ticket-records' or others
-
-  // Here, you'd update totalItems based on filtered data from your source or table.
-  // For now, assume it's updated internally or via props from table.
+  else ticketStatusProp = '';
 
   return (
     <div className="active-tickets-main">
@@ -91,6 +88,10 @@ const TicketRecords = () => {
         sortDirection={sortDirection}
         setSortDirection={setSortDirection}
         disableStatusFilter={disableStatusFilter}
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
       />
 
       <UserTicketRecordsTable
@@ -107,7 +108,7 @@ const TicketRecords = () => {
         endDate={endDate}
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
-        setTotalItems={setTotalItems} // Optional: Pass setter to update totalItems from table data
+        setTotalItems={setTotalItems}
       />
 
       <TablePagination
@@ -117,7 +118,7 @@ const TicketRecords = () => {
         onPageChange={setCurrentPage}
         onItemsPerPageChange={(num) => {
           setItemsPerPage(num);
-          setCurrentPage(1); // reset page on itemsPerPage change
+          setCurrentPage(1);
         }}
       />
     </div>
