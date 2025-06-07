@@ -6,8 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .models import Employee, Ticket, TicketAttachment, TicketComment
 from .models import PRIORITY_LEVELS, DEPARTMENT_CHOICES
-from .serializers import EmployeeSerializer, TicketSerializer, TicketAttachmentSerializer
-from .serializers import MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
+from .serializers import EmployeeSerializer, TicketSerializer, TicketAttachmentSerializer, AdminTokenObtainPairSerializer, MyTokenObtainPairSerializer, CustomTokenObtainPairSerializer
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse, Http404
@@ -61,13 +60,46 @@ class CreateEmployeeView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CreateAdminEmployeeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        data = request.data.copy()
+
+        # Auto-generate Company ID
+        last_employee = Employee.objects.filter(company_id__startswith='MA').order_by('company_id').last()
+        if last_employee:
+            last_num = int(last_employee.company_id[2:])
+            new_num = last_num + 1
+        else:
+            new_num = 1
+        data['company_id'] = f"MA{new_num:04d}"
+
+        # Set default password
+        data['password'] = "1234"
+
+        # Set default status
+        data['status'] = "Pending"
+
+        # Remove image field if not present
+        if 'image' not in data:
+            data['image'] = ''  # Will use model default
+
+        serializer = EmployeeSerializer(data=data)
+        if serializer.is_valid():
+            employee = serializer.save()
+            return Response({
+                "message": "Employee account created successfully",
+                "company_id": employee.company_id
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 # ✅ Token view for employee login (only employees)
 class EmployeeTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer  # restricts login to approved non-admin users
 
-# ✅ Token view for admin login (only admins, not superusers)
 class AdminTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer  # restricts to System Admin and Ticket Agent
+    serializer_class = AdminTokenObtainPairSerializer
 
 class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
@@ -120,6 +152,36 @@ class TicketViewSet(viewsets.ModelViewSet):
                 if instance.submit_date:
                     serializer.validated_data['resolution_time'] = timezone.now() - instance.submit_date
         serializer.save()
+
+def generate_company_id():
+    last_employee = Employee.objects.filter(company_id__startswith='MA').order_by('company_id').last()
+    if last_employee:
+        last_num = int(last_employee.company_id[2:])
+        new_num = last_num + 1
+    else:
+        new_num = 1
+    return f"MA{new_num:04d}"
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_employee_admin_view(request):
+    data = request.data.copy()
+    data['company_id'] = generate_company_id()
+    data['password'] = '1234'  # Default password
+    data['status'] = 'Pending'
+
+    # Remove 'image' from data — let model default take over
+    data.pop('image', None)
+
+    serializer = EmployeeSerializer(data=data)
+    if serializer.is_valid():
+        employee = serializer.save()
+        return Response({
+            'message': 'Account created successfully.',
+            'company_id': employee.company_id
+        }, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

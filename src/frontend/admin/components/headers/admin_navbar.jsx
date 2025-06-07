@@ -37,7 +37,7 @@ const AdminNavbar = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('adminAuthToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const fName = payload.first_name || '';
@@ -68,7 +68,7 @@ const AdminNavbar = () => {
   }, [activeDropdown, showProfilePopup, showNotificationPopup]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('adminAuthToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const fName = payload.first_name || '';

@@ -9,9 +9,13 @@ class EmployeeSerializer(serializers.ModelSerializer):
         model = Employee
         fields = [
             'last_name', 'first_name', 'middle_name', 'suffix',
-            'company_id', 'department', 'email', 'password', 'image', 'role'
+            'company_id', 'department', 'email', 'password', 
+            'image', 'role', 'status'
         ]
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'image': {'required': False, 'allow_null': True}
+        }
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -40,7 +44,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         user = self.user
 
-        if user.is_superuser or user.role in ["System Admin", "Ticket Agent"]:
+        if user.is_superuser or user.role in ["System Admin", "Ticket Coordinator"]:
             raise serializers.ValidationError("Invalid credentials.")
 
         if hasattr(user, 'status') and user.status != 'Approved':
@@ -51,6 +55,33 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['first_name'] = user.first_name
 
         return data
+
+class AdminTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = self.user
+
+        if not user.is_superuser and user.role not in ["System Admin", "Ticket Coordinator"]:
+            raise serializers.ValidationError("Access denied: Admins only.")
+
+        # Add these to the response body (optional)
+        data['email'] = user.email
+        data['role'] = getattr(user, 'role', 'Unknown')
+        data['first_name'] = user.first_name
+
+        return data
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # ✅ Add custom claims to the JWT
+        token['email'] = user.email
+        token['role'] = user.role
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+
+        return token
 
 class TicketAttachmentSerializer(serializers.ModelSerializer):
     class Meta:

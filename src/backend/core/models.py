@@ -24,7 +24,7 @@ DEPARTMENT_CHOICES = [
 
 ROLE_CHOICES = [
     ('Employee', 'Employee'),
-    ('Ticket Agent', 'Ticket Agent'),
+    ('Ticket Coordinator', 'Ticket Coordinator'),
     ('System Admin', 'System Admin'),
 ]
 
@@ -61,7 +61,7 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     department = models.CharField(max_length=100, choices=DEPARTMENT_CHOICES)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    image = models.ImageField(upload_to='employee_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='employee_images/', default='employee_images/default-profile.png', blank=True, null=True)
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='Employee')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')

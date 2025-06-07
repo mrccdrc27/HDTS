@@ -1,186 +1,129 @@
 import { useState } from "react";
-import AdminUploadedImagePreview from "../../components/modals/admin_uploaded-image-preview.jsx";
+import { ChevronDown, X } from "lucide-react";
 import './admin_user-access-register-user.css';
-
-import { Upload, X, ChevronDown } from "lucide-react";
 
 function CreateAccount() {
   // Form field states
   const [email, setEmail] = useState("");
-  const [companyId, setCompanyId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
   
   // UI states
-  const [uploadedImage, setUploadedImage] = useState(null);
-  const [selectedUploadedImage, setSelectedUploadedImage] = useState("");
-  const [showImagePreviewModal, setShowImagePreviewModal] = useState(false);
   const [department, setDepartment] = useState('');
   const [suffix, setSuffix] = useState('');
   const [role, setRole] = useState('');
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // NEW: Confirmation modal states
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [confirmMessage, setConfirmMessage] = useState('');
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-  
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    const maxSize = 2 * 1024 * 1024; // 2MB
-  
-    // Clear previous image errors
-    setErrors(prev => ({ ...prev, image: null }));
-  
-    if (!validTypes.includes(file.type)) {
-      setErrors(prev => ({
-        ...prev,
-        image: 'Only JPG, JPEG, and PNG formats are allowed.',
-      }));
-      return;
-    }
-  
-    if (file.size > maxSize) {
-      setErrors(prev => ({
-        ...prev,
-        image: 'Image must not exceed 2MB.',
-      }));
-      return;
-    }
-  
-    const img = new Image();
-    img.onload = () => {
-      if (img.width !== 1024 || img.height !== 1024) {
-        setErrors(prev => ({
-          ...prev,
-          image: 'Image must be exactly 1024x1024 pixels.',
-        }));
-      } else {
-        setErrors(prev => ({ ...prev, image: null }));
-        setSelectedUploadedImage(file.name);
-        setUploadedImage(file);
-      }
-    };
-    img.onerror = () => {
-      setErrors(prev => ({
-        ...prev,
-        image: 'Could not read image. Please upload a valid file.',
-      }));
-    };
-    img.src = URL.createObjectURL(file);
-  };
-
   const validateForm = () => {
     const newErrors = {};
-  
-    if (!uploadedImage) {
-      newErrors.image = "Profile image is required.";
-    }
     
     if (!firstName) {
-      newErrors.firstName = "First name is required.";
+      newErrors.firstName = "Please fill the required field.";
     }
     
     if (!lastName) {
-      newErrors.lastName = "Last name is required.";
+      newErrors.lastName = "Please fill the required field.";
     }
-  
-    if (!/^\d{4}$/.test(companyId)) {
-      newErrors.companyId = "Company ID must be a 4-digit number.";
-    }
-  
+
     if (!email) {
-      newErrors.email = "Email is required.";
+      newErrors.email = "Please fill the required field.";
     } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-      newErrors.email = "Invalid email format.";
+      newErrors.email = "Invalid Email.";
     }
     
     if (!department) {
-      newErrors.department = "Department is required.";
+      newErrors.department = "Please fill the required field.";
     }
     
     if (!role) {
-      newErrors.role = "User role is required.";
+      newErrors.role = "Please fill the required field.";
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  
-    if (!validateForm()) return;
-  
-    const formData = new FormData();
-    formData.append("last_name", lastName);
-    formData.append("first_name", firstName);
-    formData.append("middle_name", middleName);
-    formData.append("suffix", suffix);
-    formData.append("company_id", `MA${companyId}`);
-    formData.append("department", department);
-    formData.append("role", role);
-    formData.append("email", email);
-    formData.append("image", uploadedImage);
-  
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setErrors({});
+
     try {
-      const response = await fetch("http://localhost:8000/api/create_employee/", {
+      const token = localStorage.getItem("adminAuthToken");
+      if (!token) throw new Error("Authentication required. Please login again.");
+
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("first_name", firstName);
+      formData.append("last_name", lastName);
+      formData.append("middle_name", middleName);
+      formData.append("suffix", suffix);
+      formData.append("department", department);
+      formData.append("role", role);
+      // If you have an image input:
+      // formData.append("image", imageFile);  <-- must be a File object
+
+      const response = await fetch("http://localhost:8000/api/admin/create-employee/", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+          // DON'T include "Content-Type" here — fetch will auto-set it for FormData
+        },
         body: formData,
       });
-  
-      console.log("🔍 Status:", response.status);
-  
-      const contentType = response.headers.get("content-type");
-  
+
+      const data = await response.json();
+      console.log("Response data:", data);
+
       if (!response.ok) {
-        if (contentType && contentType.includes("application/json")) {
-          const errorJson = await response.json();
-          console.error("❌ JSON error:", errorJson);
-      
-          const formattedErrors = {};
-          if (errorJson.company_id) {
-            formattedErrors.companyId = "Invalid Company ID";
-          }
-          if (errorJson.email) {
-            formattedErrors.email = "Invalid Email";
-          }
-      
-          setErrors(formattedErrors);
-        } else {
-          const errorText = await response.text();
-          console.error("❌ Text error:", errorText);
-          alert(`Error: ${errorText}`);
-        }
+        handleApiErrors(data);
         return;
       }
-  
-      const data = await response.json();
-      console.log("✅ Success:", data);
-      alert("User registered successfully!");
-      
-      // Reset form after successful submission
-      setFirstName("");
-      setLastName("");
-      setMiddleName("");
-      setSuffix("");
-      setCompanyId("");
-      setDepartment("");
-      setRole("");
-      setEmail("");
-      setUploadedImage(null);
-      setSelectedUploadedImage("");
-    } catch (error) {
-      console.error("🚨 Network error:", error);
-      alert("Network error. Please try again.");
+
+      handleSuccessResponse(data);
+
+    } catch (err) {
+      console.error("Submission error:", err);
+      setErrors({
+        general: err.message || "Network error. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // NEW: Handle cancel with confirmation
+  // Helper functions
+  const handleApiErrors = (data) => {
+    if (data.email) {
+      setErrors({ email: data.email[0] });
+    } else if (data.error) {
+      setErrors({ general: data.error });
+    } else {
+      setErrors({
+        general: `Server error: ${JSON.stringify(data)}`
+      });
+    }
+  };
+
+  const handleSuccessResponse = (data) => {
+    alert(`Account created successfully. Company ID: ${data.company_id}`);
+    // Reset form
+    setFirstName("");
+    setLastName("");
+    setMiddleName("");
+    setSuffix("");
+    setDepartment("");
+    setRole("");
+    setEmail("");
+  };
+
+  // Handle cancel with confirmation
   const handleCancel = () => {
     setConfirmMessage('All unsaved changes will be lost.');
     setConfirmAction(() => () => {
@@ -189,33 +132,38 @@ function CreateAccount() {
       setLastName("");
       setMiddleName("");
       setSuffix("");
-      setCompanyId("");
       setDepartment("");
       setRole("");
       setEmail("");
-      setUploadedImage(null);
-      setSelectedUploadedImage("");
       setErrors({});
       setShowConfirmModal(false);
     });
     setShowConfirmModal(true);
   };
 
-  // NEW: Handle register with confirmation
+  // Handle register with confirmation
   const handleRegister = (event) => {
     event.preventDefault();
     
     if (!validateForm()) return;
+    console.log('Validation passed')
     
-    setConfirmMessage('Are you sure you want to register this user? Please verify all information is correct.');
-    setConfirmAction(() => () => {
-      setShowConfirmModal(false);
-      handleSubmit(event);
-    });
-    setShowConfirmModal(true);
-  };
+    setConfirmMessage(`Are you sure you want to register this user?
 
-  // NEW: Confirmation Modal Component
+  • Company ID will be auto-generated
+  • Default password will be set to "1234"
+  • User will receive an email with approval instructions
+  • User cannot log in until they approve via email
+
+  Please verify all information is correct.`);
+      setConfirmAction(() => () => {
+        setShowConfirmModal(false);
+        handleSubmit(event);
+      });
+      setShowConfirmModal(true);
+    };
+
+  // Confirmation Modal Component
   const ConfirmationModal = () => {
     if (!showConfirmModal) return null;
 
@@ -223,10 +171,10 @@ function CreateAccount() {
       <div className="confirmation-modal-overlay">
         <div className="confirmation-modal">
           <div className="confirmation-modal-header">
-            <h3>Save Progress?</h3>
+            <h3>Confirm Action</h3>
           </div>
           <div className="confirmation-modal-body">
-            <p>{confirmMessage}</p>
+            <p style={{ whiteSpace: 'pre-line' }}>{confirmMessage}</p>
           </div>
           <div className="confirmation-modal-footer">
             <button 
@@ -236,10 +184,12 @@ function CreateAccount() {
             >
               Cancel
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn-confirm-proceed"
-              onClick={confirmAction}
+              onClick={() => {
+                if (confirmAction) confirmAction();
+              }}
             >
               Confirm
             </button>
@@ -260,8 +210,7 @@ function CreateAccount() {
           <input 
             type="text" 
             id="last-name" 
-            name="last_name" 
-            required 
+            name="last_name"
             placeholder="Last Name" 
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -274,8 +223,7 @@ function CreateAccount() {
           <input 
             type="text" 
             id="first-name" 
-            name="first_name" 
-            required 
+            name="first_name"
             placeholder="First Name" 
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
@@ -349,7 +297,6 @@ function CreateAccount() {
             <select
               id="department"
               name="department"
-              required
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
               className="suffix-select"
@@ -392,39 +339,11 @@ function CreateAccount() {
         </div>
         
         <div className="register-user-form-group">
-          <label htmlFor="company-id">Company ID</label>
-          <div className="company-id-wrapper">
-            <span className="company-id-prefix">MA</span>
-            <div className="company-id-separator"></div>
-            <input
-              type="text"
-              id="company-id"
-              name="company_id"
-              placeholder="XXXX"
-              value={companyId}
-              autoComplete="off"
-              onChange={(e) => {
-                const numeric = e.target.value.replace(/\D/g, "");
-                if (numeric.length <= 4) {
-                  setCompanyId(numeric);
-                }
-              }}
-              maxLength={4}
-              inputMode="numeric"
-              className="company-id-input"
-            />
-          </div>
-
-          {errors.companyId && <p className="error-message">{errors.companyId}</p>}
-        </div>
-
-        <div className="register-user-form-group">
           <label htmlFor="role-selection">User Role</label>
           <div className="register-user-select-wrapper">
             <select
               id="role-selection"
               name="role"
-              required
               value={role}
               onChange={(e) => setRole(e.target.value)}
               className="register-user-suffix-select"
@@ -432,7 +351,7 @@ function CreateAccount() {
             >
               <option value="" disabled hidden>User Role</option>
               <option value="Employee">Employee</option>
-              <option value="Ticket Agent">Ticket Coordinator</option>
+              <option value="Ticket Coordinator">Ticket Coordinator</option>
               <option value="System Admin">System Admin</option>
             </select>
 
@@ -461,92 +380,12 @@ function CreateAccount() {
           {errors.role && <p className="error-message">{errors.role}</p>}
         </div>
 
-        {/* Image Upload */}
-        <div className="register-user-form-group">
-          <label htmlFor="image-upload">Upload Profile Picture</label>
-          <div className="register-user-file-upload-container">
-            <label
-              htmlFor="image"
-              className={`register-user-file-upload-btn full-clickable ${uploadedImage ? "disabled" : ""}`}
-              style={uploadedImage ? { cursor: "not-allowed", opacity: 0.6 } : {}}
-            >
-              <Upload size={18} className="upload-icon" />
-              <input
-                type="file"
-                id="image"
-                name="image"
-                accept="image/*"
-                required
-                onChange={handleImageUpload}
-                style={{ display: "none" }}
-                disabled={!!uploadedImage}
-              />
-            </label>
-
-            <span
-              className={`register-user-file-name ${selectedUploadedImage ? "has-file" : ""}`}
-              style={{ color: '#7e7e7e' }}
-              onClick={() => {
-                if (uploadedImage) {
-                  setShowImagePreviewModal(true);
-                } else {
-                  const fileInput = document.getElementById("image");
-                  if (fileInput) fileInput.click();
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  if (uploadedImage) {
-                    setShowImagePreviewModal(true);
-                  } else {
-                    const fileInput = document.getElementById("image");
-                    if (fileInput) fileInput.click();
-                  }
-                }
-              }}
-            >
-              {selectedUploadedImage || "Upload Profile Picture"}
-
-              {selectedUploadedImage && (
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setUploadedImage(null);
-                    setSelectedUploadedImage("");
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.stopPropagation();
-                      setUploadedImage(null);
-                      setSelectedUploadedImage("");
-                    }
-                  }}
-                >
-                  <X size={18} />
-                </span>
-              )}
-            </span>
-          </div>
-          {errors.image && <p className="error-message">{errors.image}</p>}
-        </div>
-
-        <AdminUploadedImagePreview
-          showModal={showImagePreviewModal}
-          imageSrc={uploadedImage ? URL.createObjectURL(uploadedImage) : null}
-          closeModal={() => setShowImagePreviewModal(false)}
-        />
-
         <div className="register-user-form-group">
           <label htmlFor="email">Email Address</label>
           <input 
             type="email" 
             id="email" 
-            name="email" 
-            required 
+            name="email"
             placeholder="Email Address" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -554,18 +393,42 @@ function CreateAccount() {
           {errors.email && <p className="error-message">{errors.email}</p>}
         </div>
 
+        {/* Info section about auto-generated fields
+        <div className="register-user-info-section">
+          <div className="register-user-info-box">
+            <h4>Auto-Generated Settings</h4>
+            <ul>
+              <li><strong>Company ID:</strong> Will be auto-generated (e.g., MA0001, MA0002, etc.)</li>
+              <li><strong>Profile Image:</strong> Default image will be assigned (user can change later)</li>
+              <li><strong>Password:</strong> Default password "1234" (user must change on first login)</li>
+              <li><strong>Account Status:</strong> Pending approval via email confirmation</li>
+            </ul>
+          </div>
+        </div> */}
+
+        {errors.general && <p className="error-message">{errors.general}</p>}
+
         <div className="register-user-button-group">
-          <button type="button" className="btn-cancel-register-user" onClick={handleCancel}>
+          <button 
+            type="button" 
+            className="btn-cancel-register-user" 
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </button>
-          <button type="submit" className="btn-register-user">
-            Register
+          <button 
+            type="submit" 
+            className="btn-register-user"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Registering...' : 'Register'}
           </button>
         </div>
 
       </form>
 
-      {/* NEW: Confirmation Modal */}
+      {/* Confirmation Modal */}
       <ConfirmationModal />
     </div>
   );
