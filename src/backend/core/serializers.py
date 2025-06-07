@@ -62,7 +62,7 @@ class AdminTokenObtainPairSerializer(TokenObtainPairSerializer):
         user = self.user
 
         if not user.is_superuser and user.role not in ["System Admin", "Ticket Coordinator"]:
-            raise serializers.ValidationError("Access denied: Admins only.")
+            raise serializers.ValidationError("Invalid credentials.")
 
         # Add these to the response body (optional)
         data['email'] = user.email

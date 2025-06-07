@@ -108,8 +108,8 @@ class TicketViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        if user.role in ['System Admin', 'Ticket Agent']:
-            return Ticket.objects.all()  # Admins and agents can see everything
+        if user.role in ['System Admin', 'Ticket Coordinator']:
+            return Ticket.objects.all()  # Admins and coordinators can see everything
         return Ticket.objects.filter(employee=user)  # Regular employees see their own
     
     def create(self, request, *args, **kwargs):
@@ -200,11 +200,11 @@ def get_ticket_detail(request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         
         # Check if user has permission to view this ticket
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent'] or request.user == ticket.employee):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator'] or request.user == ticket.employee):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
         # Get comments based on user role
-        if request.user.role in ['System Admin', 'Ticket Agent'] or request.user.is_staff:
+        if request.user.role in ['System Admin', 'Ticket Coordinator'] or request.user.is_staff:
             # Admins can see all comments including internal ones
             comments = ticket.comments.all().order_by('created_at')
         else:
@@ -264,7 +264,7 @@ def approve_ticket(request, ticket_id):
     try:
         ticket = get_object_or_404(Ticket, id=ticket_id)
 
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent']):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator']):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
         if ticket.status not in ['New', 'Pending']:
@@ -317,7 +317,7 @@ def reject_ticket(request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         
         # Check if user has permission to reject tickets
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent']):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator']):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
         # Check if ticket is in a state that can be rejected
@@ -399,7 +399,7 @@ def update_ticket_status(request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         
         # Check if user has permission to update tickets
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent']):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator']):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
         new_status = request.data.get('status')
@@ -454,7 +454,7 @@ def get_new_tickets(request):
     """
     try:
         # Check if user has permission to view tickets
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent']):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator']):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
         new_tickets = Ticket.objects.filter(status='New').select_related('employee').order_by('-submit_date')
@@ -481,7 +481,7 @@ def get_new_tickets(request):
 @permission_classes([IsAuthenticated])
 def get_open_tickets(request):
     try:
-        if not request.user.is_staff and request.user.role not in ['System Admin', 'Ticket Agent']:
+        if not request.user.is_staff and request.user.role not in ['System Admin', 'Ticket Coordinator']:
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
 
         tickets = Ticket.objects.filter(status='Open').select_related('employee')
@@ -499,7 +499,7 @@ def get_my_tickets(request):
     """
     try:
         # Check if user has permission
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent']):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator']):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
         my_tickets = Ticket.objects.filter(assigned_to=request.user).select_related('employee').order_by('-submit_date')
@@ -536,7 +536,7 @@ def download_attachment(request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id)
         
         # Check permissions
-        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Agent'] or request.user == ticket.employee):
+        if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator'] or request.user == ticket.employee):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
         if not ticket.attachment:
