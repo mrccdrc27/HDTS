@@ -13,14 +13,50 @@ const UserActiveTicketsTable = () => {
 
   useEffect(() => {
     const fetchTickets = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
-          },
-        });
+      setLoading(true);
+      setError(null);
 
-        const mapped = response.data.map(ticket => ({
+      try {
+        const token = localStorage.getItem('authToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        const fetchWithToken = async (accessToken) => {
+          return axios.get(`${API_BASE_URL}/api/tickets/`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+        };
+
+        let response;
+        try {
+          response = await fetchWithToken(token);
+        } catch (err) {
+          // Handle 401 Unauthorized with token refresh
+          if (err.response?.status === 401 && refreshToken) {
+            try {
+              const refreshRes = await axios.post(`${API_BASE_URL}/api/token/refresh/`, {
+                refresh: refreshToken,
+              });
+
+              const newAccess = refreshRes.data.access;
+              localStorage.setItem('authToken', newAccess);
+              response = await fetchWithToken(newAccess);
+            } catch (refreshErr) {
+              console.error('Token refresh failed:', refreshErr);
+              localStorage.removeItem('authToken');
+              localStorage.removeItem('refreshToken');
+              setError('Session expired. Please log in again.');
+              return;
+            }
+          } else {
+            throw err;
+          }
+        }
+
+        // Transform ticket data
+        const mappedTickets = response.data.map(ticket => ({
+          id: ticket.id,
           number: ticket.ticket_number,
           subject: ticket.subject,
           status: ticket.status,
@@ -30,12 +66,13 @@ const UserActiveTicketsTable = () => {
           subCategory: ticket.sub_category,
           dateCreated: ticket.submit_date,
           lastUpdated: ticket.update_date,
+          assignedTo: ticket.assigned_to,
         }));
 
-        setTickets(mapped);
+        setTickets(mappedTickets);
       } catch (error) {
         console.error('Error fetching tickets:', error);
-        setError('Unable to load tickets.');
+        setError(error.response?.data?.message || 'Unable to load tickets.');
       } finally {
         setLoading(false);
       }

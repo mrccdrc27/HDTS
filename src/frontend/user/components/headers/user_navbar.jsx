@@ -74,21 +74,57 @@ const UserNavbar = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-
     const fetchProfile = async () => {
-      try {
+      let token = localStorage.getItem("authToken");
+
+      const attemptFetch = async (tokenToUse) => {
         const response = await fetch("http://localhost:8000/api/employee/profile/", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenToUse}`,
           },
         });
 
-        const data = await response.json();
+        if (response.status === 401) {
+          throw new Error("Token expired");
+        }
+
+        return response.json();
+      };
+
+      try {
+        // Try initial fetch
+        const data = await attemptFetch(token);
         setProfileName(`${data.first_name} ${data.last_name}`);
         setProfileImage(`http://localhost:8000${data.image}`);
-      } catch (error) {
-        console.error("Failed to fetch profile info:", error);
+      } catch (err) {
+        console.warn("Initial token failed, trying refresh...");
+
+        try {
+          const refreshToken = localStorage.getItem("refreshToken");
+
+          const refreshRes = await fetch("http://localhost:8000/api/token/refresh/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refresh: refreshToken }),
+          });
+
+          if (!refreshRes.ok) throw new Error("Refresh token invalid");
+
+          const refreshData = await refreshRes.json();
+          const newAccessToken = refreshData.access;
+
+          localStorage.setItem("authToken", newAccessToken);
+
+          // Retry original request with new token
+          const data = await attemptFetch(newAccessToken);
+          setProfileName(`${data.first_name} ${data.last_name}`);
+          setProfileImage(`http://localhost:8000${data.image}`);
+        } catch (refreshErr) {
+          console.error("Refresh failed. User may need to log in again.");
+          // Optionally redirect to login
+        }
       }
     };
 

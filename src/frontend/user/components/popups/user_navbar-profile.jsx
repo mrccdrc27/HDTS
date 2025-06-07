@@ -16,34 +16,59 @@ const UserProfilePopup = ({ onClose }) => {
   };
 
   useEffect(() => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const fName = payload.first_name || '';
-        const lName = payload.last_name || '';
-    
-        const formattedProfileName = `${fName.charAt(0).toUpperCase() + fName.slice(1)} ${lName.charAt(0).toUpperCase() + lName.slice(1)}`;
-    
-        setProfileName(formattedProfileName);
-      }
-    }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-
     const fetchProfile = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/employee/profile/", {
+      let token = localStorage.getItem("authToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      const makeProfileRequest = async (accessToken) => {
+        return fetch("http://localhost:8000/api/employee/profile/", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
+      };
 
-        const data = await response.json();
-        setProfileName(`${data.first_name} ${data.last_name}`);
-        setProfileImage(`http://localhost:8000${data.image}`);
-      } catch (error) {
-        console.error("Failed to fetch profile info:", error);
+      let response = await makeProfileRequest(token);
+
+      // Handle token expiration
+      if (response.status === 401 && refreshToken) {
+        try {
+          const refreshResponse = await fetch("http://localhost:8000/api/token/refresh/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refresh: refreshToken }),
+          });
+
+          if (refreshResponse.ok) {
+            const data = await refreshResponse.json();
+            token = data.access;
+            localStorage.setItem("authToken", token);
+            response = await makeProfileRequest(token); // Retry with new token
+          } else {
+            console.error("Refresh token expired or invalid");
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("refreshToken");
+            return;
+          }
+        } catch (error) {
+          console.error("Token refresh failed:", error);
+          return;
+        }
+      }
+
+      // Process successful response
+      if (response.ok) {
+        try {
+          const data = await response.json();
+          setProfileName(`${data.first_name} ${data.last_name}`);
+          setProfileImage(`http://localhost:8000${data.image}`);
+        } catch (error) {
+          console.error("Failed to parse profile data:", error);
+        }
+      } else {
+        console.error("Failed to fetch profile info");
       }
     };
 
@@ -74,6 +99,10 @@ const UserProfilePopup = ({ onClose }) => {
           onClick={() => {
             localStorage.removeItem('authToken');
             localStorage.removeItem("firstName");
+            localStorage.removeItem("lastName");
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('profileImage');
+            localStorage.removeItem('profileName');
             onClose?.();
             navigate('/login/employee', { replace: true });
           }}
