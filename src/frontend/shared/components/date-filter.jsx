@@ -1,9 +1,26 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './date-filter.css';
 
-const DateFilter = ({ onApply, onClear }) => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+const DateFilter = ({
+  startDate: propStartDate,
+  endDate: propEndDate,
+  onStartDateChange,
+  onEndDateChange,
+  onApply,
+  onClear,
+  onClose, // NEW: callback to close the dropdown
+}) => {
+  const [startDate, setStartDate] = useState(propStartDate || '');
+  const [endDate, setEndDate] = useState(propEndDate || '');
+
+  // Sync local state when props change
+  useEffect(() => {
+    setStartDate(propStartDate || '');
+  }, [propStartDate]);
+
+  useEffect(() => {
+    setEndDate(propEndDate || '');
+  }, [propEndDate]);
 
   const applyPreset = (preset) => {
     const today = new Date();
@@ -13,18 +30,17 @@ const DateFilter = ({ onApply, onClear }) => {
       case 'today':
         start = end = today.toISOString().split('T')[0];
         break;
-      case 'last7':
-        end = today.toISOString().split('T')[0];
-        start = new Date(today.setDate(today.getDate() - 6)).toISOString().split('T')[0];
+      case 'last7': {
+        const endDate = today.toISOString().split('T')[0];
+        const startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 6);
+        start = startDate.toISOString().split('T')[0];
+        end = endDate;
         break;
+      }
       case 'thisMonth':
         start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
         end = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
-        break;
-      case 'lastMonth':
-        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        start = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1).toISOString().split('T')[0];
-        end = new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0).toISOString().split('T')[0];
         break;
       default:
         return;
@@ -32,6 +48,9 @@ const DateFilter = ({ onApply, onClear }) => {
 
     setStartDate(start);
     setEndDate(end);
+    if (onStartDateChange) onStartDateChange(start);
+    if (onEndDateChange) onEndDateChange(end);
+    if (onClose) onClose(); // ✅ Auto-close dropdown after preset click
   };
 
   const handleApply = () => {
@@ -41,30 +60,33 @@ const DateFilter = ({ onApply, onClear }) => {
   const handleClear = () => {
     setStartDate('');
     setEndDate('');
+    if (onStartDateChange) onStartDateChange('');
+    if (onEndDateChange) onEndDateChange('');
     if (onClear) onClear();
   };
 
   return (
     <div className="date-filter-popup">
       <div className="quick-presets">
-        <button onClick={() => applyPreset('today')}>Today</button>
-        <button onClick={() => applyPreset('last7')}>Last 7 Days</button>
-        <button onClick={() => applyPreset('thisMonth')}>This Month</button>
-        <button onClick={() => applyPreset('lastMonth')}>Last Month</button>
+        <button type="button" onClick={() => applyPreset('today')}>Today</button>
+        <button type="button" onClick={() => applyPreset('last7')}>Last 7 Days</button>
+        <button type="button" onClick={() => applyPreset('thisMonth')}>This Month</button>
       </div>
 
       <div className="date-inputs">
         <div>
-          <label>Start Date</label>
+          <label htmlFor="start-date-input">Start Date</label>
           <input
+            id="start-date-input"
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
         <div>
-          <label>End Date</label>
+          <label htmlFor="end-date-input">End Date</label>
           <input
+            id="end-date-input"
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
@@ -73,8 +95,21 @@ const DateFilter = ({ onApply, onClear }) => {
       </div>
 
       <div className="date-actions">
-        <button onClick={handleClear} className="secondary-button">Clear</button>
-        <button onClick={handleApply} className="primary-button" disabled={!startDate && !endDate}>Apply</button>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="secondary-button"
+        >
+          Clear
+        </button>
+        <button
+          type="button"
+          onClick={handleApply}
+          className="primary-button"
+          disabled={!startDate && !endDate}
+        >
+          Apply
+        </button>
       </div>
     </div>
   );

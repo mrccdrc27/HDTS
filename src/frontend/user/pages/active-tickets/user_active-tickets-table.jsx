@@ -5,13 +5,12 @@ import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 import './user_active-tickets-table.css';
 
 const statusConfig = {
-  New: 'user-active-status-new',
+  Submitted: 'user-active-status-submitted',
   Open: 'user-active-status-open',
+  Pending: 'user-active-status-pending',
   'On Progress': 'user-active-status-progress',
   'On Hold': 'user-active-status-hold',
-  Pending: 'user-active-status-pending',
   Resolved: 'user-active-status-resolved',
-  Closed: 'user-active-status-closed',
 };
 
 const priorityClassMap = {
@@ -37,11 +36,12 @@ const formatDateTime = (value) => {
 };
 
 const noTicketsMessageMap = {
-  'all-active-tickets': 'No open, on progress, on hold, pending, or resolved tickets.',
+  'all-active-tickets': 'No submitted, open, pending, on progress, on hold, or resolved tickets.',
+  'submitted-tickets': 'No submitted tickets.',
   'open-tickets': 'No open tickets.',
+  'pending-tickets': 'No pending tickets.',
   'on-progress-tickets': 'No on progress tickets.',
   'on-hold-tickets': 'No on hold tickets.',
-  'pending-tickets': 'No pending tickets.',
   'resolved-tickets': 'No resolved tickets.',
 };
 
@@ -71,33 +71,45 @@ const UserActiveTicketsTable = ({
   }, []);
 
   const statusMap = {
-    'all-active-tickets': ['Open', 'On Progress', 'On Hold', 'Pending', 'Resolved'],
+    'all-active-tickets': ['Submitted', 'Open', 'Pending', 'On Progress', 'On Hold', 'Resolved'],
+    'submitted-tickets': ['Submitted'],
     'open-tickets': ['Open'],
+    'pending-tickets': ['Pending'],
     'on-progress-tickets': ['On Progress'],
     'on-hold-tickets': ['On Hold'],
-    'pending-tickets': ['Pending'],
     'resolved-tickets': ['Resolved'],
   };
 
-  const activeStatuses = useMemo(() => statusMap[ticketStatus] || statusMap['all-active-tickets'], [ticketStatus]);
+  // Determine active statuses based on ticketStatus prop
+  const activeStatuses = useMemo(
+    () => statusMap[ticketStatus] || statusMap['all-active-tickets'],
+    [ticketStatus]
+  );
 
   const normalize = (str) => (str ? str.trim().toLowerCase() : '');
 
+  // Status filter logic
   const applyStatusFilter = (status) => {
     const normalized = normalize(statusFilter);
     return normalized ? normalize(status) === normalized : activeStatuses.includes(status);
   };
 
+  // Date range filter: filter tickets by dateCreated within startDate and endDate
   const applyDateRangeFilter = (dateCreated) => {
+    if (!dateCreated) return false;
     const created = new Date(dateCreated);
     if (isNaN(created)) return false;
 
     const start = startDate ? new Date(startDate) : null;
     const end = endDate ? new Date(endDate) : null;
 
+    if (start) start.setHours(0, 0, 0, 0);
+    if (end) end.setHours(23, 59, 59, 999);
+
     return (!start || created >= start) && (!end || created <= end);
   };
 
+  // Search filter across ticketNumber, subject, department
   const applySearchFilter = (ticket) => {
     const term = normalize(searchTerm);
     if (!term) return true;
@@ -106,6 +118,7 @@ const UserActiveTicketsTable = ({
     );
   };
 
+  // Filtering tickets with all applied filters
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
 
@@ -120,12 +133,14 @@ const UserActiveTicketsTable = ({
     return true;
   });
 
+  // Notify parent about total filtered items
   useEffect(() => {
     if (typeof onTotalItemsChange === 'function') {
       onTotalItemsChange(filteredTickets.length);
     }
   }, [filteredTickets, onTotalItemsChange]);
 
+  // Sorting logic
   const sortedTickets = [...filteredTickets];
   if (sortBy) {
     sortedTickets.sort((a, b) => {
@@ -138,9 +153,7 @@ const UserActiveTicketsTable = ({
       }
 
       if (typeof valA === 'string' && typeof valB === 'string') {
-        return sortDirection === 'asc'
-          ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
+        return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
       if (typeof valA === 'number' && typeof valB === 'number') {
@@ -151,14 +164,17 @@ const UserActiveTicketsTable = ({
     });
   }
 
+  // Pagination slicing
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
 
+  // Navigation on row click
   const handleView = (ticket) => {
     if (!ticket.ticketNumber) return console.warn('Missing ticket number.');
     navigate(`/user/ticket-details/${ticket.ticketNumber}`);
   };
 
+  // Action handlers
   const handleWithdraw = (e, ticketNumber) => {
     e.preventDefault();
     e.stopPropagation();
@@ -186,7 +202,7 @@ const UserActiveTicketsTable = ({
               <th>Department</th>
               <th>Category</th>
               <th>Sub Category</th>
-              <th>Scheduled Request</th> {/* moved here */}
+              <th>Scheduled Request</th>
               <th>Date Created</th>
               <th>Last Updated</th>
               <th>Action</th>
@@ -203,7 +219,7 @@ const UserActiveTicketsTable = ({
                   department,
                   category,
                   subCategory,
-                  scheduledRequest, // moved here
+                  scheduledRequest,
                   dateCreated,
                   lastUpdated,
                 } = ticket;
@@ -235,7 +251,7 @@ const UserActiveTicketsTable = ({
                     <td>{formatDateTime(lastUpdated)}</td>
                     <td>
                       <div className="user-active-ticket-actions">
-                        {['Open', 'On Progress', 'On Hold', 'Pending'].includes(status) && (
+                        {['Submitted', 'Open', 'On Progress', 'On Hold', 'Pending'].includes(status) && (
                           <button
                             className="user-active-ticket-btn user-active-ticket-withdraw-btn"
                             onClick={(e) => handleWithdraw(e, ticketNumber)}

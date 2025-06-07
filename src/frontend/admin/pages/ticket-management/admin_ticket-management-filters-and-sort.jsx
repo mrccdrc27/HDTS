@@ -5,7 +5,8 @@ import {
   categoryOptions as rawCategories,
   subCategoryOptions,
   priorityOptions,
-} from '../../../../utilities/filters/user/shared/sharedDropdowns.js';
+} from '../../../../utilities/filters/sharedDropdowns.js';
+
 import './admin_ticket-management-filters-and-sort.css'
 
 const ticketManagementStatuses = [

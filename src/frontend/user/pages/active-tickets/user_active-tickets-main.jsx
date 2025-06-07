@@ -6,7 +6,7 @@ import UserActiveTicketsFiltersAndSort from './user_active-tickets-filter-and-so
 import UserActiveTicketsTable from './user_active-tickets-table.jsx';
 import TablePagination from '../../../shared/components/table-pagination.jsx';
 
-const categoryMap = {
+const statusHeadingMap = {
   all: 'All Active Tickets',
   open: 'Open Tickets',
   'on-progress': 'On Progress Tickets',
@@ -15,19 +15,18 @@ const categoryMap = {
   resolved: 'Resolved Tickets',
 };
 
-const capitalizeStatus = (status) => {
-  if (!status) return '';
-  return status
-    .split('-')
-    .map((word) => (word ? word[0].toUpperCase() + word.slice(1) : ''))
-    .join(' ');
-};
+const capitalizeStatus = (status) =>
+  status
+    ? status
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    : '';
 
 const ActiveTickets = () => {
   const { category } = useParams();
-  const normalizedCategory = category?.toLowerCase().replace(/-tickets$/, '') || '';
-
-  const heading = categoryMap[normalizedCategory] || 'All Active Tickets';
+  const normalizedCategory = category?.toLowerCase().replace(/-tickets$/, '') || 'all';
+  const isActiveCategory = Object.keys(statusHeadingMap).includes(normalizedCategory);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('');
@@ -37,32 +36,45 @@ const ActiveTickets = () => {
   const [priorityFilter, setPriorityFilter] = useState('');
   const [sortBy, setSortBy] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
 
-  const isActiveTicketsView = Object.keys(categoryMap).includes(normalizedCategory);
+  const heading = statusHeadingMap[normalizedCategory] || 'All Active Tickets';
 
   useEffect(() => {
-    if (isActiveTicketsView) {
-      if (normalizedCategory === 'all') {
-        setStatusFilter('');
-      } else {
-        setStatusFilter(capitalizeStatus(normalizedCategory));
-      }
+    if (isActiveCategory) {
+      setStatusFilter(normalizedCategory === 'all' ? '' : capitalizeStatus(normalizedCategory));
     } else {
       setStatusFilter('');
     }
-    setCurrentPage(1); // Reset page when category changes
-  }, [normalizedCategory, isActiveTicketsView]);
+    setCurrentPage(1);
+  }, [normalizedCategory, isActiveCategory]);
 
-  const disableStatusFilter = isActiveTicketsView && normalizedCategory !== 'all';
+  useEffect(() => {
+    setDateRange({ startDate: '', endDate: '' });
+  }, [normalizedCategory]);
 
-  const ticketStatusKey = isActiveTicketsView
-    ? `${normalizedCategory}-tickets`
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchTerm,
+    departmentFilter,
+    categoryFilter,
+    subcategoryFilter,
+    statusFilter,
+    priorityFilter,
+    dateRange.startDate,
+    dateRange.endDate,
+  ]);
+
+  const disableStatusFilter = isActiveCategory && normalizedCategory !== 'all';
+  const ticketStatusKey = isActiveCategory
+    ? normalizedCategory === 'all'
+      ? 'all-active-tickets'
+      : `${normalizedCategory}-tickets`
     : 'all-active-tickets';
 
   return (
@@ -72,10 +84,7 @@ const ActiveTickets = () => {
       </div>
 
       <div className="active-tickets-main-search">
-        <UserActiveTicketsSearch
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
+        <UserActiveTicketsSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       </div>
 
       <UserActiveTicketsFiltersAndSort
@@ -94,6 +103,10 @@ const ActiveTickets = () => {
         sortDirection={sortDirection}
         setSortDirection={setSortDirection}
         disableStatusFilter={disableStatusFilter}
+        startDate={dateRange.startDate}
+        onStartDateChange={(date) => setDateRange((prev) => ({ ...prev, startDate: date }))}
+        endDate={dateRange.endDate}
+        onEndDateChange={(date) => setDateRange((prev) => ({ ...prev, endDate: date }))}
       />
 
       <UserActiveTicketsTable
@@ -106,14 +119,12 @@ const ActiveTickets = () => {
         sortBy={sortBy}
         sortDirection={sortDirection}
         ticketStatus={ticketStatusKey}
-        startDate={startDate}
-        endDate={endDate}
+        startDate={dateRange.startDate}
+        endDate={dateRange.endDate}
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
         onTotalItemsChange={setTotalItems}
       />
-
-      {/* Removed separate pagination-meta div since TablePagination handles this now */}
 
       <TablePagination
         totalItems={totalItems}

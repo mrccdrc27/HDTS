@@ -5,10 +5,12 @@ import {
   departmentOptions as rawDepartments,
   categoryOptions as rawCategories,
   subCategoryOptions,
-} from '../../../../utilities/filters/user/shared/sharedDropdowns.js';
+} from '../../../../utilities/filters/sharedDropdowns.js';
+import DateFilter from '../../../shared/components/date-filter.jsx';
 
 const userTicketStatuses = [
   '',
+  'Submitted',
   'Open',
   'Pending',
   'On Progress',
@@ -22,7 +24,7 @@ const sortByLabels = {
   ticketNumber: 'Ticket Number',
   subject: 'Subject',
   dateCreated: 'Date Created',
-  lastUpdated: 'Last Updated',  
+  lastUpdated: 'Last Updated',
 };
 
 const UserActiveTicketsFiltersAndSort = ({
@@ -41,49 +43,69 @@ const UserActiveTicketsFiltersAndSort = ({
   sortDirection,
   setSortDirection,
   disableStatusFilter,
+  startDate,
+  onStartDateChange,
+  endDate,
+  onEndDateChange,
 }) => {
   const [availableSubcategories, setAvailableSubcategories] = useState([]);
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const sortMenuRef = useRef(null);
+  const [showDateFilter, setShowDateFilter] = useState(false);
 
-  // Update available subcategories when categoryFilter changes
+  const sortMenuRef = useRef(null);
+  const dateFilterRef = useRef(null);
+
   useEffect(() => {
     const subs = categoryFilter ? subCategoryOptions[categoryFilter] || [] : [];
     setAvailableSubcategories(subs);
-
     if (!subs.includes(subcategoryFilter)) {
       setSubcategoryFilter('');
     }
   }, [categoryFilter, subcategoryFilter, setSubcategoryFilter]);
 
-  // Close sort menu if click outside
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        sortMenuRef.current &&
-        !sortMenuRef.current.contains(event.target)
-      ) {
+    const handleClickOutside = (event) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(event.target)) {
         setShowSortMenu(false);
       }
-    }
-    if (showSortMenu) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+      if (dateFilterRef.current && !dateFilterRef.current.contains(event.target)) {
+        setShowDateFilter(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showSortMenu]);
+  }, []);
 
   const toggleSortDirection = () =>
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
 
-  // Handle keyboard navigation for sort options (Enter key to select)
   const handleSortKeyDown = (e, value) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       setSortBy(value);
       setShowSortMenu(false);
     }
+  };
+
+  const handleDateApply = ({ startDate: sDate, endDate: eDate }) => {
+    onStartDateChange(sDate);
+    onEndDateChange(eDate);
+    setShowDateFilter(false);
+  };
+
+  const handleDateClear = () => {
+    onStartDateChange('');
+    onEndDateChange('');
+    setShowDateFilter(false);
+  };
+
+  const formatDateRangeLabel = () => {
+    if (!startDate && !endDate) return 'Date';
+    return startDate && endDate
+      ? `${startDate} to ${endDate}`
+      : startDate || endDate || 'Date';
   };
 
   return (
@@ -105,10 +127,7 @@ const UserActiveTicketsFiltersAndSort = ({
               </option>
             ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Category */}
@@ -125,13 +144,10 @@ const UserActiveTicketsFiltersAndSort = ({
               </option>
             ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
-        {/* Sub Category */}
+        {/* Subcategory */}
         <div className="user-active-tickets-filter-dropdown">
           <select
             value={subcategoryFilter}
@@ -140,9 +156,7 @@ const UserActiveTicketsFiltersAndSort = ({
             className="user-active-tickets-filter-select"
           >
             <option value="">
-              {availableSubcategories.length
-                ? 'All Sub Categories'
-                : 'Sub Category'}
+              {availableSubcategories.length ? 'All Sub Categories' : 'Sub Category'}
             </option>
             {availableSubcategories.map((sub) => (
               <option key={sub} value={sub}>
@@ -150,10 +164,7 @@ const UserActiveTicketsFiltersAndSort = ({
               </option>
             ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Status */}
@@ -165,18 +176,13 @@ const UserActiveTicketsFiltersAndSort = ({
             disabled={disableStatusFilter}
           >
             <option value="">All Statuses</option>
-            {userTicketStatuses
-              .filter((status) => status !== '')
-              .map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
+            {userTicketStatuses.filter(Boolean).map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
         {/* Priority */}
@@ -187,29 +193,38 @@ const UserActiveTicketsFiltersAndSort = ({
             className="user-active-tickets-filter-select"
           >
             <option value="">All Priorities</option>
-            {priorityOptions
-              .filter((priority) => priority !== '')
-              .map((priority) => (
-                <option key={priority} value={priority}>
-                  {priority}
-                </option>
-              ))}
+            {priorityOptions.filter(Boolean).map((priority) => (
+              <option key={priority} value={priority}>
+                {priority}
+              </option>
+            ))}
           </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+          <ChevronDown size={16} className="user-active-tickets-filter-dropdown-icon" />
         </div>
 
-        {/* Date Range placeholder */}
-        <div className="user-active-tickets-filter-dropdown">
-          <select disabled className="user-active-tickets-filter-select">
-            <option value="">Date Range</option>
-          </select>
-          <ChevronDown
-            size={16}
-            className="user-active-tickets-filter-dropdown-icon"
-          />
+        {/* Date Filter */}
+        <div
+          className="user-active-tickets-filter-dropdown date-filter-wrapper"
+          ref={dateFilterRef}
+        >
+          <button
+            onClick={() => setShowDateFilter((prev) => !prev)}
+            className="user-active-tickets-date-filter-button"
+          >
+            <span>{formatDateRangeLabel()}</span>
+            <ChevronDown size={16} />
+          </button>
+          {showDateFilter && (
+            <DateFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={onStartDateChange}
+              onEndDateChange={onEndDateChange}
+              onApply={handleDateApply}
+              onClear={handleDateClear}
+              onClose={() => setShowDateFilter(false)} // ✅ Close on preset click
+            />
+          )}
         </div>
       </div>
 
@@ -247,11 +262,7 @@ const UserActiveTicketsFiltersAndSort = ({
                   }}
                   aria-label={`Toggle sort direction, currently ${sortDirection}`}
                 >
-                  {sortDirection === 'asc' ? (
-                    <ArrowUp size={16} />
-                  ) : (
-                    <ArrowDown size={16} />
-                  )}
+                  {sortDirection === 'asc' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                 </span>
               )}
             </span>

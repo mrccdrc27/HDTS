@@ -77,6 +77,7 @@
   white-space: nowrap;
 }
 
+.user-active-status-submitted,
 .user-active-status-open,
 .user-active-status-pending,
 .user-active-status-progress,
@@ -84,6 +85,10 @@
 .user-active-status-resolved,
 .user-active-status-closed {
   color: var(--text-secondary);
+}
+
+.user-active-status-submitted {
+  background-color: var(--info-dark);
 }
 
 .user-active-status-open {

@@ -68,8 +68,7 @@
 }
 
 /* Dropdown Icon Styles */
-.user-active-tickets-filter-dropdown-icon,
-.user-active-tickets-filter-date-dropdown-icon {
+.user-active-tickets-filter-dropdown-icon {
   position: absolute;
   right: 6px;
   top: 50%;
@@ -84,6 +83,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  transform: translateY(-6px);
 }
 
 /* Date Button */
@@ -99,7 +99,6 @@
   text-align: left;
   cursor: pointer;
   outline: none;
-  transform: translateY(-6px);
   transition: 0.2s ease;
 }
 
@@ -121,6 +120,7 @@
   border-radius: 3px;
   background: #fff;
   max-width: 360px;
+  z-index: 10;
 }
 
 /* Sort Dropdown */
@@ -176,8 +176,8 @@
   border: 1px solid #ccc;
   border-radius: 3px;
   margin-top: 3px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  z-index: 10;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  z-index: 20;
 }
 
 .user-active-tickets-custom-dropdown-menu li {

@@ -5,7 +5,8 @@ import {
   departmentOptions as rawDepartments,
   categoryOptions as rawCategories,
   subCategoryOptions,
-} from '../../../../utilities/filters/user/shared/sharedDropdowns.js';
+} from '../../../../utilities/filters/sharedDropdowns.js';
+
 
 const userTicketStatuses = [
   '',

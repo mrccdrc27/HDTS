@@ -32,8 +32,6 @@ export const AdminRoutes = () => {
         <Route path="reports/:category" element={<AdminReports />} />
         <Route path="report-information" element={<AdminReportInformation />} />
 
---
-
         <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
       </Route>
     </Routes>

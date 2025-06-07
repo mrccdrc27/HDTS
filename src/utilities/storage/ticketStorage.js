@@ -2,11 +2,25 @@
 
 export const TICKET_STORAGE_KEY = 'tickets';
 
+// Aligned ticket statuses for system
+export const ticketStatuses = [
+  'Submitted', // Default for Users (submitted ticket)
+  'New',       // Default for Admins (new ticket)
+  'Open',
+  'On Progress',
+  'On Hold',
+  'Resolved',
+  'Closed',
+  'Rejected',
+  'Withdrawn',
+];
+
+// Sample tickets with createdBy referencing users with role 'User'
 const sampleTickets = [
   {
     ticketNumber: 'TCK-001',
     subject: 'VPN setup request',
-    status: 'new', // new ticket, coordinator approval pending
+    status: 'Pending', // User default; Admin sees this as 'New'
     priorityLevel: 'Medium',
     department: 'IT Department',
     category: 'IT Category',
@@ -19,6 +33,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-001',
       name: 'Jane Doe'
+    },
+    createdBy: {
+      userId: 'U001',
+      role: 'User',
+      name: 'Bonjing San Jose'
     }
   },
   {
@@ -37,6 +56,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-002',
       name: 'John Smith'
+    },
+    createdBy: {
+      userId: 'U004',
+      role: 'User',
+      name: 'Alyssa Navarro'
     }
   },
   {
@@ -55,6 +79,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-001',
       name: 'Jane Doe'
+    },
+    createdBy: {
+      userId: 'U008',
+      role: 'User',
+      name: 'Joshua Tan'
     }
   },
   {
@@ -73,12 +102,17 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-003',
       name: 'Clara Reyes'
+    },
+    createdBy: {
+      userId: 'U001',
+      role: 'User',
+      name: 'Bonjing San Jose'
     }
   },
   {
     ticketNumber: 'TCK-005',
     subject: 'Request for training budget',
-    status: 'pending', // after coordinator approval, waiting for agent approval
+    status: 'Submitted', // User default; Admin will see 'New'
     priorityLevel: 'Medium',
     department: 'Budget Department',
     category: 'Budget Category',
@@ -91,6 +125,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-003',
       name: 'Clara Reyes'
+    },
+    createdBy: {
+      userId: 'U014',
+      role: 'User',
+      name: 'Luis Ramos'
     }
   },
   {
@@ -109,6 +148,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-002',
       name: 'John Smith'
+    },
+    createdBy: {
+      userId: 'U004',
+      role: 'User',
+      name: 'Alyssa Navarro'
     }
   },
   {
@@ -127,6 +171,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-002',
       name: 'John Smith'
+    },
+    createdBy: {
+      userId: 'U008',
+      role: 'User',
+      name: 'Joshua Tan'
     }
   },
   {
@@ -145,6 +194,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-003',
       name: 'Clara Reyes'
+    },
+    createdBy: {
+      userId: 'U001',
+      role: 'User',
+      name: 'Bonjing San Jose'
     }
   },
   {
@@ -163,6 +217,11 @@ const sampleTickets = [
     assignedTo: {
       id: 'AGT-002',
       name: 'John Smith'
+    },
+    createdBy: {
+      userId: 'U014',
+      role: 'User',
+      name: 'Luis Ramos'
     }
   }
 ];
@@ -186,6 +245,6 @@ if (!localStorage.getItem(TICKET_STORAGE_KEY)) {
   saveTickets(sampleTickets);
 }
 
-// Remove below line after initial data load confirmed
+// Remove below lines after initial data load confirmed
 // localStorage.removeItem(TICKET_STORAGE_KEY);
 // saveTickets(sampleTickets);

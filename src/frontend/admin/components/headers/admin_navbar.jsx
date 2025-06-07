@@ -124,15 +124,15 @@ const AdminNavbar = () => {
         {/* Dropdown for Reports */}
         <div className="adminNavbar-menu-dropdown">
           <div className="adminNavbar-menu-trigger" onClick={() => toggleDropdown('reports')}>
-            <NavLink to="/admin/reports/agent-performance-report" className="adminNavbar-menu-item">Reports</NavLink>
+            <NavLink to="/admin/reports/ticket-reports" className="adminNavbar-menu-item">Reports</NavLink>
             <ChevronDown size={18} />
           </div>
           {activeDropdown === 'reports' && (
             <div className="dropdown-content">
-              <NavLink to="/admin/reports/agent-performance-report">Agent Performance Report</NavLink>
-              <NavLink to="/admin/reports/department-report">Department Report</NavLink>
-              <NavLink to="/admin/reports/sla-compliance-report">SLA Compliance Report</NavLink>
               <NavLink to="/admin/reports/ticket-reports">Ticket Reports</NavLink>
+              <NavLink to="/admin/reports/ticket-coordinator-reports">Ticket Coordinator Reports</NavLink>
+              <NavLink to="/admin/reports/department-reports">Department Report</NavLink>
+              <NavLink to="/admin/reports/SLA-compliance-reports">SLA Compliance Report</NavLink>
             </div>
           )}
         </div>
