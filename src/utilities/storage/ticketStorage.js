@@ -227,8 +227,6 @@ const sampleTickets = [
   {
 }
 
-  
-
 ];
 
 export const getTickets = () => {

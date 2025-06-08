@@ -194,6 +194,7 @@ const TicketManagementTable = ({
             <tr>
               <th>Ticket Number</th>
               <th>Subject</th>
+              <th>Created By</th>
               <th>Status</th>
               <th>Priority Level</th>
               <th>Department</th>
@@ -211,7 +212,9 @@ const TicketManagementTable = ({
                 <td colSpan="11">No tickets found.</td>
               </tr>
             ) : (
-              paginatedTickets.map((ticket) => {
+              paginatedTickets
+                .filter((ticket) => ticket && ticket.ticketNumber) // prevent ghost rows
+                .map((ticket) => {
                 const displayStatus = getDisplayStatus(ticket.status);
                 const normalizedDisplayStatus = normalize(displayStatus);
 
@@ -226,6 +229,9 @@ const TicketManagementTable = ({
                       {ticket.ticketNumber || '—'}
                     </td>
                     <td className="ticket-management-subject-cell">{ticket.subject || '—'}</td>
+                    <td className="ticket-management-created-by-cell">
+                      {ticket.createdBy?.name || '—'}
+                    </td>
                     <td>
                       <span
                         className={`ticket-management-status-badge ${getStatusClass(
