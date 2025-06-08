@@ -11,26 +11,66 @@ const AdminDashboard = () => {
   const [newTickets, setNewTickets] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('adminAuthToken');
+    const token = localStorage.getItem("adminAuthToken");
     if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      setFirstName(payload.first_name || '');
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        setFirstName(payload.first_name || "");
+      } catch (err) {
+        console.warn("Failed to decode token:", err);
+      }
     }
   }, []);
 
   useEffect(() => {
     const fetchNewTickets = async () => {
+      let accessToken = localStorage.getItem("adminAuthToken");
+      const refreshToken = localStorage.getItem("adminRefreshToken");
+
+      if (!accessToken || !refreshToken) {
+        console.warn("Missing tokens.");
+        setError("Authentication error.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(atob(accessToken.split(".")[1]));
+        const now = Math.floor(Date.now() / 1000);
+        if (payload.exp < now) {
+          const refreshResponse = await fetch("http://localhost:8000/api/token/refresh/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refresh: refreshToken }),
+          });
+
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            accessToken = refreshData.access;
+            localStorage.setItem("adminAuthToken", accessToken);
+          } else {
+            throw new Error("Unable to refresh token.");
+          }
+        }
+      } catch (err) {
+        console.error("Token validation/refresh failed:", err);
+        setError("Authentication failed.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('adminAuthToken')}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
-        // Filter tickets to only show those with "New" status
         const filteredTickets = response.data
-          .filter(ticket => ticket.status === 'New')
-          .map(ticket => ({
+          .filter((ticket) => ticket.status === "New")
+          .map((ticket) => ({
             id: ticket.ticket_number,
             subject: ticket.subject,
             category: ticket.category,
@@ -39,8 +79,8 @@ const AdminDashboard = () => {
 
         setNewTickets(filteredTickets);
       } catch (error) {
-        console.error('Error fetching new tickets:', error);
-        setError('Unable to load new tickets for approval.');
+        console.error("Error fetching new tickets:", error);
+        setError("Unable to load new tickets for approval.");
       } finally {
         setLoading(false);
       }

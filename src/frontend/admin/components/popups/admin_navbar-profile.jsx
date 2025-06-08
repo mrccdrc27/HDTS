@@ -42,10 +42,6 @@ const AdminNavbarProfile = () => {
     navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
   };
 
-  const handleLogout = () => {
-    navigate('/');
-  };
-
   const closeModal = () => {
     navigate(location.pathname, { replace: true });
   };
@@ -82,7 +78,14 @@ const AdminNavbarProfile = () => {
           <button className="profile-link" onClick={() => addQueryParam('section', 'about')}>
             About
           </button>
-          <button className="profile-link logout" onClick={handleLogout}>
+          <button 
+            className="profile-link logout" 
+            onClick={() => {
+              localStorage.removeItem('adminAuthToken');
+              localStorage.removeItem('adminRefreshToken');
+              navigate('/login/admin', { replace: true });
+            }}
+          >
             Log Out
           </button>
         </div>

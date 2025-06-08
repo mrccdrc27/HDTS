@@ -13,45 +13,70 @@ const AdminLogin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    
     try {
+      // Clear any previous tokens
+      localStorage.removeItem("adminAuthToken");
+      localStorage.removeItem("adminRefreshToken");
+
       const response = await fetch("http://localhost:8000/api/token/admin/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          email: email.trim(), 
+          password: password 
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        if (data.non_field_errors && data.non_field_errors.length > 0) {
-          alert(data.non_field_errors[0]);
-        } else {
-          alert("Invalid credentials.");
-        }
-        return;
+        const errorMessage = data.non_field_errors?.[0] || 
+                          data.detail || 
+                          "Invalid credentials";
+        throw new Error(errorMessage);
       }
 
-      const token = data.access;
-      const payload = JSON.parse(atob(token.split(".")[1]));
+      const { access, refresh } = data;
+      
+      // Decode JWT token safely
+      let payload;
+      try {
+        payload = JSON.parse(atob(access.split('.')[1]));
+      } catch (decodeError) {
+        console.error("Token decode error:", decodeError);
+        throw new Error("Invalid token format");
+      }
+
       const userRole = payload.role;
+      console.log("Authenticated as:", payload);
 
-      console.log("Decoded JWT payload:", payload);
+      // Role validation
+      const ADMIN_ROLES = [
+        "System Admin", 
+        "Ticket Coordinator", 
+        "Superuser"
+      ];
 
-      const allowedRoles = ["System Admin", "Ticket Coordinator", "Superuser"];
-      if (allowedRoles.includes(userRole)) {
-        localStorage.setItem("adminAuthToken", token);
-        console.log("Login success. Redirecting...");
-        navigate("/admin/dashboard");
-      } else {
-        console.warn("Rejected role:", userRole);
-        alert("Access denied: Not an admin account.");
+      if (!ADMIN_ROLES.includes(userRole)) {
+        throw new Error(`Access denied: ${userRole} role not authorized`);
       }
+
+      // Store tokens securely
+      localStorage.setItem("adminAuthToken", access);
+      localStorage.setItem("adminRefreshToken", refresh);
+
+      // Redirect with state for additional security
+      navigate("/admin/dashboard", {
+        replace: true,
+        state: { freshLogin: true }
+      });
+
     } catch (error) {
       console.error("Login error:", error);
-      alert("Something went wrong during login.");
+      alert(error.message || "Login failed. Please try again.");
     }
   };
 

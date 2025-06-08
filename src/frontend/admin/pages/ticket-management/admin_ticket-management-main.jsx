@@ -43,9 +43,45 @@ const TicketManagement = () => {
     const fetchTickets = async () => {
       try {
         setIsLoading(true);
+
+        let accessToken = localStorage.getItem("adminAuthToken");
+        const refreshToken = localStorage.getItem("adminRefreshToken");
+
+        if (!accessToken || !refreshToken) {
+          setError("Missing authentication tokens.");
+          setIsLoading(false);
+          return;
+        }
+
+        // Check expiration
+        const payload = JSON.parse(atob(accessToken.split(".")[1]));
+        const now = Math.floor(Date.now() / 1000);
+
+        if (payload.exp < now) {
+          // Token expired, attempt refresh
+          const refreshResponse = await fetch("http://localhost:8000/api/token/refresh/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refresh: refreshToken }),
+          });
+
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            accessToken = refreshData.access;
+            localStorage.setItem("adminAuthToken", accessToken);
+          } else {
+            setError("Session expired. Please log in again.");
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // Proceed with valid token
         const response = await axios.get(`${API_BASE_URL}/api/tickets/`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('adminAuthToken')}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
 
@@ -63,8 +99,8 @@ const TicketManagement = () => {
 
         setTickets(mappedTickets);
       } catch (error) {
-        console.error('Failed to load tickets:', error);
-        setError('Unable to load tickets.');
+        console.error("Failed to load tickets:", error);
+        setError("Unable to load tickets.");
       } finally {
         setIsLoading(false);
       }
