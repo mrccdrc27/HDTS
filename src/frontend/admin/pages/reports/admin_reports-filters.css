@@ -1,0 +1,86 @@
+/* Toolbar Container */
+.admin-reports-filters-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 4px 0;
+  width: 100%;
+}
+
+/* Date Filter Wrapper */
+.date-filter-wrapper {
+  position: relative;
+}
+
+/* Date Filter Button */
+.admin-reports-date-filter-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 120px;
+  height: 28px;
+  padding: 0 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-reports-date-filter-button:hover {
+  border-color: #4a90e2;
+  color: #2a4abf;
+}
+
+.admin-reports-date-filter-button:focus {
+  border-color: #2a4abf;
+  color: #1a3080;
+}
+
+/* Sort Wrapper (container for text and icon button) */
+.admin-reports-sort-wrapper {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Sort Text (non-clickable) */
+.admin-reports-sort-text {
+  cursor: default;
+  user-select: none;
+}
+
+/* Sort Icon Button (only the icon is clickable) */
+.admin-reports-sort-icon-button {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  color: #333;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-reports-sort-icon-button:hover,
+.admin-reports-sort-icon-button:focus {
+  color: #2a4abf;
+  background-color: #e8f0fe;
+  outline: none;
+}
+
+/* Disable pointer events on the icon SVG itself so button handles clicks */
+.admin-reports-sort-icon {
+  pointer-events: none;
+}

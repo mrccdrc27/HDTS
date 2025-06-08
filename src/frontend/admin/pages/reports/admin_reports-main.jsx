@@ -19,7 +19,7 @@ const AdminReports = () => {
     return (
         <div className="admin-reports-main">
             <div className="admin-reports-main-header">
-                <h1>{formatHeading(category)}</h1>
+                <h2>{formatHeading(category)}</h2>
             </div>
 
             <div className="admin-reports-main-search-print">

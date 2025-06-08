@@ -1,56 +1,110 @@
-const AdminReportsFilters = ({ category }) => {
-    // Example dynamic options by category
-    const departments = ['IT Department', 'Asset Department', 'Budget Department'];
-    const coordinators = ['John Doe', 'Jane Smith', 'Alex Johnson'];
-    const slaStatuses = ['Compliant', 'Non-Compliant', 'Pending'];
+import { useState, useRef, useEffect } from 'react';
+import { ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
+import DateFilter from '../../../shared/components/date-filter.jsx';
+import './admin_reports-filters.css';
 
-    return (
-        <div className="admin-reports-filters">
-            <h2>Admin Reports Filters</h2>
+const AdminReportsFilters = ({
+  startDate = '',
+  endDate = '',
+  onStartDateChange,
+  onEndDateChange,
+}) => {
+  // Local state for date filter dropdown visibility
+  const [showDateFilter, setShowDateFilter] = useState(false);
 
-            {(category === 'ticket-reports' || category === 'department-reports') && (
-                <div className="filter-dropdown">
-                    <label htmlFor="department">Department:</label>
-                    <select id="department" name="department">
-                        <option value="">Select Department</option>
-                        {departments.map((dept) => (
-                            <option key={dept} value={dept}>
-                                {dept}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
+  // Local state for sort direction (owning the state here)
+  const [sortDirection, setSortDirection] = useState('desc');
 
-            {category === 'ticket-coordinator-reports' && (
-                <div className="filter-dropdown">
-                    <label htmlFor="coordinator">Coordinator:</label>
-                    <select id="coordinator" name="coordinator">
-                        <option value="">Select Coordinator</option>
-                        {coordinators.map((coor) => (
-                            <option key={coor} value={coor}>
-                                {coor}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
+  const dateFilterRef = useRef(null);
 
-            {category === 'SLA-compliance-reports' && (
-                <div className="filter-dropdown">
-                    <label htmlFor="slaStatus">SLA Status:</label>
-                    <select id="slaStatus" name="slaStatus">
-                        <option value="">Select SLA Status</option>
-                        {slaStatuses.map((status) => (
-                            <option key={status} value={status}>
-                                {status}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
-        </div>
-    );
-}
+  useEffect(() => {
+    if (!showDateFilter) return;
+
+    const handleClickOutside = (e) => {
+      if (dateFilterRef.current && !dateFilterRef.current.contains(e.target)) {
+        setShowDateFilter(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDateFilter]);
+
+  const handleDateApply = ({ startDate: sDate, endDate: eDate }) => {
+    onStartDateChange(sDate);
+    onEndDateChange(eDate);
+    setShowDateFilter(false);
+  };
+
+  const handleDateClear = () => {
+    onStartDateChange('');
+    onEndDateChange('');
+    setShowDateFilter(false);
+  };
+
+  const formatDateLabel = () => {
+    if (!startDate && !endDate) return 'Date';
+    return startDate && endDate
+      ? `${startDate} to ${endDate}`
+      : startDate || endDate || 'Date';
+  };
+
+  // Toggle sort direction locally
+  const toggleSortDirection = () => {
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  return (
+    <div className="admin-reports-filters-wrapper">
+      {/* Date Filter */}
+      <div
+        className="admin-reports-filter-dropdown date-filter-wrapper"
+        ref={dateFilterRef}
+      >
+        <button
+          type="button"
+          onClick={() => setShowDateFilter((prev) => !prev)}
+          className="admin-reports-date-filter-button"
+          aria-haspopup="dialog"
+          aria-expanded={showDateFilter}
+        >
+          <span>{formatDateLabel()}</span>
+          <ChevronDown size={16} />
+        </button>
+
+        {showDateFilter && (
+          <DateFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={onStartDateChange}
+            onEndDateChange={onEndDateChange}
+            onApply={handleDateApply}
+            onClear={handleDateClear}
+            onClose={() => setShowDateFilter(false)}
+          />
+        )}
+      </div>
+
+      {/* Sort By Text (plain) + Icon (clickable button only) */}
+      <div className="admin-reports-sort-wrapper">
+        <span className="admin-reports-sort-text">Sort By</span>
+        <button
+          type="button"
+          onClick={toggleSortDirection}
+          aria-label={`Toggle sort direction, currently ${
+            sortDirection === 'asc' ? 'ascending' : 'descending'
+          }`}
+          className="admin-reports-sort-icon-button"
+        >
+          {sortDirection === 'asc' ? (
+            <ArrowUp size={16} className="admin-reports-sort-icon" />
+          ) : (
+            <ArrowDown size={16} className="admin-reports-sort-icon" />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default AdminReportsFilters;
