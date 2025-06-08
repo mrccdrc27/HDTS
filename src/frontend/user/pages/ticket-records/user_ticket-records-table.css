@@ -13,7 +13,7 @@
 
 .user-ticket-records-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
   border-spacing: 0;
   font-size: 13px;
   text-align: center;
@@ -43,13 +43,12 @@
   border-top-right-radius: 8px;
 }
 
-.user-ticket-records-table tbody tr:not(:last-child) {
+.user-ticket-records-table tbody tr:not(:last-child) td {
   border-bottom: 1px solid var(--neutral-light-gray);
 }
 
 .user-ticket-records-table tbody tr:hover {
   background-color: var(--neutral-light-gray);
-  cursor: pointer;
 }
 
 .user-ticket-records-table td {
@@ -115,10 +114,6 @@
 
 .user-ticket-records-priority-critical {
   color: var(--error);
-}
-
-.user-ticket-records-row {
-  transition: background-color 0.2s ease;
 }
 
 .user-ticket-records-no-tickets-row td {

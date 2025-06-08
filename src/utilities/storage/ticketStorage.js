@@ -20,13 +20,13 @@ const sampleTickets = [
   {
     ticketNumber: 'TCK-001',
     subject: 'VPN setup request',
-    status: 'Pending', // User default; Admin sees this as 'New'
+    status: 'Submitted', 
     priorityLevel: 'Medium',
     department: 'IT Department',
     category: 'IT Category',
     subCategory: 'Technical Support & Troubleshooting',
-    dateCreated: '2025-06-01T08:00:00Z',
-    lastUpdated: '2025-06-01T08:00:00Z',
+    dateCreated: '2025-06-08T08:00:00Z',
+    lastUpdated: '2025-06-08T08:00:00Z',
     fileUploaded: null,
     description: 'Need help setting up VPN on my laptop.',
     scheduledRequest: null,
@@ -112,7 +112,7 @@ const sampleTickets = [
   {
     ticketNumber: 'TCK-005',
     subject: 'Request for training budget',
-    status: 'Submitted', // User default; Admin will see 'New'
+    status: 'Pending', // User default; Admin will see 'New'
     priorityLevel: 'Medium',
     department: 'Budget Department',
     category: 'Budget Category',
@@ -223,7 +223,12 @@ const sampleTickets = [
       role: 'User',
       name: 'Luis Ramos'
     }
-  }
+  },
+  {
+}
+
+  
+
 ];
 
 export const getTickets = () => {

@@ -243,7 +243,7 @@ const UserTicketRecordsTable = ({
               })
             ) : (
               <tr>
-                <td colSpan={9} className="user-ticket-records-no-tickets">
+                <td colSpan={9} className="user-ticket-records-no-tickets-row">
                   {noTicketsMessage}
                 </td>
               </tr>

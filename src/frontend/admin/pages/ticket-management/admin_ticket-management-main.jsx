@@ -9,10 +9,14 @@ import TablePagination from '../../../shared/components/table-pagination.jsx';
 const categoryDisplayMap = {
   'all-tickets': 'All Tickets',
   'new-tickets': 'New Tickets',
+  'pending-tickets': 'Pending Tickets',
   'open-tickets': 'Open Tickets',
   'on-progress-tickets': 'On Progress Tickets',
-  'pending-tickets': 'Pending Tickets',
+  'on-hold-tickets': 'On Hold Tickets',
+  'resolved-tickets': 'Resolved Tickets',
+  'closed-tickets': 'Closed Tickets',
   'rejected-tickets': 'Rejected Tickets',
+  'withdrawn-tickets': 'Withdrawn Tickets',
 };
 
 const formatHeading = (category) => {
@@ -26,19 +30,22 @@ const TicketManagement = () => {
   const normalizedCategory = category?.toLowerCase() || 'all-tickets';
   const heading = formatHeading(category);
 
+  // Extract status from URL category (empty string if all)
+  const currentPageStatus = normalizedCategory !== 'all-tickets'
+    ? normalizedCategory.replace('-tickets', '').replace(/-/g, ' ')
+    : '';
+
   // Filters state
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [subcategoryFilter, setSubcategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState(currentPageStatus); // Initialize to current page status
   const [priorityFilter, setPriorityFilter] = useState('');
-  // Optional date filters, you can implement UI inputs later
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
 
   // Sorting state
   const [sortBy, setSortBy] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
+  const [sortDirection, setSortDirection] = useState('asc');
 
   // Search term
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,6 +58,13 @@ const TicketManagement = () => {
   // Tickets and loading
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Sync statusFilter with URL category whenever category changes
+  useEffect(() => {
+    setStatusFilter(currentPageStatus);
+    setDateRange({ startDate: '', endDate: '' });
+    setCurrentPage(1);
+  }, [currentPageStatus]);
 
   // Fetch tickets once on mount
   useEffect(() => {
@@ -73,16 +87,16 @@ const TicketManagement = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [
+    searchTerm,
     departmentFilter,
     categoryFilter,
     subcategoryFilter,
     statusFilter,
     priorityFilter,
-    dateFrom,
-    dateTo,
+    dateRange.startDate,
+    dateRange.endDate,
     sortBy,
     sortDirection,
-    searchTerm,
     normalizedCategory,
   ]);
 
@@ -102,6 +116,9 @@ const TicketManagement = () => {
       setIsLoading(false);
     }
   }, []);
+
+  // Disable status filter if on filtered status page
+  const disableStatusFilter = currentPageStatus !== '';
 
   return (
     <div className="ticket-management-main">
@@ -124,14 +141,16 @@ const TicketManagement = () => {
         setStatusFilter={setStatusFilter}
         priorityFilter={priorityFilter}
         setPriorityFilter={setPriorityFilter}
-        dateFrom={dateFrom}
-        setDateFrom={setDateFrom}
-        dateTo={dateTo}
-        setDateTo={setDateTo}
+        startDate={dateRange.startDate}
+        onStartDateChange={(date) => setDateRange(prev => ({ ...prev, startDate: date }))}
+        endDate={dateRange.endDate}
+        onEndDateChange={(date) => setDateRange(prev => ({ ...prev, endDate: date }))}
         sortBy={sortBy}
         setSortBy={setSortBy}
         sortDirection={sortDirection}
         setSortDirection={setSortDirection}
+        currentPageStatus={currentPageStatus}           // <-- Pass current page status
+        disableStatusFilter={disableStatusFilter}       // <-- Disable dropdown if on filtered status page
       />
 
       <div className="ticket-management-main-table">
@@ -148,8 +167,8 @@ const TicketManagement = () => {
             subcategoryFilter={subcategoryFilter}
             statusFilter={statusFilter}
             priorityFilter={priorityFilter}
-            dateFrom={dateFrom}
-            dateTo={dateTo}
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
             sortBy={sortBy}
             sortDirection={sortDirection}
             currentPage={currentPage}

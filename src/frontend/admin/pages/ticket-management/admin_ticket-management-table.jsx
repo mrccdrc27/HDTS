@@ -5,8 +5,10 @@ import './admin_ticket-management-table.css';
 import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 const statusClassMap = {
-  open: 'ticket-management-status-open',
+  all: 'ticket-management-status-all',
+  new: 'ticket-management-status-new',
   pending: 'ticket-management-status-pending',
+  open: 'ticket-management-status-open',
   'on progress': 'ticket-management-status-progress',
   'on hold': 'ticket-management-status-hold',
   resolved: 'ticket-management-status-resolved',
@@ -37,6 +39,15 @@ const formatDateTime = (value) => {
       });
 };
 
+// NEW helper to normalize strings
+const normalize = (str) => (typeof str === 'string' ? str.trim().toLowerCase() : '');
+
+// NEW helper to map Submitted → New for display
+const getDisplayStatus = (status) => {
+  if (normalize(status) === 'submitted') return 'New';
+  return status;
+};
+
 const TicketManagementTable = ({
   searchTerm = '',
   departmentFilter = '',
@@ -44,6 +55,8 @@ const TicketManagementTable = ({
   subcategoryFilter = '',
   statusFilter = '',
   priorityFilter = '',
+  startDate = '',   // <-- Add here
+  endDate = '',     // <-- Add here
   sortBy = '',
   sortDirection = 'asc',
   currentPage = 1,
@@ -60,13 +73,11 @@ const TicketManagementTable = ({
     setTickets(storedTickets);
   }, []);
 
-  const normalize = (str) => (typeof str === 'string' ? str.trim().toLowerCase() : '');
-
   useEffect(() => {
     let filtered = tickets;
 
-    if (statusFilter) {
-      filtered = filtered.filter((t) => normalize(t.status) === normalize(statusFilter));
+    if (statusFilter && normalize(statusFilter) !== 'all') {
+      filtered = filtered.filter((t) => normalize(getDisplayStatus(t.status)) === normalize(statusFilter));
     }
 
     if (departmentFilter) {
@@ -83,6 +94,21 @@ const TicketManagementTable = ({
 
     if (priorityFilter) {
       filtered = filtered.filter((t) => normalize(t.priorityLevel) === normalize(priorityFilter));
+    }
+
+    if (startDate) {
+      const start = new Date(startDate).setHours(0, 0, 0, 0);
+      filtered = filtered.filter(t => {
+        const ticketDate = new Date(t.dateCreated).getTime();
+        return !isNaN(ticketDate) && ticketDate >= start;
+      });
+    }
+    if (endDate) {
+      const end = new Date(endDate).setHours(23, 59, 59, 999);
+      filtered = filtered.filter(t => {
+        const ticketDate = new Date(t.dateCreated).getTime();
+        return !isNaN(ticketDate) && ticketDate <= end;
+      });
     }
 
     if (searchTerm) {
@@ -102,6 +128,8 @@ const TicketManagementTable = ({
     categoryFilter,
     subcategoryFilter,
     priorityFilter,
+    startDate,    // <-- ADD these dependencies!
+    endDate,
     searchTerm,
   ]);
 
@@ -124,9 +152,7 @@ const TicketManagementTable = ({
       }
 
       if (typeof valA === 'string' && typeof valB === 'string') {
-        return sortDirection === 'asc'
-          ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
+        return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
 
       if (typeof valA === 'number' && typeof valB === 'number') {
@@ -159,7 +185,11 @@ const TicketManagementTable = ({
   return (
     <div className="ticket-management-container">
       <div className="ticket-management-table-wrapper">
-        <table className="ticket-management-table" role="grid" aria-label="Ticket Management Table">
+        <table
+          className="ticket-management-table"
+          role="grid"
+          aria-label="Ticket Management Table"
+        >
           <thead>
             <tr>
               <th>Ticket Number</th>
@@ -181,71 +211,76 @@ const TicketManagementTable = ({
                 <td colSpan="11">No tickets found.</td>
               </tr>
             ) : (
-              paginatedTickets.map((ticket) => (
-                <tr
-                  key={ticket.ticketNumber}
-                  className="ticket-management-row"
-                  onClick={() => navigate(`/admin/ticket-details/${ticket.ticketNumber}`)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <td className="ticket-management-ticket-number-cell">
-                    {ticket.ticketNumber}
-                  </td>
-                  <td className="ticket-management-subject-cell">{ticket.subject}</td>
-                  <td>
-                    <span
-                      className={`ticket-management-status-badge ${getStatusClass(
-                        ticket.status
-                      )}`}
-                    >
-                      {ticket.status}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={`ticket-management-priority-badge ${getPriorityClass(
-                        ticket.priorityLevel
-                      )}`}
-                    >
-                      {ticket.priorityLevel}
-                    </span>
-                  </td>
-                  <td>{ticket.department}</td>
-                  <td>{ticket.category}</td>
-                  <td>{ticket.subCategory}</td>
-                  <td>
-                    {ticket.scheduledRequest
-                      ? formatDateTime(ticket.scheduledRequest)
-                      : 'None'}
-                  </td>
-                  <td>{formatDateTime(ticket.dateCreated)}</td>
-                  <td>{formatDateTime(ticket.lastUpdated)}</td>
-                  <td>
-                    <div className="ticket-management-action-buttons">
-                      {ticket.status.toLowerCase() === 'new' && (
-                        <>
-                          <button
-                            className="ticket-management-action-btn ticket-management-close-btn"
-                            onClick={(e) => handleClose(e, ticket.ticketNumber)}
-                            title="Close Ticket"
-                          >
-                            Close
-                          </button>
-                          <button
-                            className="ticket-management-action-btn ticket-management-reject-btn"
-                            onClick={(e) => handleReject(e, ticket.ticketNumber)}
-                            title="Reject Ticket"
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
+              paginatedTickets.map((ticket) => {
+                const displayStatus = getDisplayStatus(ticket.status);
+                const normalizedDisplayStatus = normalize(displayStatus);
+
+                return (
+                  <tr
+                    key={ticket.ticketNumber}
+                    className="ticket-management-row"
+                    onClick={() => navigate(`/admin/ticket-details/${ticket.ticketNumber}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <td className="ticket-management-ticket-number-cell">
+                      {ticket.ticketNumber || '—'}
+                    </td>
+                    <td className="ticket-management-subject-cell">{ticket.subject || '—'}</td>
+                    <td>
+                      <span
+                        className={`ticket-management-status-badge ${getStatusClass(
+                          displayStatus
+                        )}`}
+                      >
+                        {displayStatus}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`ticket-management-priority-badge ${getPriorityClass(
+                          ticket.priorityLevel
+                        )}`}
+                      >
+                        {ticket.priorityLevel || '—'}
+                      </span>
+                    </td>
+                    <td>{ticket.department || '—'}</td>
+                    <td>{ticket.category || '—'}</td>
+                    <td>{ticket.subCategory || '—'}</td>
+                    <td>
+                      {ticket.scheduledRequest
+                        ? formatDateTime(ticket.scheduledRequest)
+                        : 'None'}
+                    </td>
+                    <td>{formatDateTime(ticket.dateCreated)}</td>
+                    <td>{formatDateTime(ticket.lastUpdated)}</td>
+                    <td>
+                      <div className="ticket-management-action-buttons">
+                        {['new', 'pending'].includes(normalizedDisplayStatus) && (
+                          <>
+                            <button
+                              className="ticket-management-action-btn ticket-management-close-btn"
+                              onClick={(e) => handleClose(e, ticket.ticketNumber)}
+                              title="Close Ticket"
+                            >
+                              Close
+                            </button>
+                            <button
+                              className="ticket-management-action-btn ticket-management-reject-btn"
+                              onClick={(e) => handleReject(e, ticket.ticketNumber)}
+                              title="Reject Ticket"
+                            >
+                              Reject
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
-        </tbody>
+          </tbody>
         </table>
       </div>
     </div>

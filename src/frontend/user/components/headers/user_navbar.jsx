@@ -105,6 +105,7 @@ const UserNavbar = () => {
 
         {renderDropdown('Active Tickets', '/user/active-tickets', [
           { path: 'all-active-tickets', label: 'All Active Tickets' },
+          { path: 'submitted-tickets', label: 'Submitted Tickets' },
           { path: 'open-tickets', label: 'Open Tickets' },
           { path: 'on-progress-tickets', label: 'On Progress Tickets' },
           { path: 'on-hold-tickets', label: 'On Hold Tickets' },

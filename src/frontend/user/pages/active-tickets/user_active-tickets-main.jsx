@@ -8,6 +8,7 @@ import TablePagination from '../../../shared/components/table-pagination.jsx';
 
 const statusHeadingMap = {
   all: 'All Active Tickets',
+  submitted: 'Submitted Tickets',
   open: 'Open Tickets',
   'on-progress': 'On Progress Tickets',
   'on-hold': 'On Hold Tickets',

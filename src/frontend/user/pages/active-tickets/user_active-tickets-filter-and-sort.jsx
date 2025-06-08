@@ -101,7 +101,7 @@ const UserActiveTicketsFiltersAndSort = ({
     setShowDateFilter(false);
   };
 
-  const formatDateRangeLabel = () => {
+  const formatDateLabel = () => {
     if (!startDate && !endDate) return 'Date';
     return startDate && endDate
       ? `${startDate} to ${endDate}`
@@ -211,7 +211,7 @@ const UserActiveTicketsFiltersAndSort = ({
             onClick={() => setShowDateFilter((prev) => !prev)}
             className="user-active-tickets-date-filter-button"
           >
-            <span>{formatDateRangeLabel()}</span>
+            <span>{formatDateLabel()}</span>
             <ChevronDown size={16} />
           </button>
           {showDateFilter && (
