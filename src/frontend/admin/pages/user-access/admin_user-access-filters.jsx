@@ -24,16 +24,22 @@ const SORT_OPTIONS = {
   middleName: 'Middle Name',
 };
 
-const UserAccessFilters = ({ category, onFilterChange }) => {
-  const [filters, setFilters] = useState({
-    department: '',
-    role: '',
-    status: '',
-    date: '',
-  });
-
-  const [sortBy, setSortBy] = useState('');
-  const [sortDirection, setSortDirection] = useState('asc');
+const UserAccessFilters = ({
+  category,
+  department,
+  role,
+  status,
+  startDate,
+  endDate,
+  setDepartment,
+  setRole,
+  setStatus,
+  setStartDate,
+  setEndDate,
+  sortBy,
+  sortDirection,
+  onFilterChange,
+}) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
 
@@ -54,40 +60,37 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
 
   // Reset role filter if not shown
   useEffect(() => {
-    if (!showRole && filters.role !== '') {
-      setFilters((prev) => ({ ...prev, role: '' }));
-      onFilterChange?.({ ...filters, role: '', sortBy, sortDirection });
+    if (!showRole && role !== '') {
+      setRole('');
+      onFilterChange?.({ role: '', sortBy, sortDirection });
     }
   }, [category]);
 
-  // Handler for filter changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    let normalizedValue = value;
+  // Handlers for individual filter changes
+  const handleDepartmentChange = (e) => {
+    setDepartment(e.target.value);
+    onFilterChange?.({ department: e.target.value, sortBy, sortDirection });
+  };
 
-    if (name === 'role' && value === 'All Roles') {
-      normalizedValue = '';
-    }
+  const handleRoleChange = (e) => {
+    const val = e.target.value === 'All Roles' ? '' : e.target.value;
+    setRole(val);
+    onFilterChange?.({ role: val, sortBy, sortDirection });
+  };
 
-    const updatedFilters = {
-      ...filters,
-      [name]: normalizedValue,
-    };
-
-    setFilters(updatedFilters);
-    onFilterChange?.({ ...updatedFilters, sortBy, sortDirection });
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+    onFilterChange?.({ status: e.target.value, sortBy, sortDirection });
   };
 
   const toggleSortDirection = () => {
     const newDir = sortDirection === 'asc' ? 'desc' : 'asc';
-    setSortDirection(newDir);
-    onFilterChange?.({ ...filters, sortBy, sortDirection: newDir });
+    onFilterChange?.({ sortBy, sortDirection: newDir });
   };
 
   const handleSortSelect = (value) => {
-    setSortBy(value);
     setShowSortMenu(false);
-    onFilterChange?.({ ...filters, sortBy: value, sortDirection });
+    onFilterChange?.({ sortBy: value, sortDirection });
   };
 
   return (
@@ -99,8 +102,8 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
         <div className="user-access-filter-dropdown">
           <select
             name="department"
-            value={filters.department}
-            onChange={handleChange}
+            value={department}
+            onChange={handleDepartmentChange}
             className="user-access-filter-select"
           >
             <option value="">Department</option>
@@ -118,13 +121,13 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
           <div className="user-access-filter-dropdown">
             <select
               name="role"
-              value={filters.role}
-              onChange={handleChange}
+              value={role || 'All Roles'}
+              onChange={handleRoleChange}
               className="user-access-filter-select"
             >
-              {ROLE_OPTIONS.map((role) => (
-                <option key={role} value={role}>
-                  {role}
+              {ROLE_OPTIONS.map((roleOption) => (
+                <option key={roleOption} value={roleOption}>
+                  {roleOption}
                 </option>
               ))}
             </select>
@@ -137,14 +140,14 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
           <div className="user-access-filter-dropdown">
             <select
               name="status"
-              value={filters.status}
-              onChange={handleChange}
+              value={status}
+              onChange={handleStatusChange}
               className="user-access-filter-select"
             >
               <option value="">Status</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
+              {statusOptions.map((statusOption) => (
+                <option key={statusOption} value={statusOption}>
+                  {statusOption}
                 </option>
               ))}
             </select>
@@ -163,12 +166,18 @@ const UserAccessFilters = ({ category, onFilterChange }) => {
           </button>
           {showDateFilter && (
             <DateFilter
-              value={filters.date}
-              onChange={(dateValue) => {
-                const updated = { ...filters, date: dateValue };
-                setFilters(updated);
-                onFilterChange?.({ ...updated, sortBy, sortDirection });
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={(val) => setStartDate(val)}
+              onEndDateChange={(val) => setEndDate(val)}
+              onApply={({ startDate, endDate }) => {
+                onFilterChange?.({ startDate, endDate, sortBy, sortDirection });
+                setShowDateFilter(false);
               }}
+              onClear={() => {
+                onFilterChange?.({ startDate: '', endDate: '', sortBy, sortDirection });
+              }}
+              onClose={() => setShowDateFilter(false)}
             />
           )}
         </div>

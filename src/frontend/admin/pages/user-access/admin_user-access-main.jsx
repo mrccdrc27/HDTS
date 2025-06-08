@@ -37,7 +37,8 @@ const UserAccess = () => {
     department: "",
     role: "",
     status: "",
-    date: "",
+    startDate: "",
+    endDate: "",
     searchTerm: "",
     sortBy: "",
     sortDirection: "asc",
@@ -91,11 +92,14 @@ const UserAccess = () => {
         category={normalizedCategory}
         department={filters.department}
         role={filters.role}
-        setRole={(val) => updateFilter("role", val)}
+        setRole={(val) => updateFilter('role', val)}
+        setDepartment={(val) => updateFilter('department', val)}
         status={filters.status}
-        setStatus={(val) => updateFilter("status", val)}
-        date={filters.date}
-        setDate={(val) => updateFilter("date", val)}
+        setStatus={(val) => updateFilter('status', val)}
+        startDate={filters.startDate}
+        endDate={filters.endDate}
+        setStartDate={(val) => updateFilter('startDate', val)}
+        setEndDate={(val) => updateFilter('endDate', val)}
         sortBy={filters.sortBy}
         sortDirection={filters.sortDirection}
         onFilterChange={(newFilters) => {
@@ -104,7 +108,7 @@ const UserAccess = () => {
           );
         }}
         searchTerm={filters.searchTerm}
-        setSearchTerm={(val) => updateFilter("searchTerm", val)}
+        setSearchTerm={(val) => updateFilter('searchTerm', val)}
       />
 
       <div className="user-access-table-wrapper">

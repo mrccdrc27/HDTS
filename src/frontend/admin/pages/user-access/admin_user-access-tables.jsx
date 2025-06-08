@@ -1,14 +1,13 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import './admin_user-access-tables.css';
 
 import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
-import { getUsers } from '/src/utilities/storage/userStorage.js';
-
 const UserAccessTable = ({
   category,
+  users,
   filters,
   sortBy,
   sortDirection,
@@ -20,7 +19,6 @@ const UserAccessTable = ({
   const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [users, setUsers] = useState([]);
 
   const openModal = (type, user) => {
     setModalType(type);
@@ -32,30 +30,27 @@ const UserAccessTable = ({
     setSelectedUser(null);
   };
 
-  // Load users from localStorage on mount
-  useEffect(() => {
-    const storedUsers = getUsers();
-    setUsers(storedUsers);
-  }, []);
-
   // Filter users based on filters and category
   const filteredData = useMemo(() => {
     return users.filter((user) => {
+      // Department filter (case-insensitive substring match)
       const matchesDepartment = filters.department
         ? user.department.toLowerCase().includes(filters.department.toLowerCase())
         : true;
 
+      // Role filter based on category or selected filter role
       let matchesRole = true;
       if (category === 'users') {
         matchesRole = user.role.toLowerCase() === 'user';
       } else if (category === 'ticket-agents') {
         matchesRole = user.role.toLowerCase() === 'ticket agent';
-      } else if (category === 'system-admins') {
+      } else if (category === 'system-admin') {
         matchesRole = user.role.toLowerCase() === 'system admin';
       } else if (filters.role) {
         matchesRole = user.role.toLowerCase() === filters.role.toLowerCase();
       }
 
+      // Status filter based on category or selected filter status
       const matchesStatus =
         category === 'for-approvals'
           ? user.status.toLowerCase() === 'pending'
@@ -63,10 +58,15 @@ const UserAccessTable = ({
           ? user.status.toLowerCase() === filters.status.toLowerCase()
           : true;
 
-      const matchesDate = filters.date
-        ? user.dateCreated === filters.date
-        : true;
+      // Date filter (checks if user's dateCreated is within startDate and endDate)
+      const userDate = new Date(user.dateCreated);
+      const startDate = filters.startDate ? new Date(filters.startDate) : null;
+      const endDate = filters.endDate ? new Date(filters.endDate) : null;
+      const matchesDate =
+        (!startDate || userDate >= startDate) &&
+        (!endDate || userDate <= endDate);
 
+      // Search term filter (search all user values)
       const matchesSearch = filters.searchTerm
         ? Object.values(user).some((val) =>
             String(val).toLowerCase().includes(filters.searchTerm.toLowerCase())
