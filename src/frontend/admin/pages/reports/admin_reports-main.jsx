@@ -31,7 +31,7 @@ const AdminReports = () => {
             </div>
 
             <div className="admin-reports-main-tables">
-                <AdminReportsTables />
+                <AdminReportsTables category={category} />
             </div>
 
             <div className="pagination">
