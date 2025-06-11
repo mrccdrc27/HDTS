@@ -1,44 +1,36 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import AdminReportsSearchPrint from "./admin_reports-search-print.jsx";
-import AdminReportsFilters from "./admin_reports-filters.jsx";
 import AdminReportsContents from './admin_reports-content.jsx';
 
-import TablePagination from '../../../shared/components/table-pagination.jsx';
-
 const AdminReports = () => {
-    const { category } = useParams();
+  const { category } = useParams();
 
-    const formatHeading = (category) => {
-      return category
-        .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    };
+  const formatHeading = (category) => {
+    return category
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };    
 
-    return (
-        <div className="admin-reports-main">
-            <div className="admin-reports-main-header">
-                <h2>{formatHeading(category)}</h2>
-            </div>
+  return (
+    <div className="admin-reports-main">
+      <div className="admin-reports-main-header">
+        <h2>{formatHeading(category)}</h2>
+      </div>
 
-            <div className="admin-reports-main-search-print">
-                <AdminReportsSearchPrint />
-            </div>    
+      <div className="admin-reports-main-search-print">
+        <AdminReportsSearchPrint />
+      </div>    
 
-            <div className="admin-reports-main-filters">
-                <AdminReportsFilters category={category} />
-            </div>
-
-            <div className="admin-reports-main-contents">
-                <AdminReportsContents category={category} />  
-            </div>
-
-            <div className="pagination">
-                <TablePagination />
-            </div>
-        </div>
-    );
-}
+      <div className="admin-reports-main-contents">
+        <AdminReportsContents
+          category={category}
+        />  
+      </div>
+    </div>
+  );
+};
 
 export default AdminReports;

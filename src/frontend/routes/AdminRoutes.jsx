@@ -30,7 +30,7 @@ export const AdminRoutes = () => {
         <Route path="account-details/:userId" element={<AdminUserAccountDetails />} />
 
         <Route path="reports/:category" element={<AdminReports />} />
-        <Route path="report-information" element={<AdminReportInformation />} />
+        <Route path="report-information/:category" element={<AdminReportInformation />} />
 
         <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
       </Route>

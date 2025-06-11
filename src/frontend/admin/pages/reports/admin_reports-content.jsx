@@ -32,7 +32,21 @@ const isPeriodDataEmpty = (data) => {
   return false;
 };
 
-const AdminReportsTables = ({ category }) => {
+const isDateInRange = (dateStr, startDate, endDate) => {
+  if (!startDate && !endDate) return true;
+
+  const itemDate = new Date(dateStr);
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
+
+  if (start && end) return itemDate >= start && itemDate <= end;
+  if (start) return itemDate >= start;
+  if (end) return itemDate <= end;
+
+  return true;
+};
+
+const AdminReportsTables = ({ category, startDate, endDate, sortDirection }) => {
   const matchedReport = reports.find((r) => r.link === category);
   if (!matchedReport) return null;
 
@@ -58,10 +72,25 @@ const AdminReportsTables = ({ category }) => {
     <div className="admin-reports-container">
       <div className="report-group">
         {periods.map((periodKey) => {
-          const periodData = reportData?.[periodKey];
+          const rawData = reportData?.[periodKey];
+          let periodData = Array.isArray(rawData)
+            ? rawData.filter((item) =>
+                isDateInRange(item.dateCreated, startDate, endDate)
+              )
+            : rawData;
+
+          // Apply sort direction if data is an array
+          if (Array.isArray(periodData)) {
+            periodData.sort((a, b) => {
+              const dateA = new Date(a.dateCreated);
+              const dateB = new Date(b.dateCreated);
+              return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+          }
+
           const hasData = !isPeriodDataEmpty(periodData);
 
-          const periodLabel = 
+          const periodLabel =
             periodKey === 'today'
               ? 'Today Reports'
               : periodKey === 'week'

@@ -9,7 +9,8 @@ const AdminLayout = () => {
 
   const showBackButton = 
     location.pathname.startsWith('/admin/ticket-details') ||
-    location.pathname.startsWith('/admin/account-details');
+    location.pathname.startsWith('/admin/account-details') ||
+    location.pathname.startsWith('/admin/report-information');
 
   return (
     <div className="admin-layout">

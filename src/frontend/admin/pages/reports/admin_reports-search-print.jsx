@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import './admin_reports-search-print.css';
 
 const AdminReportsSearchPrint = () => {
   const handlePrintClick = () => {
@@ -6,16 +6,8 @@ const AdminReportsSearchPrint = () => {
   };
 
   return (
-    <div className="user-access-search-create-bar">
-      <div className="search-container">
-        <Search className="search-icon" />
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search"
-        />
-      </div>
-      <button className="create-user-button" onClick={handlePrintClick}>
+    <div className="reports-header">
+      <button className="print-report-button" onClick={handlePrintClick}>
         Print Report
       </button>
     </div>
