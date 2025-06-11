@@ -2,59 +2,46 @@
 
 import { getTickets } from '../../storage/ticketStorage';
 
-// Date range checks
-const isToday = (date) => {
+const getWeekIndex = (dateStr) => {
+  const date = new Date(dateStr);
+  const firstDay = new Date(2025, 0, 1);
+  firstDay.setHours(0, 0, 0, 0);
+  const day = firstDay.getDay();
+  if (day !== 0) firstDay.setDate(firstDay.getDate() - day);
+
+  const diff = date - firstDay;
+  return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
+};
+
+const getMonthIndex = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.getFullYear() === 2025 ? date.getMonth() + 1 : null;
+};
+
+const isToday = (dateStr) => {
   const now = new Date();
-  const d = new Date(date);
+  const d = new Date(dateStr);
   return d.toDateString() === now.toDateString();
 };
 
-const isThisWeek = (date) => {
-  const now = new Date();
-  const d = new Date(date);
-  const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
-  startOfWeek.setHours(0, 0, 0, 0);
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
-  endOfWeek.setHours(23, 59, 59, 999);
-  return d >= startOfWeek && d <= endOfWeek;
-};
+const createEmptyReport = () => ({
+  total: 0,
+  byStatus: {},
+  byPriority: {},
+});
 
-const isThisMonth = (date) => {
-  const now = new Date();
-  const d = new Date(date);
-  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-};
+const generateBlock = (tickets) => {
+  const result = createEmptyReport();
 
-// Generate ticket report for a date range
-const generate = (range = 'all') => {
-  const tickets = getTickets();
-
-  const filterByDate = (ticket) => {
-    if (range === 'today') return isToday(ticket.dateCreated);
-    if (range === 'week') return isThisWeek(ticket.dateCreated);
-    if (range === 'month') return isThisMonth(ticket.dateCreated);
-    return true;
-  };
-
-  const result = {
-    total: 0,
-    byStatus: {},
-    byPriority: {},
-  };
-
-  tickets.filter(filterByDate).forEach(ticket => {
+  tickets.forEach((ticket) => {
     result.total += 1;
 
     const status = ticket.status;
     const priority = ticket.priorityLevel;
 
-    // Count by status
     if (!result.byStatus[status]) result.byStatus[status] = 0;
     result.byStatus[status] += 1;
 
-    // Count by priority
     if (!result.byPriority[priority]) result.byPriority[priority] = 0;
     result.byPriority[priority] += 1;
   });
@@ -62,17 +49,37 @@ const generate = (range = 'all') => {
   return result;
 };
 
-// Export structured reports
-export const ticketReports = {
-  today: generate('today'),
-  week: generate('week'),
-  month: generate('month'),
-  all: generate(),
-};
+export const generateTicketReports = () => {
+  const tickets = getTickets();
+  const grouped = { today: [], all: tickets };
 
-// For use in dynamic report viewer
-export const generateTicketReports = () => ({
-  today: ticketReports.today,
-  week: ticketReports.week,
-  month: ticketReports.month,
-});
+  tickets.forEach((ticket) => {
+    if (!ticket.dateCreated) return;
+
+    const dateStr = ticket.dateCreated;
+
+    // Today
+    if (isToday(dateStr)) grouped.today.push(ticket);
+
+    // Weekly
+    const weekIndex = getWeekIndex(dateStr);
+    const weekKey = `week-${weekIndex}`;
+    if (!grouped[weekKey]) grouped[weekKey] = [];
+    grouped[weekKey].push(ticket);
+
+    // Monthly
+    const monthIndex = getMonthIndex(dateStr);
+    if (monthIndex) {
+      const monthKey = `month-${monthIndex}`;
+      if (!grouped[monthKey]) grouped[monthKey] = [];
+      grouped[monthKey].push(ticket);
+    }
+  });
+
+  const summarized = {};
+  Object.keys(grouped).forEach((key) => {
+    summarized[key] = generateBlock(grouped[key]);
+  });
+
+  return summarized;
+};

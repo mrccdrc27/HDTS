@@ -1,6 +1,6 @@
-import './admin_reports-search-print.css';
+import './admin_reports-print.css';
 
-const AdminReportsSearchPrint = () => {
+const AdminReportsPrint = () => {
   const handlePrintClick = () => {
     window.print();
   };
@@ -14,4 +14,4 @@ const AdminReportsSearchPrint = () => {
   );
 };
 
-export default AdminReportsSearchPrint;
+export default AdminReportsPrint;

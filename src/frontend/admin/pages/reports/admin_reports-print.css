@@ -1,0 +1,14 @@
+.print-report-button {
+  padding: 8px 18px;
+  background-color: var(--neutral-dim-gray);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.print-report-button:hover {
+  background-color: var(--neutral-dark-gray);
+}

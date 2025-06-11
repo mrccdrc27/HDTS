@@ -1,33 +1,26 @@
 import { getTickets } from '../../storage/ticketStorage';
 
-// Time filters
+// Utility date checks
 const isToday = (dateStr) => {
   const date = new Date(dateStr);
   const today = new Date();
   return date.toDateString() === today.toDateString();
 };
 
-const isThisWeek = (dateStr) => {
+const getWeekIndex = (dateStr) => {
   const date = new Date(dateStr);
-  const now = new Date();
-  const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-  startOfWeek.setHours(0, 0, 0, 0);
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
-  endOfWeek.setHours(23, 59, 59, 999);
-  return date >= startOfWeek && date <= endOfWeek;
+  const base = new Date(2025, 0, 1); // Jan 1, 2025
+  const diffTime = date - base;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return Math.floor((diffDays + base.getDay()) / 7) + 1;
 };
 
-const isThisMonth = (dateStr) => {
+const getMonthIndex = (dateStr) => {
   const date = new Date(dateStr);
-  const now = new Date();
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth()
-  );
+  return date.getMonth() + 1; // 1-based index
 };
 
-// Creates a summary block for each department
+// Aggregates tickets by department and status
 const generateReportByDepartment = (tickets) => {
   const reports = {};
 
@@ -48,25 +41,38 @@ const generateReportByDepartment = (tickets) => {
   return reports;
 };
 
-// Filters tickets based on time range
-const generateDepartmentReportsForRange = (range = 'all') => {
+export const generateDepartmentReports = () => {
   const tickets = getTickets();
+  const grouped = {
+    today: [],
+  };
 
-  const filteredTickets = tickets.filter(ticket => {
-    if (!ticket.dateCreated) return false;
-    if (range === 'today') return isToday(ticket.dateCreated);
-    if (range === 'week') return isThisWeek(ticket.dateCreated);
-    if (range === 'month') return isThisMonth(ticket.dateCreated);
-    return true;
+  tickets.forEach(ticket => {
+    if (!ticket.dateCreated) return;
+
+    const dateStr = ticket.dateCreated;
+
+    // Today
+    if (isToday(dateStr)) grouped.today.push(ticket);
+
+    // Weekly
+    const weekIndex = getWeekIndex(dateStr);
+    const weekKey = `week-${weekIndex}`;
+    if (!grouped[weekKey]) grouped[weekKey] = [];
+    grouped[weekKey].push(ticket);
+
+    // Monthly
+    const monthIndex = getMonthIndex(dateStr);
+    const monthKey = `month-${monthIndex}`;
+    if (!grouped[monthKey]) grouped[monthKey] = [];
+    grouped[monthKey].push(ticket);
   });
 
-  return generateReportByDepartment(filteredTickets);
-};
+  // Convert arrays to summary reports
+  const summarized = {};
+  Object.keys(grouped).forEach(key => {
+    summarized[key] = generateReportByDepartment(grouped[key]);
+  });
 
-// ✅ Export as a function that returns an object
-export const generateDepartmentReports = () => ({
-  today: generateDepartmentReportsForRange('today'),
-  week: generateDepartmentReportsForRange('week'),
-  month: generateDepartmentReportsForRange('month'),
-  all: generateDepartmentReportsForRange('all'),
-});
+  return summarized;
+};
