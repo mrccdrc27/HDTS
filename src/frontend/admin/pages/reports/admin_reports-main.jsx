@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 
 import AdminReportsSearchPrint from "./admin_reports-search-print.jsx";
 import AdminReportsFilters from "./admin_reports-filters.jsx";
-import AdminReportsTables from "./admin_reports-content.jsx";
+import AdminReportsContents from './admin_reports-content.jsx';
 
 import TablePagination from '../../../shared/components/table-pagination.jsx';
 
@@ -30,8 +30,8 @@ const AdminReports = () => {
                 <AdminReportsFilters category={category} />
             </div>
 
-            <div className="admin-reports-main-tables">
-                <AdminReportsTables category={category} />
+            <div className="admin-reports-main-contents">
+                <AdminReportsContents category={category} />  
             </div>
 
             <div className="pagination">

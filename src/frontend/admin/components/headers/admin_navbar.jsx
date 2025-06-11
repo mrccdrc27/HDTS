@@ -117,7 +117,7 @@
               <div className="dropdown-content">
                 <NavLink to="/admin/user-access/all-users">All Users</NavLink>
                 <NavLink to="/admin/user-access/users">Users</NavLink>
-                <NavLink to="/admin/user-access/ticket-agents">Ticket Agents</NavLink>
+                <NavLink to="/admin/user-access/ticket-coordinators">Ticket Coordinators</NavLink>
                 <NavLink to="/admin/user-access/system-admins">System Admins</NavLink>
                 <NavLink to="/admin/user-access/for-approvals">For Approvals</NavLink>
               </div>

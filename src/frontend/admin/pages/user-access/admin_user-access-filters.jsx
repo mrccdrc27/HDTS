@@ -12,7 +12,7 @@ const DEPARTMENTS = [
 const ROLE_OPTIONS = [
   'All Roles',
   'User',
-  'Ticket Agent',
+  'Ticket Coordinator',
   'System Admin',
 ];
 
@@ -50,7 +50,7 @@ const UserAccessFilters = ({
   const showStatus =
     category === 'all-users' ||
     category === 'users' ||
-    category === 'ticket-agents' ||
+    category === 'ticket-coordinator' ||
     category === 'system-admin' ||
     category !== 'for-approvals';
 

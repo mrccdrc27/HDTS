@@ -1,47 +1,78 @@
 // ticketReports.js
+
 import { getTickets } from '../../storage/ticketStorage';
 
-// Helper to get start of today (00:00 UTC)
-const getTodayStart = () => {
+// Date range checks
+const isToday = (date) => {
   const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const d = new Date(date);
+  return d.toDateString() === now.toDateString();
 };
 
-// Helper to get start of the week (Sunday) for given date (00:00 UTC)
-const getWeekStart = (date) => {
-  const day = date.getUTCDay(); // 0=Sunday
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() - day));
+const isThisWeek = (date) => {
+  const now = new Date();
+  const d = new Date(date);
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay()); // Sunday
+  startOfWeek.setHours(0, 0, 0, 0);
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Saturday
+  endOfWeek.setHours(23, 59, 59, 999);
+  return d >= startOfWeek && d <= endOfWeek;
 };
 
-// Helper to get start of month (1st day) (00:00 UTC)
-const getMonthStart = (date) => {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+const isThisMonth = (date) => {
+  const now = new Date();
+  const d = new Date(date);
+  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
 };
 
-// Get tickets from localStorage via your getter
-const tickets = getTickets();
+// Generate ticket report for a date range
+const generate = (range = 'all') => {
+  const tickets = getTickets();
 
-const todayStart = getTodayStart();
-const tomorrowStart = new Date(todayStart);
-tomorrowStart.setUTCDate(tomorrowStart.getUTCDate() + 1);
+  const filterByDate = (ticket) => {
+    if (range === 'today') return isToday(ticket.dateCreated);
+    if (range === 'week') return isThisWeek(ticket.dateCreated);
+    if (range === 'month') return isThisMonth(ticket.dateCreated);
+    return true;
+  };
 
-const weekStart = getWeekStart(todayStart);
-const monthStart = getMonthStart(todayStart);
+  const result = {
+    total: 0,
+    byStatus: {},
+    byPriority: {},
+  };
 
-// Filter tickets created **today**
-export const todayTickets = tickets.filter(ticket => {
-  const d = new Date(ticket.dateCreated);
-  return d >= todayStart && d < tomorrowStart;
-});
+  tickets.filter(filterByDate).forEach(ticket => {
+    result.total += 1;
 
-// Filter tickets created **this week** (from Sunday start of week to today)
-export const weeklyTickets = tickets.filter(ticket => {
-  const d = new Date(ticket.dateCreated);
-  return d >= weekStart && d < tomorrowStart;
-});
+    const status = ticket.status;
+    const priority = ticket.priorityLevel;
 
-// Filter tickets created **this month** (from first of month to today)
-export const monthlyTickets = tickets.filter(ticket => {
-  const d = new Date(ticket.dateCreated);
-  return d >= monthStart && d < tomorrowStart;
+    // Count by status
+    if (!result.byStatus[status]) result.byStatus[status] = 0;
+    result.byStatus[status] += 1;
+
+    // Count by priority
+    if (!result.byPriority[priority]) result.byPriority[priority] = 0;
+    result.byPriority[priority] += 1;
+  });
+
+  return result;
+};
+
+// Export structured reports
+export const ticketReports = {
+  today: generate('today'),
+  week: generate('week'),
+  month: generate('month'),
+  all: generate(),
+};
+
+// For use in dynamic report viewer
+export const generateTicketReports = () => ({
+  today: ticketReports.today,
+  week: ticketReports.week,
+  month: ticketReports.month,
 });

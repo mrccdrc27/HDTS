@@ -42,9 +42,9 @@ const UserAccessTable = ({
       let matchesRole = true;
       if (category === 'users') {
         matchesRole = user.role.toLowerCase() === 'user';
-      } else if (category === 'ticket-agents') {
-        matchesRole = user.role.toLowerCase() === 'ticket agent';
-      } else if (category === 'system-admin') {
+      } else if (category === 'ticket-coordinators') {
+        matchesRole = user.role.toLowerCase() === 'ticket coordinator';
+      } else if (category === 'system-admins') {
         matchesRole = user.role.toLowerCase() === 'system admin';
       } else if (filters.role) {
         matchesRole = user.role.toLowerCase() === filters.role.toLowerCase();

@@ -1,103 +1,99 @@
 import { NavLink } from 'react-router-dom';
 import './admin_reports-content.css';
-// import { todayTickets } from '../../../../utilities/storage/reports/ticketReports';
+
+import { generateTicketReports } from '../../../../utilities/storage/reports/ticketReports';
+import { generateCoordinatorReports } from '../../../../utilities/storage/reports/coordinatorReports';
+import { generateDepartmentReports } from '../../../../utilities/storage/reports/departmentReports';
+import { generateSLAComplianceReports } from '../../../../utilities/storage/reports/slaReports';
 
 const reports = [
-  {
-    title: "Ticket Reports",
-    description: "View all submitted tickets with status, priority, and SLA info.",
-    link: "ticket-reports"
-  },
-  {
-    title: "Ticket Coordinator Reports",
-    description: "Review ticket coordinator performance and resolution times.",
-    link: "ticket-coordinator-reports"
-  },
-  {
-    title: "Department Report",
-    description: "Summarize ticket volume and metrics by department.",
-    link: "department-reports"
-  },
-  {
-    title: "SLA Compliance Report",
-    description: "Evaluate tickets for SLA compliance across categories.",
-    link: "SLA-compliance-reports"
-  }
+  { title: 'Ticket Reports', link: 'ticket-reports' },
+  { title: 'Ticket Coordinator Reports', link: 'ticket-coordinator-reports' },
+  { title: 'Department Report', link: 'department-reports' },
+  { title: 'SLA Compliance Report', link: 'SLA-compliance-reports' }
 ];
 
+const formatPeriodLabel = (period) => {
+  const now = new Date();
+  const year = now.getFullYear();
+
+  switch (period) {
+    case 'today': return `Today, ${year}`;
+    case 'week': return `This Week, ${year}`;
+    case 'month': return `This Month, ${year}`;
+    default: return `${year}`;
+  }
+};
+
+const isPeriodDataEmpty = (data) => {
+  if (!data) return true;
+  if (Array.isArray(data)) return data.length === 0;
+  if (typeof data === 'object') return Object.keys(data).length === 0;
+  return false;
+};
+
 const AdminReportsTables = ({ category }) => {
-  const filteredReports = reports.filter(report => report.link === category);
+  const matchedReport = reports.find((r) => r.link === category);
+  if (!matchedReport) return null;
 
-  if (filteredReports.length === 0) return null;
-
-  // Get current week number
-  const getCurrentWeek = () => {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 1);
-    const diff = now - start;
-    const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    return Math.ceil(diff / oneWeek);
+  const getReportData = () => {
+    switch (category) {
+      case 'ticket-reports':
+        return generateTicketReports();
+      case 'ticket-coordinator-reports':
+        return generateCoordinatorReports();
+      case 'department-reports':
+        return generateDepartmentReports();
+      case 'SLA-compliance-reports':
+        return generateSLAComplianceReports();
+      default:
+        return null;
+    }
   };
 
-  const currentWeek = getCurrentWeek();
-  const totalWeeks = 52;
+  const reportData = getReportData();
+  const periods = ['today', 'week', 'month'];
 
   return (
     <div className="admin-reports-container">
-      {filteredReports.map((report, index) => (
-        <div key={index} className="report-group">
-          {/* Today Reports Section */}
-          <div className="report-category">
-            <h3 className="category-title">Today Reports</h3>
-            <div className="report-list">
-              <NavLink
-                to={`/admin/report-information/${report.link}?period=today`}
-                className="report-item"
-              >
-                <div className="report-info">
-                  <h4 className="report-name">Today's {report.title}</h4>
-                  <p className="report-desc">{report.description}</p>
-                </div>
-              </NavLink>
-            </div>
-          </div>
+      <div className="report-group">
+        {periods.map((periodKey) => {
+          const periodData = reportData?.[periodKey];
+          const hasData = !isPeriodDataEmpty(periodData);
 
-          {/* Weekly Reports Section */}
-          <div className="report-category">
-            <h3 className="category-title">Weekly Reports</h3>
-            <div className="report-list">
-              <NavLink
-                to={`/admin/report-information/${report.link}?period=week`}
-                className="report-item"
-              >
-                <div className="report-info">
-                  <h4 className="report-name">Week {currentWeek} of {totalWeeks} - {report.title}</h4>
-                  <p className="report-desc">{report.description}</p>
-                </div>
-              </NavLink>
-            </div>
-          </div>
+          const periodLabel = 
+            periodKey === 'today'
+              ? 'Today Reports'
+              : periodKey === 'week'
+              ? 'Weekly Reports'
+              : 'Monthly Reports';
 
-          {/* Monthly Reports Section */}
-          <div className="report-category">
-            <h3 className="category-title">Monthly Reports</h3>
-            <div className="report-list">
-              <NavLink
-                to={`/admin/report-information/${report.link}?period=month`}
-                className="report-item"
-              >
-                <div className="report-info">
-                  <h4 className="report-name">Monthly {report.title}</h4>
-                  <p className="report-desc">{report.description}</p>
-                </div>
-              </NavLink>
-            </div>
-          </div>
+          return (
+            <div key={periodKey} className="report-category">
+              <h3 className="category-title">{periodLabel}</h3>
 
-          {/* Add spacing between different report types */}
-          {index < filteredReports.length - 1 && <div className="report-group-divider"></div>}
-        </div>
-      ))}
+              {hasData ? (
+                <div className="report-list">
+                  <NavLink
+                    to={`/admin/report-information/${matchedReport.link}?period=${periodKey}`}
+                    className="report-item"
+                  >
+                    <div className="report-info">
+                      <h4 className="report-name">
+                        {matchedReport.title} — {formatPeriodLabel(periodKey)}
+                      </h4>
+                    </div>
+                  </NavLink>
+                </div>
+              ) : (
+                <div className="report-empty">
+                  No reports for {formatPeriodLabel(periodKey)}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

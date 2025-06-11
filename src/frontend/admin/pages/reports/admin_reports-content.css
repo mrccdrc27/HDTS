@@ -72,3 +72,20 @@
   background: linear-gradient(to right, transparent, #e5e7eb, transparent);
   margin: 1.5rem 0;
 }
+
+/* ✅ New style for empty data message */
+.report-item.no-data {
+  font-size: 0.95rem;
+  font-style: italic;
+  color: #6b7280;
+  padding: 0.875rem 1rem;
+  background-color: #f9fafb;
+  border-bottom: 1px dashed #e5e7eb;
+  cursor: default;
+}
+
+.report-empty {
+  margin-left: 1rem;
+  color: #777;
+  font-style: italic;
+}

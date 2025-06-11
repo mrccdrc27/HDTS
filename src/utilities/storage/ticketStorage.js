@@ -15,6 +15,25 @@ export const ticketStatuses = [
   'Withdrawn',
 ];
 
+// Active Ticket Coordinators (manually defined)
+export const activeTicketCoordinators = [
+  {
+    id: 'U002',
+    name: 'Leonard Garcia',
+    department: 'Asset Department',
+  },
+  {
+    id: 'U003',
+    name: 'Marianne Velasco',
+    department: 'IT Department',
+  },
+  {
+    id: 'U005',
+    name: 'Carlos Tan',
+    department: 'Budget Department',
+  }
+];
+
 // Sample tickets with createdBy referencing users with role 'User'
 const sampleTickets = [
   {
@@ -30,15 +49,9 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'Need help setting up VPN on my laptop.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-001',
-      name: 'Jane Doe'
-    },
-    createdBy: {
-      userId: 'U001',
-      role: 'User',
-      name: 'Bonjing San Jose'
-    }
+    assignedTo: { id: 'AGT-001', name: 'Jane Doe' },
+    handledBy: { id: 'U003', role: 'Ticket Coordinator', name: 'Kristine Villanueva' },
+    createdBy: { userId: 'U001', role: 'User', name: 'Bonjing San Jose' }
   },
   {
     ticketNumber: 'TCK-002',
@@ -53,15 +66,9 @@ const sampleTickets = [
     fileUploaded: 'monitor-issue.jpg',
     description: 'Office monitor stopped working after a power outage.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-002',
-      name: 'John Smith'
-    },
-    createdBy: {
-      userId: 'U004',
-      role: 'User',
-      name: 'Alyssa Navarro'
-    }
+    assignedTo: { id: 'AGT-002', name: 'John Smith' },
+    handledBy: { id: 'U002', role: 'Ticket Coordinator', name: 'Leonard Garcia' },
+    createdBy: { userId: 'U004', role: 'User', name: 'Alyssa Navarro' }
   },
   {
     ticketNumber: 'TCK-003',
@@ -76,15 +83,9 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'Requesting update to the latest version of MS Teams.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-001',
-      name: 'Jane Doe'
-    },
-    createdBy: {
-      userId: 'U008',
-      role: 'User',
-      name: 'Joshua Tan'
-    }
+    assignedTo: { id: 'AGT-001', name: 'Jane Doe' },
+    handledBy: { id: 'U003', role: 'Ticket Coordinator', name: 'Kristine Villanueva' },
+    createdBy: { userId: 'U008', role: 'User', name: 'Joshua Tan' }
   },
   {
     ticketNumber: 'TCK-004',
@@ -99,20 +100,14 @@ const sampleTickets = [
     fileUploaded: 'cloud-outage-report.pdf',
     description: 'Cloud backups failed last night due to outage.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-003',
-      name: 'Clara Reyes'
-    },
-    createdBy: {
-      userId: 'U001',
-      role: 'User',
-      name: 'Bonjing San Jose'
-    }
+    assignedTo: { id: 'AGT-003', name: 'Clara Reyes' },
+    handledBy: { id: 'U005', role: 'Ticket Coordinator', name: 'Mikaela Santos' },
+    createdBy: { userId: 'U001', role: 'User', name: 'Bonjing San Jose' }
   },
   {
     ticketNumber: 'TCK-005',
     subject: 'Request for training budget',
-    status: 'Pending', // User default; Admin will see 'New'
+    status: 'Pending',
     priorityLevel: 'Medium',
     department: 'Budget Department',
     category: 'Budget Category',
@@ -122,15 +117,9 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'Need approval for AWS cloud certification course.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-003',
-      name: 'Clara Reyes'
-    },
-    createdBy: {
-      userId: 'U014',
-      role: 'User',
-      name: 'Luis Ramos'
-    }
+    assignedTo: { id: 'AGT-003', name: 'Clara Reyes' },
+    handledBy: { id: 'U005', role: 'Ticket Coordinator', name: 'Mikaela Santos' },
+    createdBy: { userId: 'U014', role: 'User', name: 'Luis Ramos' }
   },
   {
     ticketNumber: 'TCK-006',
@@ -145,15 +134,9 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'Request for a second monitor was declined.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-002',
-      name: 'John Smith'
-    },
-    createdBy: {
-      userId: 'U004',
-      role: 'User',
-      name: 'Alyssa Navarro'
-    }
+    assignedTo: { id: 'AGT-002', name: 'John Smith' },
+    handledBy: { id: 'U002', role: 'Ticket Coordinator', name: 'Leonard Garcia' },
+    createdBy: { userId: 'U004', role: 'User', name: 'Alyssa Navarro' }
   },
   {
     ticketNumber: 'TCK-007',
@@ -168,15 +151,9 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'User canceled request for an external keyboard.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-002',
-      name: 'John Smith'
-    },
-    createdBy: {
-      userId: 'U008',
-      role: 'User',
-      name: 'Joshua Tan'
-    }
+    assignedTo: { id: 'AGT-002', name: 'John Smith' },
+    handledBy: { id: 'U002', role: 'Ticket Coordinator', name: 'Leonard Garcia' },
+    createdBy: { userId: 'U008', role: 'User', name: 'Joshua Tan' }
   },
   {
     ticketNumber: 'TCK-008',
@@ -191,15 +168,9 @@ const sampleTickets = [
     fileUploaded: 'renewal-confirmation.pdf',
     description: 'Annual license for Zoom has been renewed.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-003',
-      name: 'Clara Reyes'
-    },
-    createdBy: {
-      userId: 'U001',
-      role: 'User',
-      name: 'Bonjing San Jose'
-    }
+    assignedTo: { id: 'AGT-003', name: 'Clara Reyes' },
+    handledBy: { id: 'U005', role: 'Ticket Coordinator', name: 'Mikaela Santos' },
+    createdBy: { userId: 'U001', role: 'User', name: 'Bonjing San Jose' }
   },
   {
     ticketNumber: 'TCK-009',
@@ -214,19 +185,10 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'Laptop returned after resignation.',
     scheduledRequest: null,
-    assignedTo: {
-      id: 'AGT-002',
-      name: 'John Smith'
-    },
-    createdBy: {
-      userId: 'U014',
-      role: 'User',
-      name: 'Luis Ramos'
-    }
-  },
-  {
-}
-
+    assignedTo: { id: 'AGT-002', name: 'John Smith' },
+    handledBy: { id: 'U002', role: 'Ticket Coordinator', name: 'Leonard Garcia' },
+    createdBy: { userId: 'U014', role: 'User', name: 'Luis Ramos' }
+  }
 ];
 
 export const getTickets = () => {
