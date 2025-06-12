@@ -40,12 +40,12 @@ const sampleTickets = [
     ticketNumber: 'TCK-001',
     subject: 'VPN setup request',
     status: 'Submitted', 
-    priorityLevel: 'Medium',
-    department: 'IT Department',
+    priorityLevel: null,
+    department: null,
     category: 'IT Category',
     subCategory: 'Technical Support & Troubleshooting',
     dateCreated: '2025-06-08T08:00:00Z',
-    lastUpdated: '2025-06-08T08:00:00Z',
+    lastUpdated: null,
     fileUploaded: null,
     description: 'Need help setting up VPN on my laptop.',
     scheduledRequest: null,
@@ -108,12 +108,12 @@ const sampleTickets = [
     ticketNumber: 'TCK-005',
     subject: 'Request for training budget',
     status: 'Pending',
-    priorityLevel: 'Medium',
-    department: 'Budget Department',
+    priorityLevel: null,
+    department: null,
     category: 'Budget Category',
     subCategory: 'Training & Certifications',
     dateCreated: '2025-05-29T12:45:00Z',
-    lastUpdated: '2025-05-31T09:00:00Z',
+    lastUpdated: null,
     fileUploaded: null,
     description: 'Need approval for AWS cloud certification course.',
     scheduledRequest: null,
@@ -190,6 +190,50 @@ const sampleTickets = [
     createdBy: { userId: 'U014', role: 'User', name: 'Luis Ramos' }
   }
 ];
+
+export const generateTicketNumber = () => {
+  const tickets = getTickets();
+  const numbers = tickets
+    .map(ticket => parseInt(ticket.ticketNumber.replace('TCK-', ''), 10))
+    .filter(num => !isNaN(num));
+  const maxNumber = numbers.length ? Math.max(...numbers) : 0;
+  const nextNumber = maxNumber + 1;
+  return `TCK-${String(nextNumber).padStart(3, '0')}`;
+};
+
+// Add a ticket with partial data (user-created)
+export const addNewUserTicket = ({
+  subject,
+  category,
+  subCategory,
+  description,
+  scheduledRequest = null,
+  fileUploaded = null,
+  createdBy, // required: { userId, name, role }
+}) => {
+  const newTicket = {
+    ticketNumber: generateTicketNumber(),
+    subject,
+    category,
+    subCategory,
+    description,
+    scheduledRequest,
+    fileUploaded,
+    status: 'Submitted',
+    priorityLevel: null,
+    department: createdBy?.department || 'Unknown',
+    dateCreated: new Date().toISOString(),
+    lastUpdated: null,
+    assignedTo: null,
+    handledBy: null,
+    createdBy,
+  };
+
+  const tickets = getTickets();
+  tickets.push(newTicket);
+  saveTickets(tickets);
+  return newTicket;
+};
 
 export const getTickets = () => {
   const data = localStorage.getItem(TICKET_STORAGE_KEY);

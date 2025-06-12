@@ -1,8 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+import AdminOpenTicket from '../../components/modals/ticket-management/admin_ticket-management-open-ticket.jsx';
+import AdminRejectTicket from '../../components/modals/ticket-management/admin_ticket-management-reject-ticket.jsx';
+import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 import './admin_ticket-management-table.css';
-import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 const statusClassMap = {
   all: 'ticket-management-status-all',
@@ -39,10 +43,8 @@ const formatDateTime = (value) => {
       });
 };
 
-// NEW helper to normalize strings
 const normalize = (str) => (typeof str === 'string' ? str.trim().toLowerCase() : '');
 
-// NEW helper to map Submitted → New for display
 const getDisplayStatus = (status) => {
   if (normalize(status) === 'submitted') return 'New';
   return status;
@@ -55,8 +57,8 @@ const TicketManagementTable = ({
   subcategoryFilter = '',
   statusFilter = '',
   priorityFilter = '',
-  startDate = '',   // <-- Add here
-  endDate = '',     // <-- Add here
+  startDate = '',
+  endDate = '',
   sortBy = '',
   sortDirection = 'asc',
   currentPage = 1,
@@ -68,8 +70,15 @@ const TicketManagementTable = ({
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
 
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [ticketToReject, setTicketToReject] = useState(null);
+
+  const [showOpenModal, setShowOpenModal] = useState(false);
+  const [ticketToOpen, setTicketToOpen] = useState(null);
+
   useEffect(() => {
     const storedTickets = getTickets() || [];
+    console.log('Initial tickets loaded:', storedTickets); // Debug log
     setTickets(storedTickets);
   }, []);
 
@@ -77,7 +86,9 @@ const TicketManagementTable = ({
     let filtered = tickets;
 
     if (statusFilter && normalize(statusFilter) !== 'all') {
-      filtered = filtered.filter((t) => normalize(getDisplayStatus(t.status)) === normalize(statusFilter));
+      filtered = filtered.filter(
+        (t) => normalize(getDisplayStatus(t.status)) === normalize(statusFilter)
+      );
     }
 
     if (departmentFilter) {
@@ -89,23 +100,28 @@ const TicketManagementTable = ({
     }
 
     if (subcategoryFilter) {
-      filtered = filtered.filter((t) => normalize(t.subCategory) === normalize(subcategoryFilter));
+      filtered = filtered.filter(
+        (t) => normalize(t.subCategory) === normalize(subcategoryFilter)
+      );
     }
 
     if (priorityFilter) {
-      filtered = filtered.filter((t) => normalize(t.priorityLevel) === normalize(priorityFilter));
+      filtered = filtered.filter(
+        (t) => normalize(t.priorityLevel) === normalize(priorityFilter)
+      );
     }
 
     if (startDate) {
       const start = new Date(startDate).setHours(0, 0, 0, 0);
-      filtered = filtered.filter(t => {
+      filtered = filtered.filter((t) => {
         const ticketDate = new Date(t.dateCreated).getTime();
         return !isNaN(ticketDate) && ticketDate >= start;
       });
     }
+
     if (endDate) {
       const end = new Date(endDate).setHours(23, 59, 59, 999);
-      filtered = filtered.filter(t => {
+      filtered = filtered.filter((t) => {
         const ticketDate = new Date(t.dateCreated).getTime();
         return !isNaN(ticketDate) && ticketDate <= end;
       });
@@ -120,6 +136,7 @@ const TicketManagementTable = ({
       );
     }
 
+    console.log('Filtered tickets:', filtered); // Debug log
     setFilteredTickets(filtered);
   }, [
     tickets,
@@ -128,7 +145,7 @@ const TicketManagementTable = ({
     categoryFilter,
     subcategoryFilter,
     priorityFilter,
-    startDate,    // <-- ADD these dependencies!
+    startDate,
     endDate,
     searchTerm,
   ]);
@@ -166,30 +183,29 @@ const TicketManagementTable = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleClose = (e, ticketNumber) => {
-    e.stopPropagation();
-    if (onStatusUpdate) onStatusUpdate(ticketNumber, 'Closed');
-  };
-
-  const handleReject = (e, ticketNumber) => {
-    e.stopPropagation();
-    if (onStatusUpdate) onStatusUpdate(ticketNumber, 'Rejected');
-  };
-
   const getStatusClass = (status) =>
     statusClassMap[normalize(status)] || 'ticket-management-status-unknown';
 
   const getPriorityClass = (priority) =>
     priorityClassMap[normalize(priority)] || 'ticket-management-priority-low';
 
+  const handleReject = (e, ticketNumber) => {
+    e.stopPropagation();
+    console.log('Attempting to reject ticket:', ticketNumber); // Debug log
+    setTicketToReject(ticketNumber);
+    setShowRejectModal(true);
+  };
+
+  const handleOpen = (e, ticketNumber) => {
+    e.stopPropagation();
+    setTicketToOpen(ticketNumber);
+    setShowOpenModal(true);
+  };
+
   return (
     <div className="ticket-management-container">
       <div className="ticket-management-table-wrapper">
-        <table
-          className="ticket-management-table"
-          role="grid"
-          aria-label="Ticket Management Table"
-        >
+        <table className="ticket-management-table" role="grid" aria-label="Ticket Management Table">
           <thead>
             <tr>
               <th>Ticket Number</th>
@@ -209,86 +225,128 @@ const TicketManagementTable = ({
           <tbody>
             {paginatedTickets.length === 0 ? (
               <tr className="ticket-management-no-tickets-row">
-                <td colSpan="11">No tickets found.</td>
+                <td colSpan="12">No tickets found.</td>
               </tr>
             ) : (
               paginatedTickets
-                .filter((ticket) => ticket && ticket.ticketNumber) // prevent ghost rows
+                .filter((ticket) => ticket && ticket.ticketNumber)
                 .map((ticket) => {
-                const displayStatus = getDisplayStatus(ticket.status);
-                const normalizedDisplayStatus = normalize(displayStatus);
+                  const displayStatus = getDisplayStatus(ticket.status);
+                  const normalizedDisplayStatus = normalize(displayStatus);
 
-                return (
-                  <tr
-                    key={ticket.ticketNumber}
-                    className="ticket-management-row"
-                    onClick={() => navigate(`/admin/ticket-details/${ticket.ticketNumber}`)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <td className="ticket-management-ticket-number-cell">
-                      {ticket.ticketNumber || '—'}
-                    </td>
-                    <td className="ticket-management-subject-cell">{ticket.subject || '—'}</td>
-                    <td className="ticket-management-created-by-cell">
-                      {ticket.createdBy?.name || '—'}
-                    </td>
-                    <td>
-                      <span
-                        className={`ticket-management-status-badge ${getStatusClass(
-                          displayStatus
-                        )}`}
-                      >
-                        {displayStatus}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`ticket-management-priority-badge ${getPriorityClass(
-                          ticket.priorityLevel
-                        )}`}
-                      >
-                        {ticket.priorityLevel || '—'}
-                      </span>
-                    </td>
-                    <td>{ticket.department || '—'}</td>
-                    <td>{ticket.category || '—'}</td>
-                    <td>{ticket.subCategory || '—'}</td>
-                    <td>
-                      {ticket.scheduledRequest
-                        ? formatDateTime(ticket.scheduledRequest)
-                        : 'None'}
-                    </td>
-                    <td>{formatDateTime(ticket.dateCreated)}</td>
-                    <td>{formatDateTime(ticket.lastUpdated)}</td>
-                    <td>
-                      <div className="ticket-management-action-buttons">
-                        {['new', 'pending'].includes(normalizedDisplayStatus) && (
-                          <>
-                            <button
-                              className="ticket-management-action-btn ticket-management-close-btn"
-                              onClick={(e) => handleClose(e, ticket.ticketNumber)}
-                              title="Close Ticket"
-                            >
-                              Close
-                            </button>
-                            <button
-                              className="ticket-management-action-btn ticket-management-reject-btn"
-                              onClick={(e) => handleReject(e, ticket.ticketNumber)}
-                              title="Reject Ticket"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
+                  console.log(`Rendering ticket ${ticket.ticketNumber} with status: ${displayStatus} (normalized: ${normalizedDisplayStatus})`); // Debug log
+
+                  return (
+                    <tr
+                      key={ticket.ticketNumber}
+                      className="ticket-management-row"
+                      onClick={() => navigate(`/admin/ticket-details/${ticket.ticketNumber}`)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <td>{ticket.ticketNumber || '—'}</td>
+                      <td>{ticket.subject || '—'}</td>
+                      <td>{ticket.createdBy?.name || '—'}</td>
+                      <td>
+                        <span
+                          className={`ticket-management-status-badge ${getStatusClass(
+                            displayStatus
+                          )}`}
+                        >
+                          {displayStatus}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`ticket-management-priority-badge ${getPriorityClass(
+                            ticket.priorityLevel
+                          )}`}
+                        >
+                          {ticket.priorityLevel || '—'}
+                        </span>
+                      </td>
+                      <td>{ticket.department || '—'}</td>
+                      <td>{ticket.category || '—'}</td>
+                      <td>{ticket.subCategory || '—'}</td>
+                      <td>
+                        {ticket.scheduledRequest
+                          ? formatDateTime(ticket.scheduledRequest)
+                          : 'None'}
+                      </td>
+                      <td>{formatDateTime(ticket.dateCreated)}</td>
+                      <td>{formatDateTime(ticket.lastUpdated)}</td>
+                      <td>
+                        <div className="ticket-management-action-buttons">
+                          {['new', 'pending'].includes(normalizedDisplayStatus) && (
+                            <>
+                              <button
+                                className="ticket-management-action-btn ticket-management-open-btn"
+                                onClick={(e) => handleOpen(e, ticket.ticketNumber)}
+                                title="Open Ticket"
+                              >
+                                Open
+                              </button>
+                              <button
+                                className="ticket-management-action-btn ticket-management-reject-btn"
+                                onClick={(e) => handleReject(e, ticket.ticketNumber)}
+                                title="Reject Ticket"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
             )}
           </tbody>
         </table>
       </div>
+
+      {showRejectModal && (
+        <AdminRejectTicket
+          onClose={() => setShowRejectModal(false)}
+          ticketNumber={ticketToReject}
+          onRejectConfirmed={(success) => {
+            setShowRejectModal(false);
+            if (success) {
+              toast.success('Ticket rejected.');
+              const updatedTickets = tickets.map((t) =>
+                t.ticketNumber === ticketToReject 
+                  ? { ...t, status: 'Rejected', lastUpdated: new Date().toISOString() } 
+                  : t
+              );
+              setTickets(updatedTickets);
+              localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+              if (onStatusUpdate) onStatusUpdate(ticketToReject, 'Rejected');
+            } else {
+              toast.error('Failed to reject ticket.');
+            }
+          }}
+        />
+      )}
+
+      {showOpenModal && (
+        <AdminOpenTicket
+          onClose={() => setShowOpenModal(false)}
+          ticketNumber={ticketToOpen}
+          onOpenConfirmed={(success) => {
+            setShowOpenModal(false);
+            if (success) {
+              toast.success('Ticket opened.');
+              const updatedTickets = tickets.map((t) =>
+                t.ticketNumber === ticketToOpen ? { ...t, status: 'Open', lastUpdated: new Date().toISOString() } : t
+              );
+              setTickets(updatedTickets);
+              localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+              if (onStatusUpdate) onStatusUpdate(ticketToOpen, 'Open');
+            } else {
+              toast.error('Failed to open ticket.');
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

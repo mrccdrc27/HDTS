@@ -4,14 +4,12 @@ export const departmentOptions = [
   'Budget Department'
 ];
 
-// Categories no longer tied to department, just an array
 export const categoryOptions = [
   'IT Category',
   'Asset Category',
   'Budget Category'
 ];
 
-// Subcategories linked only to category (keys match categoryOptions values)
 export const subCategoryOptions = {
   'IT Category': [
     'IT Infrastructure Management',
