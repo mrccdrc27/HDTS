@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import './admin_user-access-tables.css';
 
-import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
-import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
+import AdminApproveUser from '../../components/modals/user-access/admin_user-access-approve-user';
+import AdminRejectUser from '../../components/modals/user-access/admin_user-access-reject-user';
+import AdminUpdateUser from '../../components/modals/user-access/admin_user-access-update-user';
 
 const UserAccessTable = ({
   category,
@@ -25,20 +27,40 @@ const UserAccessTable = ({
     setSelectedUser(user);
   };
 
-  const closeModal = () => {
+  const closeModal = (success = false) => {
+    if (selectedUser) {
+      const userName = `${selectedUser.firstName} ${selectedUser.lastName}`;
+      const actionMap = {
+        approve: {
+          success: `Approved user: ${userName}`,
+          error: `Failed to approve user: ${userName}`
+        },
+        reject: {
+          success: `Rejected user: ${userName}`,
+          error: `Failed to reject user: ${userName}`
+        },
+        update: {
+          success: `Updated user: ${userName}`,
+          error: `Failed to update user: ${userName}`
+        }
+      };
+
+      if (success) {
+        toast.success(actionMap[modalType].success);
+      } else {
+        toast.error(actionMap[modalType].error);
+      }
+    }
     setModalType(null);
     setSelectedUser(null);
   };
 
-  // Filter users based on filters and category
   const filteredData = useMemo(() => {
     return users.filter((user) => {
-      // Department filter (case-insensitive substring match)
       const matchesDepartment = filters.department
         ? user.department.toLowerCase().includes(filters.department.toLowerCase())
         : true;
 
-      // Role filter based on category or selected filter role
       let matchesRole = true;
       if (category === 'users') {
         matchesRole = user.role.toLowerCase() === 'user';
@@ -50,7 +72,6 @@ const UserAccessTable = ({
         matchesRole = user.role.toLowerCase() === filters.role.toLowerCase();
       }
 
-      // Status filter based on category or selected filter status
       const matchesStatus =
         category === 'for-approvals'
           ? user.status.toLowerCase() === 'pending'
@@ -58,7 +79,6 @@ const UserAccessTable = ({
           ? user.status.toLowerCase() === filters.status.toLowerCase()
           : true;
 
-      // Date filter (checks if user's dateCreated is within startDate and endDate)
       const userDate = new Date(user.dateCreated);
       const startDate = filters.startDate ? new Date(filters.startDate) : null;
       const endDate = filters.endDate ? new Date(filters.endDate) : null;
@@ -66,7 +86,6 @@ const UserAccessTable = ({
         (!startDate || userDate >= startDate) &&
         (!endDate || userDate <= endDate);
 
-      // Search term filter (search all user values)
       const matchesSearch = filters.searchTerm
         ? Object.values(user).some((val) =>
             String(val).toLowerCase().includes(filters.searchTerm.toLowerCase())
@@ -83,12 +102,10 @@ const UserAccessTable = ({
     });
   }, [filters, category, users]);
 
-  // Update total items for pagination
   useMemo(() => {
     onTotalItemsChange(filteredData.length);
   }, [filteredData, onTotalItemsChange]);
 
-  // Sort filtered data
   const sortedData = useMemo(() => {
     if (!sortBy) return filteredData;
 
@@ -106,7 +123,6 @@ const UserAccessTable = ({
     });
   }, [filteredData, sortBy, sortDirection]);
 
-  // Paginate sorted data
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return sortedData.slice(startIndex, startIndex + itemsPerPage);
@@ -137,86 +153,108 @@ const UserAccessTable = ({
 
   return (
     <div className="user-access-table">
-      <table className="user-access-table-element">
-        <thead>
-          <tr>
-            {columns.map(({ label, key }) => (
-              <th
-                key={key}
-                className="user-access-th"
-                onClick={() => handleSort(key)}
-                style={{ cursor: 'pointer' }}
-              >
-                {label}
-                {sortBy === key && (
-                  <span className="sort-indicator">
-                    {sortDirection === 'asc' ? ' ▲' : ' ▼'}
-                  </span>
-                )}
-              </th>
-            ))}
-            <th className="user-access-th">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.length === 0 ? (
+      <div className="user-access-table-scroll">
+        <table className="user-access-table-element">
+          <thead>
             <tr>
-              <td colSpan={columns.length + 1} className="user-access-no-results">
-                No users match the filter.
-              </td>
-            </tr>
-          ) : (
-            paginatedData.map((user) => (
-              <tr
-                key={user.id}
-                className="user-access-row clickable"
-                onClick={() => navigate(`/admin/account-details/${user.id}`)}
-              >
-                <td>{user.companyId}</td>
-                <td>{user.lastName}</td>
-                <td>{user.firstName}</td>
-                <td>{user.middleName || '-'}</td>
-                <td>{user.suffix || '-'}</td>
-                <td>{user.department}</td>
-                <td>{user.role}</td>
-                <td>
-                  <span className={`user-access-status ${user.status.toLowerCase()}`}>
-                    {user.status}
-                  </span>
-                </td>
-                <td>{user.dateCreated}</td>
-                <td
-                  className="user-access-actions"
-                  onClick={(e) => e.stopPropagation()}
+              {columns.map(({ label, key }) => (
+                <th
+                  key={key}
+                  className="user-access-th"
+                  onClick={() => handleSort(key)}
+                  style={{ cursor: 'pointer' }}
                 >
-                  {user.status === 'Pending' ? (
-                    <button
-                      className="user-access-review-btn"
-                      onClick={() => openModal('review', user)}
-                    >
-                      Review
-                    </button>
-                  ) : (
-                    <button
-                      className="user-access-update-btn"
-                      onClick={() => openModal('update', user)}
-                    >
-                      Update
-                    </button>
+                  {label}
+                  {sortBy === key && (
+                    <span className="sort-indicator">
+                      {sortDirection === 'asc' ? ' ▲' : ' ▼'}
+                    </span>
                   )}
+                </th>
+              ))}
+              <th className="user-access-th">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + 1} className="user-access-no-results">
+                  No users match the filter.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              paginatedData.map((user) => (
+                <tr
+                  key={user.id}
+                  className="user-access-row clickable"
+                  onClick={() => navigate(`/admin/account-details/${user.id}`)}
+                >
+                  <td>{user.companyId}</td>
+                  <td>{user.lastName}</td>
+                  <td>{user.firstName}</td>
+                  <td>{user.middleName || '-'}</td>
+                  <td>{user.suffix || '-'}</td>
+                  <td>{user.department}</td>
+                  <td>{user.role}</td>
+                  <td>
+                    <span className={`user-access-status ${user.status.toLowerCase()}`}>
+                      {user.status}
+                    </span>
+                  </td>
+                  <td>{user.dateCreated}</td>
+                  <td
+                    className="user-access-actions"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {user.status === 'Pending' ? (
+                      <>
+                        <button
+                          className="user-access-approve-btn"
+                          onClick={() => openModal('approve', user)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          className="user-access-reject-btn"
+                          onClick={() => openModal('reject', user)}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="user-access-update-btn"
+                        onClick={() => openModal('update', user)}
+                      >
+                        Update
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
 
-      {modalType === 'review' && selectedUser && (
-        <AdminUserAccessReviewUser user={selectedUser} onClose={closeModal} />
-      )}
-      {modalType === 'update' && selectedUser && (
-        <UpdateModal user={selectedUser} onClose={closeModal} />
-      )}
+        {modalType === 'update' && selectedUser && (
+          <AdminUpdateUser
+            user={selectedUser}
+            onClose={closeModal}
+          />
+        )}
+        {modalType === 'approve' && selectedUser && (
+          <AdminApproveUser
+            user={selectedUser}
+            onClose={closeModal}
+          />
+        )}
+        {modalType === 'reject' && selectedUser && (
+          <AdminRejectUser
+            user={selectedUser}
+            onClose={closeModal}
+          />
+        )}
+      </div>
     </div>
   );
 };

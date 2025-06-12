@@ -189,6 +189,12 @@ const TicketManagementTable = ({
   const getPriorityClass = (priority) =>
     priorityClassMap[normalize(priority)] || 'ticket-management-priority-low';
 
+  const handleOpen = (e, ticketNumber) => {
+    e.stopPropagation();
+    setTicketToOpen(ticketNumber);
+    setShowOpenModal(true);
+  };
+
   const handleReject = (e, ticketNumber) => {
     e.stopPropagation();
     console.log('Attempting to reject ticket:', ticketNumber); // Debug log
@@ -196,10 +202,38 @@ const TicketManagementTable = ({
     setShowRejectModal(true);
   };
 
-  const handleOpen = (e, ticketNumber) => {
-    e.stopPropagation();
-    setTicketToOpen(ticketNumber);
-    setShowOpenModal(true);
+  const handleOpenConfirmed = (success) => {
+    setShowOpenModal(false);
+    if (success) {
+      const updatedTickets = tickets.map((t) =>
+        t.ticketNumber === ticketToOpen 
+          ? { ...t, status: 'Open', lastUpdated: new Date().toISOString() } 
+          : t
+      );
+      setTickets(updatedTickets);
+      localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+      if (onStatusUpdate) onStatusUpdate(ticketToOpen, 'Open');
+      toast.success('Ticket opened successfully.');
+    } else {
+      toast.error('Failed to open ticket.');
+    }
+  };
+
+  const handleRejectConfirmed = (success) => {
+    setShowRejectModal(false);
+    if (success) {
+      const updatedTickets = tickets.map((t) =>
+        t.ticketNumber === ticketToReject
+          ? { ...t, status: 'Rejected', lastUpdated: new Date().toISOString() }
+          : t
+      );
+      setTickets(updatedTickets);
+      localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+      if (onStatusUpdate) onStatusUpdate(ticketToReject, 'Rejected');
+      toast.success('Ticket rejected successfully.');
+    } else {
+      toast.error('Failed to reject ticket.');
+    }
   };
 
   return (
@@ -304,47 +338,19 @@ const TicketManagementTable = ({
         </table>
       </div>
 
-      {showRejectModal && (
-        <AdminRejectTicket
-          onClose={() => setShowRejectModal(false)}
-          ticketNumber={ticketToReject}
-          onRejectConfirmed={(success) => {
-            setShowRejectModal(false);
-            if (success) {
-              toast.success('Ticket rejected.');
-              const updatedTickets = tickets.map((t) =>
-                t.ticketNumber === ticketToReject 
-                  ? { ...t, status: 'Rejected', lastUpdated: new Date().toISOString() } 
-                  : t
-              );
-              setTickets(updatedTickets);
-              localStorage.setItem('tickets', JSON.stringify(updatedTickets));
-              if (onStatusUpdate) onStatusUpdate(ticketToReject, 'Rejected');
-            } else {
-              toast.error('Failed to reject ticket.');
-            }
-          }}
-        />
-      )}
-
       {showOpenModal && (
         <AdminOpenTicket
           onClose={() => setShowOpenModal(false)}
           ticketNumber={ticketToOpen}
-          onOpenConfirmed={(success) => {
-            setShowOpenModal(false);
-            if (success) {
-              toast.success('Ticket opened.');
-              const updatedTickets = tickets.map((t) =>
-                t.ticketNumber === ticketToOpen ? { ...t, status: 'Open', lastUpdated: new Date().toISOString() } : t
-              );
-              setTickets(updatedTickets);
-              localStorage.setItem('tickets', JSON.stringify(updatedTickets));
-              if (onStatusUpdate) onStatusUpdate(ticketToOpen, 'Open');
-            } else {
-              toast.error('Failed to open ticket.');
-            }
-          }}
+          onOpenConfirmed={handleOpenConfirmed}
+        />
+      )}
+
+      {showRejectModal && (
+        <AdminRejectTicket
+          onClose={() => setShowRejectModal(false)}
+          ticketNumber={ticketToReject}
+          onRejectConfirmed={handleRejectConfirmed}
         />
       )}
     </div>

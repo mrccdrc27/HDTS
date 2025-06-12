@@ -1,6 +1,6 @@
-/* approve-modal.css */
+/* admin_user-access-approve-user.css */
 
-.modal-backdrop {
+.user-access-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,39 +13,50 @@
   z-index: 1000;
 }
 
-.modal-content {
+.user-access-modal {
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  text-align: center;
   animation: fadeIn 0.2s ease-out;
+  text-align: center;
 }
 
-.modal-content h2 {
-  margin-bottom: 1rem;
+.user-access-modal h2 {
   font-size: 1.5rem;
-  color: #111;
+  color: #111827;
+  margin-bottom: 1rem;
 }
 
-.modal-content p {
-  font-size: 1rem;
+.user-access-modal p {
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.user-info-summary {
+  list-style: none;
+  padding: 0;
   margin-bottom: 1.5rem;
-  color: #333;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.user-info-summary li {
+  margin-bottom: 0.5rem;
 }
 
 .modal-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 1rem;
 }
 
-.confirm-btn,
+.approve-btn,
 .cancel-btn {
-  flex: 1;
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
@@ -53,18 +64,18 @@
   transition: background 0.2s ease;
 }
 
-.confirm-btn {
-  background-color: #22c55e;
+.approve-btn {
+  background-color: #10b981; /* green-500 */
   color: white;
 }
 
-.confirm-btn:hover {
-  background-color: #16a34a;
+.approve-btn:hover {
+  background-color: #059669; /* green-600 */
 }
 
 .cancel-btn {
   background-color: #e5e7eb;
-  color: #111;
+  color: #111827;
 }
 
 .cancel-btn:hover {

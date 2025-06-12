@@ -1,5 +1,4 @@
 .user-access-table {
-  font-family: 'Poppins', sans-serif;
   font-size: 12px;
   background: var(--background-color, #fff);
   border-radius: 8px;
@@ -7,15 +6,23 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* NEW: Scroll container for horizontal scroll */
+.user-access-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Ensures table doesn’t shrink too much */
 .user-access-table-element {
   width: 100%;
+  min-width: 900px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: center;
 }
 
 .user-access-table-element thead {
-  background: linear-gradient(135deg, #b22222, #8b0000);
+  background: var(--red-dark);
 }
 
 .user-access-th,
@@ -26,7 +33,7 @@
 
 .user-access-th {
   font-weight: 600;
-  color: var(--text-secondary, #f0f0f0);
+  color: var(--text-secondary);
   user-select: none;
   cursor: default;
   letter-spacing: 0.4px;
@@ -40,18 +47,17 @@
 }
 
 .user-access-row {
-  background: var(--background-color, #fff);
+  background: var(--background-color);
   transition: background-color 0.2s;
   cursor: pointer;
 }
 .user-access-row:hover {
-  background-color: #f8fafc;
+  background-color: var(--neutral-light-gray);
 }
 .user-access-table-element tbody tr:not(:last-child) td {
   border-bottom: 1px solid var(--neutral-light-gray, #e0e0e0);
 }
 
-/* Status */
 .user-access-status {
   display: inline-flex;
   align-items: center;
@@ -66,28 +72,24 @@
   white-space: nowrap;
 }
 .user-access-status.pending {
-  background: var(--warning-light, #fff3cd);
-  color: var(--warning-dark, #856404);
+  background: var(--warning-light);
+  color: var(--warning-dark);
 }
 .user-access-status.active {
-  background: var(--success-light, #d1fae5);
-  color: var(--success-dark, #157347);
+  background: var(--success-light);
+  color: var(--success-dark);
 }
 .user-access-status.inactive {
-  background: var(--neutral-light-gray, #e0e0e0);
-  color: var(--neutral-dark-gray, #666);
+  background: var(--neutral-light-gray);
+  color: var(--neutral-dark-gray);
 }
 .user-access-status.approved {
-  background: var(--success-bg, #e6ffed);
-  color: var(--success-dark, #2e7d32);
+  background: var(--success-bg);
+  color: var(--success-dark);
 }
 .user-access-status.rejected {
-  background: var(--danger-light, #fdecea);
-  color: var(--danger-dark, #b00020);
-}
-.user-access-status.archived {
-  background: var(--neutral-light, #f5f5f5);
-  color: var(--neutral-medium, #999);
+  background: var(--danger-light);
+  color: var(--danger-dark);
 }
 
 /* Actions */
@@ -98,64 +100,57 @@
   flex-wrap: wrap;
 }
 
-.user-access-view-btn,
-.user-access-update-btn,
-.user-access-review-btn {
+.user-access-approve-btn,
+.user-access-reject-btn,
+.user-access-update-btn {
   padding: 5px 10px;
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   border: none;
-  font-family: 'Poppins', sans-serif;
   transition: background-color 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
 }
 
-.user-access-view-btn {
-  background: var(--blue-light, #0d6efd);
-  color: var(--text-secondary, #fff);
+.user-access-approve-btn {
+  background: var(--success-light);
+  color: var(--text-secondary);
 }
-.user-access-view-btn:hover,
-.user-access-view-btn:focus {
-  background: var(--blue-dark, #0b5ed7);
+.user-access-approve-btn:hover,
+.user-access-approve-btn:focus {
+  background: var(--success);
+  color: var(--text-secondary);
+  transform: scale(1.05);
+}
+
+.user-access-reject-btn {
+  background: var(--error);
+  color: var(--text-secondary);
+}
+.user-access-reject-btn:hover,
+.user-access-reject-btn:focus {
+  background: var(--error-dark);
+  color: var(--text-secondary);
   transform: scale(1.05);
 }
 
 .user-access-update-btn {
-  background: var(--neutral-light-gray, #e0e0e0);
-  color: var(--neutral-dark-gray, #555);
+  background: var(--neutral-dim-gray);
+  color: var(--text-secondary);
 }
 .user-access-update-btn:hover,
 .user-access-update-btn:focus {
-  background: var(--neutral-dark-gray, #bbb);
-  color: var(--text-secondary, #fff);
+  background: var(--neutral-dark-gray);
+  color: var(--text-secondary);
   transform: scale(1.05);
-}
-
-.user-access-review-btn {
-  background: var(--warning);
-  color: var(--text-secondary, #fff);
-}
-.user-access-review-btn:hover,
-.user-access-review-btn:focus {
-  background: var(--warning-dark);
-  transform: scale(1.05);
-}
-
-/* No results */
-.user-access-no-results {
-  text-align: center;
-  padding: 40px 16px;
-  color: var(--neutral-dim-gray, #888);
-  font-size: 14px;
-  font-weight: 600;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .user-access-table {
     font-size: 11px;
+    margin-top: 16px; /* NEW: adds spacing above on small screens */
   }
   .user-access-th,
   .user-access-row td {
@@ -169,9 +164,9 @@
     flex-direction: column;
     gap: 4px;
   }
-  .user-access-view-btn,
-  .user-access-update-btn,
-  .user-access-review-btn {
+  .user-access-approve-btn,
+  .user-access-reject-btn,
+  .user-access-update-btn {
     font-size: 10px;
     padding: 4px 6px;
   }
