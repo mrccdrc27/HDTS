@@ -1,15 +1,17 @@
 import UserNavbar from '../../components/headers/user_navbar.jsx';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './user_layout.css';
 
 const UserLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Show back button only on specific routes
   const showBackButton =
     location.pathname.startsWith('/user/ticket-details') ||
+    location.pathname === '/user/frequently-asked-questions' ||
     location.pathname === '/user/request-ticket';
 
   return (
@@ -29,6 +31,8 @@ const UserLayout = () => {
         )}
         <Outlet />
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

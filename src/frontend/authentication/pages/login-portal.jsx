@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import LoginHeader from '../components/headers/login-header.jsx';
+import LoginHeader from '../components/headers/login-header';
 import LoginPortalImage from '/src/frontend/authentication/assets/login-portal/login-portal.png';
 
 import './login-portal.css';

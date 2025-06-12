@@ -2,7 +2,7 @@
 .login-header {
     width: 100%;
     padding: 1.5rem 3rem;
-    background-color: #ffffff;
+    background-color: var(--background-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
@@ -20,7 +20,7 @@
     height: 60px;
     object-fit: contain;
     padding: 0.5rem;
-    background-color: #f8fafc;
+    background-color: var(--background-color);
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -29,18 +29,18 @@
     margin: 0;
     font-size: 1.75rem;
     font-weight: 600;
-    color: #c41e3a; /* Red color for "Smart" */
+    color: var(--red-logo); 
     line-height: 1.2;
 }
 
 .login-header-title span {
-    color: #0052a5; /* Blue color for "Support" */
+    color: var(--blue-logo);
 }
 
 .login-header-subtitle {
     margin: 0.25rem 0 0;
     font-size: 0.95rem;
-    color: #64748b;
+    color: var(--neutral-dim-gray);
     font-weight: 400;
 }
 

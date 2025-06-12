@@ -211,5 +211,5 @@ if (!localStorage.getItem(TICKET_STORAGE_KEY)) {
 }
 
 // Remove below lines after initial data load confirmed
-// localStorage.removeItem(TICKET_STORAGE_KEY);
-// saveTickets(sampleTickets);
+localStorage.removeItem(TICKET_STORAGE_KEY);
+saveTickets(sampleTickets);

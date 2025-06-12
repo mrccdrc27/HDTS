@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
-import "./user_login.css"; // Import the CSS file for styling
+import "./user_login.css";
 import LoginImage from "/src/frontend/authentication/assets/login/login-image.png";
 import LoginHeader from "../../components/headers/login-header";
 import { Eye, EyeOff } from "lucide-react";
@@ -12,34 +12,55 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     
     const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-        const response = await fetch("http://localhost:8000/api/token/employee/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        e.preventDefault();
+        try {
+          const response = await fetch("http://localhost:8000/api/token/employee/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
       
-        if (!response.ok) {
-            const error = await response.json();
-            alert(error.detail || "Login failed.");
-            return;
+          if (!response.ok) {
+              const error = await response.json();
+              
+              // Check if it's a validation error from your custom serializer
+              if (error.non_field_errors && error.non_field_errors.length > 0) {
+                  alert(error.non_field_errors[0]);
+              } else {
+                  // Fallback to generic message
+                  alert("Invalid credentials.");
+              }
+              return;
+          }        
+      
+          const data = await response.json();
+          localStorage.setItem("authToken", data.access);
+          localStorage.setItem("refreshToken", data.refresh);
+      
+          // ✅ Fetch employee profile
+          const profileResponse = await fetch("http://localhost:8000/api/employee/profile/", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${data.access}`,
+            },
+          });
+      
+          if (profileResponse.ok) {
+            const profile = await profileResponse.json();
+            localStorage.setItem("firstName", profile.first_name);
+            localStorage.setItem("lastName", profile.last_name);
+          } else {
+            console.warn("Failed to fetch profile");
+          }
+      
+          navigate("/user/home");
+        } catch (error) {
+          console.error("Login error:", error);
+          alert("Something went wrong. Please try again.");
         }
-      
-        const data = await response.json();
-        localStorage.setItem("accessToken", data.access);
-        localStorage.setItem("refreshToken", data.refresh);
-      
-        // Redirect to home page
-        navigate("/user/home");
-
-      } catch (error) {
-        console.error("Login error:", error);
-        alert("Something went wrong. Please try again.");
-      }
-    };
+      };      
 
     return (
         <div className="login-wrapper">
@@ -78,6 +99,7 @@ const UserLogin = () => {
                                  required
                                  value={password}
                                  onChange={(e) => setPassword(e.target.value)}
+                                 autoComplete="new-password"
                             />
                              <span
                                 className="login-password-icon"
@@ -89,7 +111,7 @@ const UserLogin = () => {
                                 if (e.key === "Enter" || e.key === " ") setShowLogInPassword(!showLogInPassword);
                                 }}
                             >
-                                {showLogInPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showLogInPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                             </span>
                                 <div className="forgot-password">
                                     <Link to="/forgot-password">Forgot password?</Link>

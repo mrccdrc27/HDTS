@@ -1,5 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
+import UserWithdrawTicket from '../../components/modals/active-tickets/user_withdraw-ticket.jsx';
+import UserCloseTicket from '../../components/modals/active-tickets/user_close-ticket.jsx';
+
 import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
 
 import './user_active-tickets-table.css';
@@ -64,6 +69,10 @@ const UserActiveTicketsTable = ({
 }) => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
 
   useEffect(() => {
     const loadedTickets = getTickets();
@@ -80,7 +89,6 @@ const UserActiveTicketsTable = ({
     'resolved-tickets': ['Resolved'],
   };
 
-  // Determine active statuses based on ticketStatus prop
   const activeStatuses = useMemo(
     () => statusMap[ticketStatus] || statusMap['all-active-tickets'],
     [ticketStatus]
@@ -88,13 +96,11 @@ const UserActiveTicketsTable = ({
 
   const normalize = (str) => (str ? str.trim().toLowerCase() : '');
 
-  // Status filter logic
   const applyStatusFilter = (status) => {
     const normalized = normalize(statusFilter);
     return normalized ? normalize(status) === normalized : activeStatuses.includes(status);
   };
 
-  // Date range filter: filter tickets by dateCreated within startDate and endDate
   const applyDateRangeFilter = (dateCreated) => {
     if (!dateCreated) return false;
     const created = new Date(dateCreated);
@@ -109,7 +115,6 @@ const UserActiveTicketsTable = ({
     return (!start || created >= start) && (!end || created <= end);
   };
 
-  // Search filter across ticketNumber, subject, department
   const applySearchFilter = (ticket) => {
     const term = normalize(searchTerm);
     if (!term) return true;
@@ -118,7 +123,6 @@ const UserActiveTicketsTable = ({
     );
   };
 
-  // Filtering tickets with all applied filters
   const filteredTickets = tickets.filter((ticket) => {
     if (!ticket) return false;
 
@@ -133,14 +137,12 @@ const UserActiveTicketsTable = ({
     return true;
   });
 
-  // Notify parent about total filtered items
   useEffect(() => {
     if (typeof onTotalItemsChange === 'function') {
       onTotalItemsChange(filteredTickets.length);
     }
   }, [filteredTickets, onTotalItemsChange]);
 
-  // Sorting logic
   const sortedTickets = [...filteredTickets];
   if (sortBy) {
     sortedTickets.sort((a, b) => {
@@ -164,27 +166,82 @@ const UserActiveTicketsTable = ({
     });
   }
 
-  // Pagination slicing
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
 
-  // Navigation on row click
   const handleView = (ticket) => {
     if (!ticket.ticketNumber) return console.warn('Missing ticket number.');
     navigate(`/user/ticket-details/${ticket.ticketNumber}`);
   };
 
-  // Action handlers
   const handleWithdraw = (e, ticketNumber) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`Withdraw ticket ${ticketNumber}`);
+    setSelectedTicket(ticketNumber);
+    setShowWithdrawModal(true);
   };
 
-  const handleClose = (e, ticketNumber) => {
+    const handleClose = (e, ticketNumber) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(`Close ticket ${ticketNumber}`);
+    setSelectedTicket(ticketNumber);
+    setShowCloseModal(true);
+  };
+
+  const handleWithdrawTicket = (ticketNumber) => {
+  const updatedTickets = tickets.map(ticket =>
+      ticket.ticketNumber === ticketNumber
+        ? { ...ticket, status: 'Withdrawn', lastUpdated: new Date().toISOString() }
+        : ticket
+    );
+
+    const isUpdated = updatedTickets.some(
+      ticket => ticket.ticketNumber === ticketNumber && ticket.status === 'Withdrawn'
+    );
+
+    if (!isUpdated) {
+      toast.error('Failed to withdraw the ticket. Please try again.');
+      return;
+    }
+
+    setTickets(updatedTickets);
+    localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+
+    toast.success('Ticket withdrawn successfully!');
+    closeWithdrawModal();
+  };
+
+  const handleCloseTicket = (ticketNumber) => {
+    const updatedTickets = tickets.map(ticket =>
+      ticket.ticketNumber === ticketNumber
+        ? { ...ticket, status: 'Closed', lastUpdated: new Date().toISOString() }
+        : ticket
+    );
+
+    const isUpdated = updatedTickets.some(
+      ticket => ticket.ticketNumber === ticketNumber && ticket.status === 'Closed'
+    );
+
+    if (!isUpdated) {
+      toast.error('Failed to close the ticket. Please try again.');
+      return;
+    }
+
+    setTickets(updatedTickets);
+    localStorage.setItem('tickets', JSON.stringify(updatedTickets));
+
+    toast.success('Ticket closed successfully!');
+    closeCloseModal();
+  };
+
+  const closeWithdrawModal = () => {
+    setShowWithdrawModal(false);
+    setSelectedTicket(null);
+  };
+
+  const closeCloseModal = () => {
+    setShowCloseModal(false);
+    setSelectedTicket(null);
   };
 
   const noTicketsMessage = noTicketsMessageMap[ticketStatus] || 'No tickets found.';
@@ -282,6 +339,20 @@ const UserActiveTicketsTable = ({
           </tbody>
         </table>
       </div>
+
+      <UserWithdrawTicket
+        isOpen={showWithdrawModal}
+        onClose={closeWithdrawModal}
+        ticketNumber={selectedTicket}
+        onConfirm={() => handleWithdrawTicket(selectedTicket)}
+      />
+
+      <UserCloseTicket
+        isOpen={showCloseModal}
+        onClose={closeCloseModal}
+        onConfirm={() => handleCloseTicket(selectedTicket)}
+      />
+
     </div>
   );
 };

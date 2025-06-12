@@ -1,0 +1,65 @@
+.user-close-ticket-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.user-close-ticket-modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.user-close-ticket-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.user-close-ticket-message {
+  margin-bottom: 1.5rem;
+  color: #444;
+}
+
+.user-close-ticket-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.user-close-ticket-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.user-close-ticket-btn.cancel {
+  background: #e2e8f0;
+  color: #1a202c;
+}
+
+.user-close-ticket-btn.cancel:hover {
+  background: #cbd5e1;
+}
+
+.user-close-ticket-btn.confirm {
+  background: #2563eb;
+  color: #fff;
+}
+
+.user-close-ticket-btn.confirm:hover {
+  background: #1e40af;
+}
