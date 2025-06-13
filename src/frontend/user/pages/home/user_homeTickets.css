@@ -1,0 +1,137 @@
+.tickets-container {
+  margin-top: 24px;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  color: #0d3b73;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.view-all,
+.view-details-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #0d3b73;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.view-all:hover,
+.view-details-link:hover {
+  color: #0a2b55;
+  text-decoration: underline;
+}
+
+/* Ticket Grid and Cards */
+.tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.ticket-card {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.ticket-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e0;
+}
+
+/* Ticket Header */
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.ticket-number {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #2d3748;
+  letter-spacing: 0.5px;
+}
+
+/* Ticket Status Badge */
+.ticket-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Status Colors */
+.user-active-status-submitted { background: #e1f0ff; color: #1a5fb4; }
+.user-active-status-open { background: #e1f5fe; color: #0288d1; }
+.user-active-status-pending { background: #fff3e0; color: #f57c00; }
+.user-active-status-progress { background: #e8f5e9; color: #388e3c; }
+.user-active-status-hold { background: #f3e5f5; color: #8e24aa; }
+.user-active-status-resolved { background: #e0f7fa; color: #00acc1; }
+.user-active-status-closed { background: #e8eaf6; color: #3949ab; }
+
+/* Ticket Content */
+.ticket-content {
+  display: grid;
+  gap: 10px;
+}
+
+.ticket-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.ticket-label {
+  font-weight: 600;
+  color: #4a5568;
+  min-width: 80px;
+}
+
+.ticket-value {
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.ticket-divider {
+  color: #cbd5e0;
+  font-weight: 300;
+}
+
+/* No Tickets Message */
+.no-tickets {
+  text-align: center;
+  padding: 30px;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  font-size: 1rem;
+  border: 1px dashed #cbd5e0;
+}
+
+.no-tickets p {
+  margin-bottom: 16px;
+  color: #4a5568;
+}

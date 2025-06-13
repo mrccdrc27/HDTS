@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Search, Menu, Bot, HelpCircle, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import UserHomeActiveTicketsOverview from './user_active-tickets-overview.jsx';
 import SupportChatModal from '../chatbot/user_chatbot.jsx';
 import { getTickets } from '../../../../utilities/storage/ticketStorage.js';
-import './user_home.css';
+import './user_homeHeader.css';
+import './user_homeActions.css';
+import './user_homeNotice.css';
+import './user_homeTickets.css';
+import './user_homeFloatingButtons.css';
+// import './user_home.css';
 
 const UserHome = () => {
   const navigate = useNavigate();

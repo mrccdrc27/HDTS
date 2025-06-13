@@ -1,0 +1,45 @@
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.button {
+  display: inline-flex;
+  justify-content: left;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+}
+
+.button.primary {
+  background-color: #0d3b73;
+  color: white;
+  box-shadow: 0 2px 4px rgba(13, 59, 115, 0.2);
+}
+
+.button.secondary {
+  background-color: #2c3e50;
+  color: white;
+  box-shadow: 0 2px 4px rgba(44, 62, 80, 0.2);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.button.primary:hover {
+  background-color: #0a2b55;
+}
+
+.button.secondary:hover {
+  background-color: #1e2b38;
+}
