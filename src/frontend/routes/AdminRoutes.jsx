@@ -2,7 +2,7 @@
 import { Routes, Route } from 'react-router-dom';
 
 import AdminLayout from '../admin/layouts/admin_layout.jsx';
-import AdminDashboard from '../admin/pages/dashboard/admin_dashboard.jsx';
+import AdminDashboard from '../admin/pages/dashboard/admin_dashboard-main.jsx';
 import RegisterUser from '../admin/pages/register-user/admin_user-access-register-user.jsx'; 
 
 import TicketManagement from '../admin/pages/ticket-management/admin_ticket-management-main.jsx';

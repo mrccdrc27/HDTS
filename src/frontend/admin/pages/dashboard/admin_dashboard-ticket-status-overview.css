@@ -1,0 +1,90 @@
+/* components/TicketStatusCards.css */
+.ticket-status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 200px;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 40px;
+  height: 200px;
+}
+
+.status-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.status-count {
+  font-size: 2.5rem;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.status-label {
+  margin: 0;
+  font-weight: bold;
+}
+
+/* Specific card styles */
+.new-tickets {
+  border: 3px solid #17a2b8;
+}
+.new-tickets .status-label {
+  color: #17a2b8;
+}
+
+.pending-tickets {
+  border: 3px solid #fd7e14;
+}
+.pending-tickets .status-label {
+  color: #fd7e14;
+}
+
+.open-tickets {
+  border: 3px solid #28a745;
+}
+.open-tickets .status-label {
+  color: #28a745;
+}
+
+.total-tickets {
+  background-color: #007bff;
+  color: white;
+  grid-row: 1 / 3;
+}
+.total-tickets .status-count {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 10px;
+}
+.total-tickets .status-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white;
+}
+
+.on-progress {
+  border: 3px solid #ffc107;
+}
+.on-progress .status-label {
+  color: #ffc107;
+}
+
+.on-hold {
+  border: 3px solid #6c757d;
+}
+.on-hold .status-label {
+  color: #6c757d;
+}
+
+.resolved {
+  border: 3px solid #dc3545;
+}
+.resolved .status-label {
+  color: #dc3545;
+}
