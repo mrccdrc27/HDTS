@@ -49,7 +49,7 @@ const sampleTickets = [
     fileUploaded: null,
     description: 'Need help setting up VPN on my laptop.',
     scheduledRequest: null,
-    assignedTo: { id: 'AGT-001', name: 'Jane Doe' },
+    assignedTo: { id: null, name: null },
     handledBy: { id: 'U003', role: 'Ticket Coordinator', name: 'Kristine Villanueva' },
     createdBy: { userId: 'U001', role: 'User', name: 'Bonjing San Jose' }
   },

@@ -1,35 +1,32 @@
-import React from 'react';
-import { ArrowLeft, ChevronRight, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { ChevronDown, ChevronRight, Search } from 'lucide-react';
+import faqs from '../../../../utilities/storage/faqs';
 import './user_faqs.css';
 
-const questions = [
-  'What types of issues can I report?',
-  'How do I submit a ticket?',
-  'How can I track the status of my ticket?',
-  'Can I update or add more information to an existing ticket?',
-  'How long does it take to resolve a ticket?',
-  "I submitted a request, but I haven’t heard back. What should I do?",
-  'What if I need urgent support?'
-];
-
-const routes = [
-  '/faq/report-issues',
-  '/faq/submit-ticket',
-  '/faq/track-ticket',
-  '/faq/update-ticket',
-  '/faq/resolve-time',
-  '/faq/no-response',
-  '/faq/urgent-support'
-];
-
 const FrequentlyAskedQuestions = () => {
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedIndex, setExpandedIndex] = useState(null);
+
+  const toggleAnswer = (index) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
+  };
+
+  const filteredFaqs = faqs.filter(faq => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      faq.question.toLowerCase().includes(searchLower) ||
+      faq.answer.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setExpandedIndex(null); // Collapse all answers when searching
+  };
 
   return (
     <div className="faq-container">
       <div className="faq-header">
-        <ArrowLeft className="back-icon" onClick={() => window.history.back()} />
         <h1 className="faq-title">Frequently Asked Questions</h1>
       </div>
 
@@ -38,20 +35,37 @@ const FrequentlyAskedQuestions = () => {
         <input 
           className="faq-search" 
           type="text" 
-          placeholder="Search"
+          placeholder="Search FAQs..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          autoFocus
         />
       </div>
 
       <ul className="faq-list">
-        {questions.map((question, index) => (
-          <li key={index} className="faq-item">
-            <span>{question}</span>
-            <ChevronRight 
-              className="faq-arrow" 
-              onClick={() => navigate(routes[index])}
-            />
-          </li>
-        ))}
+        {filteredFaqs.length > 0 ? (
+          filteredFaqs.map((faq, index) => (
+            <li key={index} className="faq-item">
+              <div className="faq-question" onClick={() => toggleAnswer(index)}>
+                <span>{faq.question}</span>
+                {expandedIndex === index ? (
+                  <ChevronDown className="faq-arrow" />
+                ) : (
+                  <ChevronRight className="faq-arrow" />
+                )}
+              </div>
+              {expandedIndex === index && (
+                <div className="faq-answer">
+                  <p>{faq.answer}</p>
+                </div>
+              )}
+            </li>
+          ))
+        ) : (
+          <div className="faq-no-results">
+            No results found for "{searchTerm}"
+          </div>
+        )}
       </ul>
     </div>
   );
