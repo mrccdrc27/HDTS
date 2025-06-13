@@ -24,13 +24,13 @@ const UserTicketDetails = () => {
         </div>
         <div className="section column">
           {/* Uncomment if you want to show status */}
-          {/* <UserTicketDetailsStatus ticketNumber={ticketNumber} /> */}
+          <UserTicketDetailsStatus /> 
         </div>
       </div>
 
       <div className="section">
         {/* Uncomment if you want to show messaging */}
-        {/* <UserTicketDetailsMessaging ticketNumber={ticketNumber} /> */}
+        <UserTicketDetailsMessaging /> 
       </div>
     </div>
   );
