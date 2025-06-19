@@ -168,3 +168,35 @@ def ticket_to_dict(ticket):
         "time_closed": ticket.time_closed.isoformat() if ticket.time_closed else None,
         "rejection_reason": ticket.rejection_reason,
     }
+
+class CustomerInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = [
+            "id", "first_name", "last_name", "middle_name", "suffix",
+            "email", "company_id", "department", "image"
+        ]
+
+class AggregatedTicketAttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketAttachment
+        fields = [
+            "id", "file", "file_name", "file_type", "file_size",
+            "upload_date", "uploaded_by"
+        ]
+
+class AggregatedTicketSerializer(serializers.ModelSerializer):
+    customer = CustomerInfoSerializer(source='employee', read_only=True)
+    attachments = AggregatedTicketAttachmentSerializer(many=True, read_only=True)
+    assigned_to = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Ticket
+        fields = [
+            "id", "ticket_number", "subject", "category", "sub_category",
+            "description", "scheduled_date", "priority", "department",
+            "status", "submit_date", "update_date", "assigned_to",
+            "customer", "attachments", "response_time", "resolution_time",
+            "time_closed", "rejection_reason"
+        ]
+        read_only_fields = fields

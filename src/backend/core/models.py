@@ -159,8 +159,8 @@ from .tasks import push_ticket_to_workflow
 @receiver(post_save, sender=Ticket)
 def send_ticket_to_workflow(sender, instance, created, **kwargs):
     if created:
-        from .serializers import ticket_to_dict
-        push_ticket_to_workflow.delay(ticket_to_dict(instance))
+        from .serializers import AggregatedTicketSerializer
+        push_ticket_to_workflow.delay(AggregatedTicketSerializer(instance).data)
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='attachments')
     file = models.FileField(upload_to='ticket_attachments/')
