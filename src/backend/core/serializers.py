@@ -121,6 +121,32 @@ class TicketSerializer(serializers.ModelSerializer):
         return Ticket.objects.create(employee=user, **validated_data)
     
 def ticket_to_dict(ticket):
+    employee = ticket.employee
+    customer_info = {
+        "id": employee.id,
+        "first_name": employee.first_name,
+        "last_name": employee.last_name,
+        "middle_name": employee.middle_name,
+        "suffix": employee.suffix,
+        "email": employee.email,
+        "company_id": employee.company_id,
+        "department": employee.department,
+        "image": employee.image.url if employee.image else None,
+    } if employee else None
+
+    attachments = [
+        {
+            "id": att.id,
+            "file": att.file.url if att.file else None,
+            "file_name": att.file_name,
+            "file_type": att.file_type,
+            "file_size": att.file_size,
+            "upload_date": att.upload_date.isoformat() if att.upload_date else None,
+            "uploaded_by": att.uploaded_by_id,
+        }
+        for att in ticket.attachments.all()
+    ]
+
     return {
         "ticket_id": ticket.id,
         "ticket_number": ticket.ticket_number,
@@ -135,7 +161,8 @@ def ticket_to_dict(ticket):
         "submit_date": ticket.submit_date.isoformat() if ticket.submit_date else None,
         "update_date": ticket.update_date.isoformat() if ticket.update_date else None,
         "assigned_to": str(ticket.assigned_to) if ticket.assigned_to else None,
-        "customer": str(ticket.employee) if ticket.employee else None,
+        "customer": customer_info,
+        "attachments": attachments,
         "response_time": str(ticket.response_time) if ticket.response_time else None,
         "resolution_time": str(ticket.resolution_time) if ticket.resolution_time else None,
         "time_closed": ticket.time_closed.isoformat() if ticket.time_closed else None,
