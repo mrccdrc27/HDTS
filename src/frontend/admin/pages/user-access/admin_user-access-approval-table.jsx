@@ -1,12 +1,31 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './admin_user-access-approval-table.css';
-import { users } from '/src/utilities/storage/userStorage.js';
 
 import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 
 const ApprovalsTable = ({ filters }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  // --- Add refreshToken helper ---
+  const refreshToken = async () => {
+    const refresh = localStorage.getItem('adminRefreshToken');
+    if (!refresh) return null;
+    const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data.access) {
+      localStorage.setItem('adminAuthToken', data.access);
+      return data.access;
+    }
+    return null;
+  };
+  // --- End refreshToken helper ---
 
   const openReviewModal = (user) => {
     setSelectedUser(user);
@@ -34,7 +53,7 @@ const ApprovalsTable = ({ filters }) => {
 
       return true;
     });
-  }, [filters]);
+  }, [filters, users]);
 
   const columns = [
     'Company ID',
@@ -47,6 +66,52 @@ const ApprovalsTable = ({ filters }) => {
     'Status',
     'Date Created',
   ];
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      let access = localStorage.getItem('adminAuthToken');
+      let response = await fetch('http://127.0.0.1:8000/api/employees/', {
+        headers: { Authorization: `Bearer ${access}` },
+      });
+
+      // --- Add refresh logic ---
+      if (response.status === 401) {
+        access = await refreshToken();
+        if (!access) {
+          setUsers([]);
+          return;
+        }
+        response = await fetch('http://127.0.0.1:8000/api/employees/', {
+          headers: { Authorization: `Bearer ${access}` },
+        });
+      }
+      // --- End refresh logic ---
+
+      if (!response.ok) {
+        setUsers([]);
+        return;
+      }
+
+      const data = await response.json();
+      const mapped = (data.results || data).map(user => ({
+        id: user.id, // <-- THIS IS REQUIRED
+        companyId: user.company_id,
+        lastName: user.last_name,
+        firstName: user.first_name,
+        middleName: user.middle_name,
+        suffix: user.suffix,
+        department: user.department,
+        role: user.role,
+        status: user.status,
+        dateCreated: user.date_joined || user.date_created,
+        email: user.email,
+        image: user.image,
+      }));
+      setUsers(mapped);
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <div className="user-access-approval-table">

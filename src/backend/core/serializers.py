@@ -8,9 +8,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = [
+            'id',  # <-- Add this line
             'last_name', 'first_name', 'middle_name', 'suffix',
             'company_id', 'department', 'email', 'password', 
-            'image', 'role', 'status'
+            'image', 'role', 'status', 'date_created'
         ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -53,6 +54,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['email'] = user.email
         data['role'] = user.role if hasattr(user, 'role') else 'Unknown'
         data['first_name'] = user.first_name
+        data['dateCreated'] = user.date_created
 
         return data
 
@@ -117,3 +119,25 @@ class TicketSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         return Ticket.objects.create(employee=user, **validated_data)
+    
+def ticket_to_dict(ticket):
+    return {
+        "ticket_id": ticket.id,
+        "ticket_number": ticket.ticket_number,
+        "subject": ticket.subject,
+        "category": ticket.category,
+        "sub_category": ticket.sub_category,
+        "description": ticket.description,
+        "scheduled_date": ticket.scheduled_date.isoformat() if ticket.scheduled_date else None,
+        "priority": ticket.priority,
+        "department": ticket.department,
+        "status": ticket.status,
+        "submit_date": ticket.submit_date.isoformat() if ticket.submit_date else None,
+        "update_date": ticket.update_date.isoformat() if ticket.update_date else None,
+        "assigned_to": str(ticket.assigned_to) if ticket.assigned_to else None,
+        "customer": str(ticket.employee) if ticket.employee else None,
+        "response_time": str(ticket.response_time) if ticket.response_time else None,
+        "resolution_time": str(ticket.resolution_time) if ticket.resolution_time else None,
+        "time_closed": ticket.time_closed.isoformat() if ticket.time_closed else None,
+        "rejection_reason": ticket.rejection_reason,
+    }

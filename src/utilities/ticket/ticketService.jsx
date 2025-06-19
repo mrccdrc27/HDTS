@@ -35,6 +35,44 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Function to refresh access token
+async function refreshAccessToken() {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) return null;
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+      refresh: refreshToken,
+    });
+    localStorage.setItem('authToken', response.data.access);
+    return response.data.access;
+  } catch (error) {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    return null;
+  }
+}
+
+// Axios response interceptor for automatic token refresh
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      const newAccessToken = await refreshAccessToken();
+      if (newAccessToken) {
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Ticket API functions
 const ticketService = {
   // Create a new ticket

@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 SUFFIX_CHOICES = [
     ('Jr.', 'Jr.'), ('Sr.', 'Sr.'), ('III', 'III'), ('IV', 'IV'), ('V', 'V'),
@@ -69,6 +71,8 @@ class Employee(AbstractBaseUser, PermissionsMixin):
 
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+
+    date_created = models.DateTimeField(auto_now_add=True)  # <-- Add this line
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['last_name', 'first_name', 'company_id']
@@ -145,10 +149,18 @@ class Ticket(models.Model):
     response_time = models.DurationField(blank=True, null=True)
     resolution_time = models.DurationField(blank=True, null=True)
     time_closed = models.DateTimeField(blank=True, null=True)
+    rejection_reason = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Ticket #{self.id} - {self.subject}"
 
+from .tasks import push_ticket_to_workflow
+
+@receiver(post_save, sender=Ticket)
+def send_ticket_to_workflow(sender, instance, created, **kwargs):
+    if created:
+        from .serializers import ticket_to_dict
+        push_ticket_to_workflow.delay(ticket_to_dict(instance))
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='attachments')
     file = models.FileField(upload_to='ticket_attachments/')

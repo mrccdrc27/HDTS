@@ -1,19 +1,40 @@
 import { useState } from 'react';
+import adminTicketService from '../../../../../utilities/ticket/adminTicketService';
 import './admin_ticket-management-reject-ticket.css';
 
-const AdminTicketManagementRejectTicket = () => {
+const AdminTicketManagementRejectTicket = ({ ticketId, ticketStatus, onClose, onRejected }) => {
   const [showNoteModal, setShowNoteModal] = useState(true);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [note, setNote] = useState('');
+  const [error, setError] = useState('');
 
-  const handleNoteSubmit = () => {
-    // Logic for rejecting the ticket would go here
-    console.log('Ticket rejected with note.');
-    setShowNoteModal(false);
-    setShowConfirmationModal(true);
+  const handleNoteSubmit = async () => {
+    setError('');
+    if (ticketStatus !== 'New') {
+      setError('Only tickets with status "New" can be rejected.');
+      return;
+    }
+    if (!note.trim()) {
+      setError('Please provide a reason for rejection.');
+      return;
+    }
+    try {
+      await adminTicketService.rejectTicket(ticketId, note);
+      setShowNoteModal(false);
+      setShowConfirmationModal(true);
+      if (onRejected) onRejected();
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+        err.response?.data?.detail ||
+        'Failed to reject ticket.'
+      );
+    }
   };
 
   const handleCloseConfirmation = () => {
     setShowConfirmationModal(false);
+    if (onClose) onClose();
   };
 
   if (!showNoteModal && !showConfirmationModal) {
@@ -29,7 +50,10 @@ const AdminTicketManagementRejectTicket = () => {
           <textarea
             id="note"
             placeholder="Enter your reason for rejecting this ticket..."
+            value={note}
+            onChange={e => setNote(e.target.value)}
           />
+          {error && <div className="error-message">{error}</div>}
           <div className="modal-actions">
             <button onClick={() => setShowNoteModal(false)}>Cancel</button>
             <button onClick={handleNoteSubmit}>Reject Ticket</button>

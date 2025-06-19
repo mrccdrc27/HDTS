@@ -5,15 +5,21 @@ import './admin_user-access-filters.css';
 import DateFilter from '../../components/shared/date-filter.jsx';
 
 const DEPARTMENTS = [
-  'Finance Department',
-  'Human Resources',
   'IT Department',
-  'Technical Support',
-  'Customer Service',
+  'Asset Management',
+  'Document Control',
+  'Finance & Budgeting',
   'Operations',
+  'Facilities & Maintenance',
+  'Human Resources',
+  'Administration',
 ];
 
-const ROLE_OPTIONS = ['User', 'Ticket Agent', 'System Admin'];
+const ROLE_OPTIONS = [
+  'Employee',
+  'Ticket Coordinator',
+  'System Admin',
+];
 
 const ROLE_CATEGORY_MAP = {
   'System Admin': 'system-admins',

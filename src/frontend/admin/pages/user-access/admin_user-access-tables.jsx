@@ -1,16 +1,83 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import './admin_user-access-tables.css';
 
 import AdminUserAccessReviewUser from '../../components/modals/user-access/admin_user-access-review-user.jsx';
 import UpdateModal from '../../components/modals/user-access/admin_user-access-update-user.jsx';
 
-import { users } from '/src/utilities/storage/userStorage.js';
-
 const UserAccessTable = ({ category, filters }) => {
   const navigate = useNavigate();
   const [modalType, setModalType] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [users, setUsers] = useState([]);
+
+  // Helper to refresh token
+  const refreshToken = async () => {
+    const refresh = localStorage.getItem('adminRefreshToken');
+    if (!refresh) return null;
+    const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data.access) {
+      localStorage.setItem('adminAuthToken', data.access);
+      return data.access;
+    }
+    return null;
+  };
+
+  // Fetch employees with refresh logic
+  const fetchEmployees = async () => {
+    let access = localStorage.getItem('adminAuthToken');
+    let response = await fetch('http://127.0.0.1:8000/api/employees/', {
+      headers: { Authorization: `Bearer ${access}` },
+    });
+
+    if (response.status === 401) {
+      // Try refresh
+      access = await refreshToken();
+      if (!access) {
+        setUsers([]);
+        return;
+      }
+      response = await fetch('http://127.0.0.1:8000/api/employees/', {
+        headers: { Authorization: `Bearer ${access}` },
+      });
+    }
+
+    if (!response.ok) {
+      setUsers([]);
+      return;
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data) && !Array.isArray(data.results)) {
+      setUsers([]);
+      return;
+    }
+    const mapped = (data.results || data).map(user => ({
+      companyId: user.company_id,
+      lastName: user.last_name,
+      firstName: user.first_name,
+      middleName: user.middle_name,
+      suffix: user.suffix,
+      department: user.department,
+      role: user.role,
+      status: user.status,
+      dateCreated: user.date_joined || user.date_created,
+      id: user.id,
+      email: user.email,
+    }));
+    setUsers(mapped);
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+    // eslint-disable-next-line
+  }, []);
 
   const openModal = (type, user) => {
     setModalType(type);
@@ -24,32 +91,24 @@ const UserAccessTable = ({ category, filters }) => {
 
   const filteredData = useMemo(() => {
     return users.filter((user) => {
+      // Filter by department and role from filters
       const matchesDepartment = filters.department
-        ? user.department.toLowerCase().includes(filters.department.toLowerCase())
+        ? user.department === filters.department
         : true;
-
       const matchesRole = filters.role
-        ? user.role.toLowerCase() === filters.role.toLowerCase()
+        ? user.role === filters.role
         : true;
 
-      const matchesStatus = filters.status
-        ? user.status.toLowerCase() === filters.status.toLowerCase()
-        : category === 'for-approvals'
-        ? user.status.toLowerCase() === 'pending'
-        : true;
+      // Filter by category (route)
+      let matchesCategory = true;
+      if (category === 'system-admins') matchesCategory = user.role === 'System Admin';
+      if (category === 'ticket-agents') matchesCategory = user.role === 'Ticket Coordinator';
+      if (category === 'users') matchesCategory = user.role === 'Employee';
+      if (category === 'for-approvals') matchesCategory = user.status && user.status.toLowerCase() === 'pending';
 
-      const matchesDate = filters.date
-        ? user.dateCreated === filters.date
-        : true;
-
-      return (
-        matchesDepartment &&
-        matchesRole &&
-        matchesStatus &&
-        matchesDate
-      );
+      return matchesDepartment && matchesRole && matchesCategory;
     });
-  }, [filters, category]);
+  }, [filters, category, users]);
 
   const columns = [
     { label: 'Company ID', key: 'companyId' },
@@ -62,6 +121,8 @@ const UserAccessTable = ({ category, filters }) => {
     { label: 'Status', key: 'status' },
     { label: 'Date Created', key: 'dateCreated' },
   ];
+
+  const pendingUsers = users.filter(user => user.status && user.status.toLowerCase() === 'pending');
 
   return (
     <div className="user-access-table">
@@ -78,7 +139,7 @@ const UserAccessTable = ({ category, filters }) => {
           {filteredData.length === 0 ? (
             <tr>
               <td colSpan={columns.length + 1} className="user-access-no-results">
-                No users match the filter.
+                No users found.
               </td>
             </tr>
           ) : (
@@ -92,7 +153,7 @@ const UserAccessTable = ({ category, filters }) => {
                 <td>{user.department}</td>
                 <td>{user.role}</td>
                 <td>
-                  <span className={`user-access-status ${user.status.toLowerCase()}`}>
+                  <span className={`user-access-status ${user.status?.toLowerCase()}`}>
                     {user.status}
                   </span>
                 </td>

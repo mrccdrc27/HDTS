@@ -8,6 +8,8 @@ const AdminUserAccountApproval = ({ user, onClose, onApprove, onReject }) => {
 
   if (!user) return null;
 
+  console.log("User object in approval modal:", user);
+
   const handleApproveClick = () => {
     setShowApproveConfirm(true);
   };
@@ -16,8 +18,63 @@ const AdminUserAccountApproval = ({ user, onClose, onApprove, onReject }) => {
     setShowRejectConfirm(true);
   };
 
-  const confirmApprove = () => {
-    if (onApprove) onApprove(user);
+  // Helper to refresh token
+  const refreshToken = async () => {
+    const refresh = localStorage.getItem('adminRefreshToken');
+    if (!refresh) return null;
+    const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    if (data.access) {
+      localStorage.setItem('adminAuthToken', data.access);
+      return data.access;
+    }
+    return null;
+  };
+
+  const confirmApprove = async () => {
+    try {
+      let token = localStorage.getItem('adminAuthToken');
+      let response = await fetch(`http://127.0.0.1:8000/api/employees/${user.id}/approve/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // If unauthorized, try refresh
+      if (response.status === 401) {
+        token = await refreshToken();
+        if (!token) {
+          alert('Session expired. Please log in again.');
+          setShowApproveConfirm(false);
+          onClose();
+          return;
+        }
+        response = await fetch(`http://127.0.0.1:8000/api/employees/${user.id}/approve/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+
+      if (response.ok) {
+        alert('User approved and notified!');
+      } else {
+        const data = await response.json();
+        alert(data.detail || 'Failed to approve user.');
+      }
+    } catch (err) {
+      alert('Error approving user.');
+    }
+
     setShowApproveConfirm(false);
     onClose();
   };
@@ -55,9 +112,9 @@ const AdminUserAccountApproval = ({ user, onClose, onApprove, onReject }) => {
 
         <div className="approval-content">
           <div className="user-avatar">
-            <img 
-              src={user.avatar || "/api/placeholder/80/80"} 
-              alt="User Avatar" 
+            <img
+              src={user.image ? `http://127.0.0.1:8000${user.image}` : "/api/placeholder/80/80"}
+              alt="User Avatar"
               className="avatar-image"
             />
           </div>

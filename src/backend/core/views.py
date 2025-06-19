@@ -11,11 +11,16 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.utils import timezone
 from django.http import JsonResponse, HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from django.shortcuts import get_object_or_404
 import json
 import os
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.core.mail import send_mail
+from rest_framework.reverse import reverse
 
 @csrf_exempt
 def login_view(request):
@@ -311,7 +316,7 @@ def approve_ticket(request, ticket_id):
 @permission_classes([IsAuthenticated])
 def reject_ticket(request, ticket_id):
     """
-    Reject a ticket with a reason
+    Reject a ticket with a reason (only if status is 'New')
     """
     try:
         ticket = get_object_or_404(Ticket, id=ticket_id)
@@ -320,19 +325,19 @@ def reject_ticket(request, ticket_id):
         if not (request.user.is_staff or request.user.role in ['System Admin', 'Ticket Coordinator']):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
-        # Check if ticket is in a state that can be rejected
-        if ticket.status not in ['New', 'Pending', 'Open']:
-            return Response({'error': 'Ticket cannot be rejected in current state'}, status=status.HTTP_400_BAD_REQUEST)
+        # Only allow rejection if status is "New"
+        if ticket.status != 'New':
+            return Response({'error': "Only tickets with status 'New' can be rejected."}, status=status.HTTP_400_BAD_REQUEST)
         
         # Get rejection reason from request
         rejection_reason = request.data.get('rejection_reason', '').strip()
-        
         if not rejection_reason:
             return Response({'error': 'Rejection reason is required'}, status=status.HTTP_400_BAD_REQUEST)
         
         # Update ticket
         ticket.status = 'Rejected'
         ticket.assigned_to = request.user  # Assign to the rejecting admin
+        ticket.rejection_reason = rejection_reason  # Make sure this field exists in your model
         ticket.save()
         
         # Create internal comment for rejection
@@ -553,3 +558,129 @@ def download_attachment(request, ticket_id):
             
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def custom_api_root(request, format=None):
+    return Response({
+        'create_employee': reverse('create_employee', request=request, format=format),
+        'admin-create-employee': reverse('admin-create-employee', request=request, format=format),
+        'token_employee': reverse('token_employee', request=request, format=format),
+        'admin_token_obtain_pair': reverse('admin_token_obtain_pair', request=request, format=format),
+        'token_refresh': reverse('token_refresh', request=request, format=format),
+        'employee_profile': reverse('employee_profile', request=request, format=format),
+        'get_ticket_detail': reverse('get_ticket_detail', args=[1], request=request, format=format),  # Example ID
+        'approve_ticket': reverse('approve_ticket', args=[1], request=request, format=format),
+        'reject_ticket': reverse('reject_ticket', args=[1], request=request, format=format),
+        'claim_ticket': reverse('claim_ticket', args=[1], request=request, format=format),
+        'update_ticket_status': reverse('update_ticket_status', args=[1], request=request, format=format),
+        'get_new_tickets': reverse('get_new_tickets', request=request, format=format),
+        'get_open_tickets': reverse('get_open_tickets', request=request, format=format),
+        'get_my_tickets': reverse('get_my_tickets', request=request, format=format),
+        'tickets': reverse('ticket-list', request=request, format=format),
+    })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+
+    if not current_password or not new_password:
+        return Response({'detail': 'Current and new password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not user.check_password(current_password):
+        return Response({'detail': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if len(new_password) < 8:
+        return Response({'detail': 'New password must be at least 8 characters.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.set_password(new_password)
+    user.save()
+    return Response({'detail': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
+def upload_profile_image(request):
+    user = request.user
+    image_file = request.FILES.get('image')
+    if not image_file:
+        return Response({'detail': 'No image provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Validate file type
+    if not image_file.content_type in ['image/png', 'image/jpeg', 'image/jpg']:
+        return Response({'detail': 'Invalid file type.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Validate file size (max 2MB)
+    if image_file.size > 2 * 1024 * 1024:
+        return Response({'detail': 'File size exceeds 2MB.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Resize image to 1024x1024
+    try:
+        img = Image.open(image_file)
+        img = img.convert('RGB')
+        img = img.resize((1024, 1024))
+        buffer = BytesIO()
+        img.save(buffer, format='JPEG')
+        file_content = ContentFile(buffer.getvalue())
+        user.image.save(f"profile_{user.id}.jpg", file_content)
+        user.save()
+        return Response({'detail': 'Image uploaded successfully.'})
+    except Exception as e:
+        return Response({'detail': 'Failed to process image.'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_employees(request):
+    # Only allow admins to view all employees
+    if not request.user.is_staff and request.user.role != 'System Admin':
+        return Response({'detail': 'Permission denied.'}, status=403)
+    employees = Employee.objects.all()
+    serializer = EmployeeSerializer(employees, many=True)
+    return Response(serializer.data)
+
+class IsSystemAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return hasattr(request.user, 'role') and request.user.role == "System Admin"
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsSystemAdmin])
+def approve_employee(request, pk):
+    try:
+        employee = Employee.objects.get(pk=pk)
+    except Employee.DoesNotExist:
+        return Response({'detail': 'Employee not found.'}, status=status.HTTP_404_NOT_FOUND)
+    if employee.status == 'Approved':
+        return Response({'detail': 'Already approved.'}, status=status.HTTP_400_BAD_REQUEST)
+    employee.status = 'Approved'
+    employee.save()
+
+    # Send approval email
+    send_mail(
+        subject='Account Approved',
+        message=(
+            f"Dear {employee.first_name},\n\n"
+            "We are pleased to inform you that your SmartSupport account has been successfully created.\n\n"
+            "http://localhost:3000/login/employee\n\n"
+            "If you have any questions or need further assistance, feel free to contact our support team.\n\n"
+            "Respectfully,\n"
+            "SmartSupport Help Desk Team"
+        ),
+        from_email='sethpelagio20@gmail.com',
+        recipient_list=[employee.email],
+        fail_silently=False,
+    )
+
+    return Response({'detail': 'Employee approved and email sent.'}, status=status.HTTP_200_OK)
+
+class ApproveEmployeeView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        try:
+            employee = Employee.objects.get(email=email)
+            employee.status = 'Approved'
+            employee.save()
+            return Response({'message': 'Employee approved.'}, status=status.HTTP_200_OK)
+        except Employee.DoesNotExist:
+            return Response({'error': 'Employee not found.'}, status=status.HTTP_404_NOT_FOUND)

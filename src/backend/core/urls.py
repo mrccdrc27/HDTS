@@ -14,21 +14,21 @@ from .views import (
     update_ticket_status,
     get_open_tickets,
     get_my_tickets,
-    create_employee_admin_view
+    create_employee_admin_view,
+    custom_api_root,  # <-- add this import
+    change_password,
+    upload_profile_image,
+    list_employees,
+    approve_employee,
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
-from django.http import JsonResponse
-
-def api_root(request):
-    return JsonResponse({"message": "API is working!"})
 
 router = DefaultRouter()
 router.register(r'tickets', TicketViewSet, basename='ticket')
 
 urlpatterns = [
-    path('', api_root),
-
+    path('', custom_api_root, name='api-root'),  # <-- put this FIRST
     # Custom endpoints (must come before router)
     path('create_employee/', CreateEmployeeView.as_view(), name='create_employee'),
     path("admin/create-employee/", CreateAdminEmployeeView.as_view(), name="admin-create-employee"),
@@ -36,6 +36,10 @@ urlpatterns = [
     path("token/admin/", AdminTokenObtainPairView.as_view(), name="admin_token_obtain_pair"),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('employee/profile/', employee_profile_view, name='employee_profile'),
+    path('employee/change-password/', change_password, name='change_password'),
+    path('employee/upload-image/', upload_profile_image, name='upload_profile_image'),
+    path('employees/', list_employees, name='list_employees'),
+    path('employees/<int:pk>/approve/', approve_employee, name='approve_employee'),
 
     path('tickets/<int:ticket_id>/', get_ticket_detail, name='get_ticket_detail'),
     path('tickets/<int:ticket_id>/approve/', approve_ticket, name='approve_ticket'),
@@ -46,6 +50,6 @@ urlpatterns = [
     path('tickets/open/', get_open_tickets, name='get_open_tickets'),
     path('tickets/my-tickets/', get_my_tickets, name='get_my_tickets'),
 
-    # DRF router (should be last)
-    path('', include(router.urls)),
+    # DRF router (should be last, and at the root for browsable API)
+    path('', include(router.urls)),  # keep this LAST
 ]

@@ -105,9 +105,15 @@ const UpdateModal = ({ user, onClose, onUpdate }) => {
               {/* Avatar Section */}
               <div className="avatar-section">
                 <div className="user-avatar">
-                  <img 
-                    src={user.avatar || "/api/placeholder/80/80"} 
-                    alt="User Avatar" 
+                  <img
+                    src={
+                      user.image
+                        ? user.image.startsWith('http')
+                          ? user.image
+                          : `http://localhost:8000${user.image}`
+                        : "/api/placeholder/80/80"
+                    }
+                    alt="User Avatar"
                     className="avatar-image"
                   />
                 </div>

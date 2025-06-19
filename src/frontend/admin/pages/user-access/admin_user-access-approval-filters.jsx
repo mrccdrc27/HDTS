@@ -61,13 +61,15 @@ const ApprovalsFilters = ({ onFilterChange }) => {
             onChange={handleChange}
             className="user-access-approval-filter-select"
           >
-            <option value="">Department</option>
-            <option value="Finance Department">Finance Department</option>
-            <option value="Human Resources">Human Resources</option>
+            <option value="">Select Department</option>
             <option value="IT Department">IT Department</option>
-            <option value="Technical Support">Technical Support</option>
-            <option value="Customer Service">Customer Service</option>
+            <option value="Asset Management">Asset Management</option>
+            <option value="Document Control">Document Control</option>
+            <option value="Finance & Budgeting">Finance & Budgeting</option>
             <option value="Operations">Operations</option>
+            <option value="Facilities & Maintenance">Facilities & Maintenance</option>
+            <option value="Human Resources">Human Resources</option>
+            <option value="Administration">Administration</option>
           </select>
           <ChevronDown className="user-access-approval-filter-dropdown-icon" size={16} />
         </div>
@@ -81,8 +83,8 @@ const ApprovalsFilters = ({ onFilterChange }) => {
             className="user-access-approval-filter-select"
           >
             <option value="">Role</option>
-            <option value="User">User</option>
-            <option value="Ticket Agent">Ticket Agent</option>
+            <option value="Employee">Employee</option>
+            <option value="Ticket Coordinator">Ticket Coordinator</option>
             <option value="System Admin">System Admin</option>
           </select>
           <ChevronDown className="user-access-approval-filter-dropdown-icon" size={16} />

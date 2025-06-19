@@ -18,6 +18,7 @@ const AdminNavbar = () => {
   const [fullName, setFullName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [profileName, setProfileName] = useState('');
+  const [adminRole, setAdminRole] = useState('');
 
   const toggleDropdown = (menu) => {
     setActiveDropdown(activeDropdown === menu ? null : menu);
@@ -42,6 +43,7 @@ const AdminNavbar = () => {
     const token = localStorage.getItem('adminAuthToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      setAdminRole(payload.role || '');
       const fName = payload.first_name || '';
       const lName = payload.last_name || '';
       const formattedName = `${lName.charAt(0).toUpperCase() + lName.slice(1)}, ${fName.charAt(0).toUpperCase() + fName.slice(1)}`;
@@ -186,9 +188,13 @@ const AdminNavbar = () => {
           {activeDropdown === 'user-access' && (
             <div className="dropdown-content">
               <NavLink to="/admin/user-access/all-users">All Users</NavLink>
-              <NavLink to="/admin/user-access/users">Users</NavLink>
-              <NavLink to="/admin/user-access/ticket-agents">Ticket Agents</NavLink>
-              <NavLink to="/admin/user-access/system-admins">System Admins</NavLink>
+              <NavLink to="/admin/user-access/users">Employees</NavLink>
+              {adminRole === 'System Admin' && (
+                <NavLink to="/admin/user-access/system-admins">System Admins</NavLink>
+              )}
+              {(adminRole === 'System Admin' || adminRole === 'Ticket Coordinator') && (
+                <NavLink to="/admin/user-access/ticket-agents">Ticket Coordinators</NavLink>
+              )}
               <NavLink to="/admin/user-access/for-approvals">For Approvals</NavLink>
             </div>
           )}
@@ -209,6 +215,19 @@ const AdminNavbar = () => {
             </div>
           )}
         </div>
+
+        {/* Conditional dropdowns based on admin role */}
+        {adminRole === 'System Admin' && (
+          <div className="adminNavbar-menu-dropdown">
+            {/* System Admin-only links */}
+          </div>
+        )}
+        {(adminRole === 'System Admin' || adminRole === 'Ticket Coordinator') && (
+          <div className="adminNavbar-menu-dropdown">
+            {/* Links for both System Admin and Ticket Coordinator */}
+          </div>
+        )}
+        {/* ...etc... */}
       </div>
 
       <div className="adminNavbar-right">
