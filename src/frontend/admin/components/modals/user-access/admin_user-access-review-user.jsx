@@ -113,7 +113,13 @@ const AdminUserAccountApproval = ({ user, onClose, onApprove, onReject }) => {
         <div className="approval-content">
           <div className="user-avatar">
             <img
-              src={user.image ? `http://127.0.0.1:8000${user.image}` : "/api/placeholder/80/80"}
+              src={
+                user.image
+                  ? user.image.startsWith('http')
+                    ? user.image
+                    : `http://127.0.0.1:8000/media/${user.image.replace(/^\/?employee_images\//, 'employee_images/')}`
+                  : "/api/placeholder/80/80"
+              }
               alt="User Avatar"
               className="avatar-image"
             />

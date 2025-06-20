@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #222;
 }
 
@@ -12,7 +12,7 @@ body {
 .notification-wrapper {
   position: fixed;
   top: 20px;
-  right: 20px;
+  right: 90px;
   z-index: 1000;
 }
 
@@ -30,7 +30,7 @@ body {
   position: absolute;
   top: 50px;
   right: 0;
-  width: 340px;
+  width: 400px;
   background-color: #fff;
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -41,7 +41,7 @@ body {
   color: #a6192e;
   margin: 0;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 15px;
 }
 
 hr {
@@ -62,12 +62,14 @@ hr {
   gap: 10px;
 }
 
+
 .filter-btn {
   background-color: #e4e4e4;
   border: none;
   border-radius: 20px;
   padding: 6px 20px;
   font-weight: bold;
+  font-size: 10px;
   color: #333;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -79,17 +81,22 @@ hr {
 }
 
 .see-all {
-  font-size: 14px;
+  font-size: 12px;
   color: #3454d1;
   text-decoration: none;
   font-weight: bold;
 }
 
-.section-title {
-  color: #3454d1;
+.earlier {
+  font-size: 15px;
+  color: #a6192e;
+  margin-bottom: 5px;
+  text-decoration: none;
   font-weight: bold;
-  margin-top: 10px;
-  margin-bottom: 10px;
+}
+
+.section-title p{
+  font-size: 2px;
 }
 
 .notification-container {
@@ -137,17 +144,17 @@ hr {
 }
 
 .notification-title {
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 5px;
 }
 
 .notification-text {
-  font-size: 14px;
+  font-size: 12px;
   margin: 0;
 }
 
 .time {
-  font-size: 12px;
+  font-size: 10px;
   color: #666;
 }
 
@@ -156,6 +163,6 @@ hr {
   border: none;
   border-radius: 20px;
   padding: 4px 12px;
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer;
 }
