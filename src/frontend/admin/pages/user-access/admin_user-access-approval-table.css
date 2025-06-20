@@ -5,13 +5,14 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   font-family: 'Poppins', sans-serif;
   font-size: 12px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .user-access-approval-table table {
+  min-width: 900px; /* Adjust as needed for your columns */
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  text-align: center;
+  border-collapse: collapse;
 }
 
 .user-access-approval-table thead {

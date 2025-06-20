@@ -104,7 +104,7 @@ const RequestTicket = () => {
     setIsSubmitting(true);
 
     try {
-      // Call the API service to create the ticket
+      // 1. Create the ticket and upload attachments (if all in one request)
       const response = await ticketService.createTicket({
         subject: formData.subject,
         category: formData.category,
@@ -114,7 +114,11 @@ const RequestTicket = () => {
         files: formData.files
       });
 
-      // If successful, update the UI
+      // 2. Finalize only after all uploads are done
+      const ticketId = response.id || response.ticket_id;
+      await ticketService.finalizeTicket(ticketId);
+
+      // 3. Now update UI
       setSubmittedTicket({
         ticket_number: response.ticket_number,
         subject: response.subject,
@@ -126,7 +130,6 @@ const RequestTicket = () => {
       });
       setIsModalOpen(true);
 
-      // Reset the form
       setFormData({
         subject: '',
         category: '',

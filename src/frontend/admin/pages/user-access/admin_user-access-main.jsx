@@ -21,8 +21,8 @@ const UserAccess = () => {
   const getFormattedCategory = (key) => {
     const displayMap = {
       "all-users": "All Users",
-      "users": "Users",
-      "ticket-agents": "Ticket Agents",
+      "users": "Employees",
+      "ticket-agents": "Ticket Coordinators",
       "system-admins": "System Admins",
       "for-approvals": "For Approvals"
     };

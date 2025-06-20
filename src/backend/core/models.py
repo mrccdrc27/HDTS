@@ -158,9 +158,13 @@ from .tasks import push_ticket_to_workflow
 
 @receiver(post_save, sender=Ticket)
 def send_ticket_to_workflow(sender, instance, created, **kwargs):
-    if created:
-        from .serializers import AggregatedTicketSerializer
-        push_ticket_to_workflow.delay(AggregatedTicketSerializer(instance).data)
+    # Only trigger when status is set to "Open" (and not just created)
+    if not created and instance.status == "Open":
+        from .tasks import push_ticket_to_workflow  # Import here!
+        from .serializers import TicketSerializer   # Import here!
+        data = TicketSerializer(instance).data
+        push_ticket_to_workflow.delay(data)
+        
 class TicketAttachment(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='attachments')
     file = models.FileField(upload_to='ticket_attachments/')

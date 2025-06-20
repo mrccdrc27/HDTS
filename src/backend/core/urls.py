@@ -20,9 +20,12 @@ from .views import (
     upload_profile_image,
     list_employees,
     approve_employee,
+    finalize_ticket,  # <-- add this import
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
+from .serializers import TicketSerializer
+from .tasks import push_ticket_to_workflow
 
 router = DefaultRouter()
 router.register(r'tickets', TicketViewSet, basename='ticket')
@@ -49,6 +52,7 @@ urlpatterns = [
     path('tickets/new/', get_new_tickets, name='get_new_tickets'),
     path('tickets/open/', get_open_tickets, name='get_open_tickets'),
     path('tickets/my-tickets/', get_my_tickets, name='get_my_tickets'),
+    path('tickets/<int:ticket_id>/finalize/', finalize_ticket, name='finalize_ticket'),  # <-- add this line
 
     # DRF router (should be last, and at the root for browsable API)
     path('', include(router.urls)),  # keep this LAST

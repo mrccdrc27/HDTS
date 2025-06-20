@@ -21,6 +21,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 from rest_framework.reverse import reverse
+from .tasks import push_ticket_to_workflow
 
 @csrf_exempt
 def login_view(request):
@@ -131,7 +132,7 @@ class TicketViewSet(viewsets.ModelViewSet):
         instance = self.perform_create(serializer)
         
         # Process multiple file attachments
-        for file in files:
+        for file in request.FILES.getlist('files[]'):
             TicketAttachment.objects.create(
                 ticket=instance,
                 file=file,
@@ -684,3 +685,16 @@ class ApproveEmployeeView(APIView):
             return Response({'message': 'Employee approved.'}, status=status.HTTP_200_OK)
         except Employee.DoesNotExist:
             return Response({'error': 'Employee not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def finalize_ticket(request, ticket_id):
+    try:
+        ticket = Ticket.objects.get(pk=ticket_id)
+        print("Finalize called for ticket:", ticket_id)
+        print("Attachments:", list(ticket.attachments.all()))
+        data = TicketSerializer(ticket).data
+        return Response({'detail': 'Ticket finalized and sent to workflow.'})
+    except Ticket.DoesNotExist:
+        return Response({'detail': 'Ticket not found.'}, status=404)

@@ -67,15 +67,16 @@ const TicketSuccessful = ({ isOpen, onClose, ticketData }) => {
         <p><strong>Sub-Category:</strong> {subCategory || 'N/A'}</p>
         <p><strong>Description:</strong> {description || 'N/A'}</p>
 
-        <p><strong>Files:</strong> 
-          {files && files.length > 0 ? (
-            <ul>
-              {files.map((file, index) => (
-                <li key={index}>{file.name || file.file_name || 'Untitled File'}</li>
-              ))}
-            </ul>
-          ) : 'No files attached'}
-        </p>
+        <p><strong>Files:</strong></p>
+        {files && files.length > 0 ? (
+          <ul>
+            {files.map((file, index) => (
+              <li key={index}>{file.name || file.file_name || 'Untitled File'}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No files attached</p>
+        )}
 
         <p><strong>Schedule Date:</strong> {scheduleDate || 'N/A'}</p>
 

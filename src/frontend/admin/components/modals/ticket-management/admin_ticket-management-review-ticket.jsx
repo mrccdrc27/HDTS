@@ -13,7 +13,7 @@ const AdminTicketManagementReviewNewTicket = ({ ticketId, onClose, onTicketUpdat
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
   console.log("API_BASE_URL:", API_BASE_URL);
 
   // Fetch ticket details
@@ -169,7 +169,9 @@ const AdminTicketManagementReviewNewTicket = ({ ticketId, onClose, onTicketUpdat
 
   const viewAttachmentInNewTab = (fileUrl) => {
     if (fileUrl) {
-      window.open(fileUrl, '_blank');
+      // If fileUrl is already absolute, use as is; otherwise, prepend API base URL
+      const url = fileUrl.startsWith('http') ? fileUrl : `${API_BASE_URL}${fileUrl}`;
+      window.open(url, '_blank');
     } else {
       alert('Attachment file URL not available.');
     }

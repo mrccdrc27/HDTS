@@ -121,8 +121,22 @@ class TicketSerializer(serializers.ModelSerializer):
         return Ticket.objects.create(employee=user, **validated_data)
     
 def ticket_to_dict(ticket):
+    # Gather all attachments for this ticket
+    attachments = [
+        {
+            "id": att.id,
+            "file": att.file.url if att.file else None,
+            "file_name": att.file_name,
+            "file_type": att.file_type,
+            "file_size": att.file_size,
+            "upload_date": att.upload_date.isoformat() if att.upload_date else None,
+        }
+        for att in TicketAttachment.objects.filter(ticket=ticket)
+    ]
+
+    # Gather customer (employee) info
     employee = ticket.employee
-    customer_info = {
+    customer = {
         "id": employee.id,
         "first_name": employee.first_name,
         "last_name": employee.last_name,
@@ -134,25 +148,12 @@ def ticket_to_dict(ticket):
         "image": employee.image.url if employee.image else None,
     } if employee else None
 
-    attachments = [
-        {
-            "id": att.id,
-            "file": att.file.url if att.file else None,
-            "file_name": att.file_name,
-            "file_type": att.file_type,
-            "file_size": att.file_size,
-            "upload_date": att.upload_date.isoformat() if att.upload_date else None,
-            "uploaded_by": att.uploaded_by_id,
-        }
-        for att in ticket.attachments.all()
-    ]
-
-    return {
-        "ticket_id": ticket.id,
-        "ticket_number": ticket.ticket_number,
+    data = {
+        "id": ticket.id,
+        "ticket_id": ticket.ticket_number,
         "subject": ticket.subject,
         "category": ticket.category,
-        "sub_category": ticket.sub_category,
+        "subcategory": ticket.sub_category,
         "description": ticket.description,
         "scheduled_date": ticket.scheduled_date.isoformat() if ticket.scheduled_date else None,
         "priority": ticket.priority,
@@ -161,42 +162,14 @@ def ticket_to_dict(ticket):
         "submit_date": ticket.submit_date.isoformat() if ticket.submit_date else None,
         "update_date": ticket.update_date.isoformat() if ticket.update_date else None,
         "assigned_to": str(ticket.assigned_to) if ticket.assigned_to else None,
-        "customer": customer_info,
+        "customer": customer,
         "attachments": attachments,
-        "response_time": str(ticket.response_time) if ticket.response_time else None,
-        "resolution_time": str(ticket.resolution_time) if ticket.resolution_time else None,
-        "time_closed": ticket.time_closed.isoformat() if ticket.time_closed else None,
-        "rejection_reason": ticket.rejection_reason,
+        "response_time": str(ticket.response_time) if hasattr(ticket, "response_time") and ticket.response_time else None,
+        "resolution_time": str(ticket.resolution_time) if hasattr(ticket, "resolution_time") and ticket.resolution_time else None,
+        "time_closed": ticket.time_closed.isoformat() if hasattr(ticket, "time_closed") and ticket.time_closed else None,
+        "rejection_reason": ticket.rejection_reason if hasattr(ticket, "rejection_reason") else None,
     }
 
-class CustomerInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Employee
-        fields = [
-            "id", "first_name", "last_name", "middle_name", "suffix",
-            "email", "company_id", "department", "image"
-        ]
+    print("Serialized ticket data:", data)  # <-- Debug print statement
 
-class AggregatedTicketAttachmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TicketAttachment
-        fields = [
-            "id", "file", "file_name", "file_type", "file_size",
-            "upload_date", "uploaded_by"
-        ]
-
-class AggregatedTicketSerializer(serializers.ModelSerializer):
-    customer = CustomerInfoSerializer(source='employee', read_only=True)
-    attachments = AggregatedTicketAttachmentSerializer(many=True, read_only=True)
-    assigned_to = serializers.StringRelatedField(read_only=True)
-
-    class Meta:
-        model = Ticket
-        fields = [
-            "id", "ticket_number", "subject", "category", "sub_category",
-            "description", "scheduled_date", "priority", "department",
-            "status", "submit_date", "update_date", "assigned_to",
-            "customer", "attachments", "response_time", "resolution_time",
-            "time_closed", "rejection_reason"
-        ]
-        read_only_fields = fields
+    return data

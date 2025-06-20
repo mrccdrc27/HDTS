@@ -145,6 +145,16 @@ const ticketService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // Finalize a ticket
+  finalizeTicket: async (id) => {
+    try {
+      const response = await api.post(`/tickets/${id}/finalize/`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

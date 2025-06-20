@@ -115,50 +115,51 @@ const ApprovalsTable = ({ filters }) => {
 
   return (
     <div className="user-access-approval-table">
-      <table>
-        <thead>
-          <tr>
-            {columns.map((label) => (
-              <th key={label}>{label}</th>
-            ))}
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.length === 0 ? (
+      <div style={{ overflowX: 'auto' }}>
+        <table>
+          <thead>
             <tr>
-              <td colSpan={columns.length + 1} className="user-access-approval-table-no-results">
-                No users match the filter.
-              </td>
+              {columns.map((label) => (
+                <th key={label}>{label}</th>
+              ))}
+              <th>Actions</th>
             </tr>
-          ) : (
-            filteredData.map((user, idx) => (
-              <tr key={idx}>
-                <td>{user.companyId}</td>
-                <td>{user.lastName}</td>
-                <td>{user.firstName}</td>
-                <td>{user.middleName || '-'}</td>
-                <td>{user.suffix || '-'}</td>
-                <td>{user.department}</td>
-                <td>{user.role}</td>
-                <td>
-                  <span className="status pending">{user.status}</span>
-                </td>
-                <td>{user.dateCreated}</td>
-                <td className="user-access-approval-table-actions">
-                  <button
-                    className="user-access-approval-table-review-btn"
-                    onClick={() => openReviewModal(user)}
-                  >
-                    Review
-                  </button>
+          </thead>
+          <tbody>
+            {filteredData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + 1} className="user-access-approval-table-no-results">
+                  No users match the filter.
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-
+            ) : (
+              filteredData.map((user, idx) => (
+                <tr key={idx}>
+                  <td>{user.companyId}</td>
+                  <td>{user.lastName}</td>
+                  <td>{user.firstName}</td>
+                  <td>{user.middleName || '-'}</td>
+                  <td>{user.suffix || '-'}</td>
+                  <td>{user.department}</td>
+                  <td>{user.role}</td>
+                  <td>
+                    <span className="status pending">{user.status}</span>
+                  </td>
+                  <td>{user.dateCreated}</td>
+                  <td className="user-access-approval-table-actions">
+                    <button
+                      className="user-access-approval-table-review-btn"
+                      onClick={() => openReviewModal(user)}
+                    >
+                      Review
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
       {isModalOpen && selectedUser && (
         <AdminUserAccessReviewUser user={selectedUser} onClose={closeReviewModal} />
       )}
