@@ -53,6 +53,8 @@ const UserActiveTicketsFiltersAndSort = () => {
     setShowSortMenu(false);
   };
 
+  const normalizedCategory = categoryFilter?.replace(/-tickets$/, '') || 'all';
+
   return (
     <div className="user-active-tickets-filters-and-sort-wrapper">
       {/* Filter Section */}

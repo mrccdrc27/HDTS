@@ -5,7 +5,7 @@ import './user_active-tickets-table.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const UserActiveTicketsTable = () => {
+const UserActiveTicketsTable = ({ statusFilter }) => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,15 +57,15 @@ const UserActiveTicketsTable = () => {
         // Transform ticket data
         const mappedTickets = response.data.map(ticket => ({
           id: ticket.id,
-          number: ticket.ticket_number,
-          subject: ticket.subject,
-          status: ticket.status,
+          number: ticket.ticket_number || ticket.id || 'N/A',
+          subject: ticket.subject || 'N/A',
+          status: ticket.status || 'Unknown',
           priority: ticket.priority,
-          department: ticket.department,
-          category: ticket.category,
-          subCategory: ticket.sub_category,
-          dateCreated: ticket.submit_date,
-          lastUpdated: ticket.update_date,
+          department: ticket.department || 'N/A',
+          category: ticket.category || 'N/A',
+          subCategory: ticket.sub_category || 'N/A',
+          dateCreated: ticket.submit_date || ticket.created_at || 'N/A',
+          lastUpdated: ticket.update_date || ticket.last_updated || 'N/A',
           assignedTo: ticket.assigned_to,
         }));
 
@@ -120,6 +120,21 @@ const UserActiveTicketsTable = () => {
     navigate(`/user/ticket-details/${number}`);
   };
 
+  const statusMap = {
+    all: ['New', 'Open', 'On Process', 'On Hold', 'Pending'],
+    new: ['New'],
+    open: ['Open'],
+    'on-process': ['On Process'],
+    'on-hold': ['On Hold'],
+    pending: ['Pending'],
+  };
+
+  const filteredTickets = tickets.filter(ticket => {
+    // If the statusFilter is not recognized, default to showing all active statuses
+    const allowedStatuses = statusMap[statusFilter] || statusMap.all;
+    return allowedStatuses.includes(ticket.status);
+  });
+
   if (loading) return <div>Loading tickets...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -142,8 +157,8 @@ const UserActiveTicketsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {tickets.length > 0 ? (
-              tickets.map((ticket) => {
+            {filteredTickets.length > 0 ? (
+              filteredTickets.map((ticket) => {
                 const {
                   number,
                   subject,

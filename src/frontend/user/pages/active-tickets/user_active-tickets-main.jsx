@@ -9,15 +9,15 @@ const categoryMap = {
   all: 'All Active Tickets',
   new: 'New Tickets',
   open: 'Open Tickets',
-  'on-progress': 'On Progress Tickets',
+  'on-process': 'On Process Tickets',
   'on-hold': 'On Hold Tickets',
   pending: 'Pending Tickets',
 };
 
 const ActiveTickets = () => {
   const { category } = useParams();
-  const normalizedCategory = category?.replace(/-tickets$/, '') || '';
-  const heading = categoryMap[normalizedCategory] || 'Active Tickets';
+  const normalizedCategory = category?.replace(/-tickets$/, '') || 'all';
+  const heading = categoryMap[normalizedCategory] || 'All Active Tickets';
 
   return (
     <div className="active-tickets-main">
@@ -31,7 +31,7 @@ const ActiveTickets = () => {
 
       <UserActiveTicketsFiltersAndSort />
 
-      <UserActiveTicketsTable />
+      <UserActiveTicketsTable statusFilter={normalizedCategory} />
 
       <TablePagination />
 

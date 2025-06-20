@@ -34,9 +34,9 @@ const formatDateTime = (dateString) => {
 const UserTicketRecordsTable = ({ filteredTickets }) => {
   const navigate = useNavigate();
 
-  // Filter tickets to only Closed and Resolved statuses
+  // Filter tickets to only Closed, Resolved, and Rejected statuses
   const records = filteredTickets.filter(
-    (t) => t.status === 'Closed' || t.status === 'Resolved'
+    (t) => t.status === 'Closed' || t.status === 'Resolved' || t.status === 'Rejected'
   );
 
   const handleView = (ticket) => {
@@ -85,11 +85,11 @@ const UserTicketRecordsTable = ({ filteredTickets }) => {
                     className="ticket-management-row"
                     onClick={() => handleView(ticket)}
                   >
-                    <td>{number}</td>
+                    <td>{number || 'N/A'}</td>
                     <td>{subject}</td>
                     <td>{department}</td>
                     <td>{category}</td>
-                    <td>{subCategory}</td>
+                    <td>{subCategory || 'N/A'}</td>
                     <td>
                       <span
                         className={`ticket-management-status-badge ${statusClass}`}

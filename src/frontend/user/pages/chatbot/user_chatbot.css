@@ -115,6 +115,9 @@
   line-height: 1;
   word-wrap: break-word;
   position: relative;
+  width: fit-content;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
 }
 
 .message p {
@@ -262,4 +265,72 @@
   0% { opacity: 0.4; }
   20% { opacity: 1; }
   100% { opacity: 0.4; }
+}
+
+/* Style for markdown output in bot messages */
+.message-content strong, .message-content b {
+  font-weight: bold;
+  color: #222;
+}
+
+.message-content em, .message-content i {
+  font-style: italic;
+  color: #444;
+}
+
+.message-content ul, .message-content ol {
+  margin: 8px 0 8px 18px;
+  padding-left: 18px;
+}
+
+.message-content li {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.message-content p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.message-content a {
+  color: #0a4b78;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.message-content code {
+  background: #f4f4f4;
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-family: "Fira Mono", "Consolas", monospace;
+  font-size: 12px;
+}
+
+/* Ensure message content wraps and doesn't overflow */
+.message-content {
+  word-break: break-word;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure .message itself also wraps and doesn't overflow */
+.message {
+  max-width: 85%;
+  width: fit-content;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+
+/* For code blocks or preformatted text, allow horizontal scrolling if needed */
+.message-content pre, .message-content code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+  max-width: 100%;
+  display: block;
 }

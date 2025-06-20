@@ -103,6 +103,7 @@ const UserProfilePopup = ({ onClose }) => {
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('profileImage');
             localStorage.removeItem('profileName');
+            localStorage.removeItem("chatbotMessages");
             onClose?.();
             navigate('/login/employee', { replace: true });
           }}

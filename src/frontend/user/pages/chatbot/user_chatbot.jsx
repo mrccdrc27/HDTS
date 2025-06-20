@@ -1,21 +1,41 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Paperclip, Send } from "lucide-react"; // Lucide icons
+import { Paperclip, Send } from "lucide-react";
+import { marked } from "marked";
 import './user_chatbot.css';
 
+const FAQ_SYSTEM_PROMPT = `
+You are a support assistant for SmartSupport. Only answer questions based on the following FAQs:
+1. What types of issues can I report?
+2. How do I submit a ticket?
+3. How can I track the status of my ticket?
+4. Can I update or add more information to an existing ticket?
+5. How long does it take to resolve a ticket?
+6. I submitted a request, but I haven’t heard back. What should I do?
+7. What if I need urgent support?
+If you don't know the answer, say 'Please refer to our support team.'
+`;
+
+const defaultMessages = [
+  {
+    text: "👋 Hello there!\n\nI'm PAXI, your go-to support buddy! Need help with something?\nDon’t worry—I've got you covered. Here's what I can do for you:\n\n✅ Troubleshoot common issues (slow computer, lost password, connection problems? No problem!)\n✅ Help you submit a support request if you need IT assistance\n✅ Provide updates on your ticket status so you always know what's happening\n✅ Share quick tech tips to make your work easier\n\n📝 Let’s get started! How can I help today? 😊",
+    sender: "bot",
+    time: new Date(),
+    isList: false,
+  }
+];
+
 const SupportChatModal = ({ closeModal }) => {
-  const [messages, setMessages] = useState([
-    {
-      text: "👋 Hello there!\n\nI'm PAXI, your go-to support buddy! Need help with something?\nDon’t worry—I've got you covered. Here's what I can do for you:\n\n✅ Troubleshoot common issues (slow computer, lost password, connection problems? No problem!)\n✅ Help you submit a support request if you need IT assistance\n✅ Provide updates on your ticket status so you always know what's happening\n✅ Share quick tech tips to make your work easier\n\n📝 Let’s get started! How can I help today? 😊",
-      sender: "bot",
-      time: new Date(),
-      isList: false,
-    },
-    {
-      text: "What should I do if I encounter a technical issue with my computer, but I’m not sure whether it’s hardware or software-related?",
-      sender: "user",
-      time: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState(() => {
+    const saved = localStorage.getItem("chatbotMessages");
+    if (saved) {
+      // Parse and convert time strings back to Date objects
+      return JSON.parse(saved).map(msg => ({
+        ...msg,
+        time: msg.time ? new Date(msg.time) : new Date()
+      }));
+    }
+    return defaultMessages;
+  });
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -28,6 +48,10 @@ const SupportChatModal = ({ closeModal }) => {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("chatbotMessages", JSON.stringify(messages));
+  }, [messages]);
 
   const formatTime = (date) => {
     const hours = date.getHours();
@@ -45,7 +69,45 @@ const SupportChatModal = ({ closeModal }) => {
     return `${month} ${day}, ${year} | ${weekday}`;
   };
 
-  const handleSend = () => {
+  // Restrict AI to FAQ knowledge by prepending a system prompt
+  const fetchOpenRouterResponse = async (userMessage) => {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer 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",
+          "Content-Type": "application/json",
+          // "HTTP-Referer": "http://localhost:3000", // Optional
+          // "X-Title": "SmartSupport", // Optional
+        },
+        body: JSON.stringify({
+          model: "mistralai/devstral-small:free",
+          messages: [
+            {
+              role: "system",
+              content: FAQ_SYSTEM_PROMPT,
+            },
+            {
+              role: "user",
+              content: userMessage,
+            },
+          ],
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data); // Debug: see the full response
+
+      if (data.error) {
+        return `Error: ${data.error.message || "Unknown error from API."}`;
+      }
+      return data.choices?.[0]?.message?.content || "Sorry, I couldn't get a response.";
+    } catch (error) {
+      return "Sorry, there was an error connecting to the support service.";
+    }
+  };
+
+  const handleSend = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage = {
@@ -58,40 +120,19 @@ const SupportChatModal = ({ closeModal }) => {
     setInputValue("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const botResponse = getBotResponse(inputValue);
-      setMessages((prev) => [
-        ...prev,
-        {
-          text: botResponse.text,
-          sender: "bot",
-          time: new Date(),
-          isList: botResponse.isList,
-          listItems: botResponse.listItems,
-        },
-      ]);
-      setIsTyping(false);
-    }, 1000);
-  };
+    // Fetch response from OpenRouter with system prompt
+    const botText = await fetchOpenRouterResponse(userMessage.text);
 
-  const getBotResponse = (message) => {
-    const msg = message.toLowerCase();
-    if (msg.includes("hardware") || msg.includes("software")) {
-      return {
-        text: "For hardware vs software issues, try the following steps:",
-        isList: true,
-        listItems: [
-          "✅ Restart your device",
-          "✅ Check if others have the same issue",
-          "✅ Look for error messages",
-          "✅ Contact IT support for diagnosis",
-        ],
-      };
-    }
-    return {
-      text: "Thanks for your message! We'll get back to you shortly.",
-      isList: false,
-    };
+    setMessages((prev) => [
+      ...prev,
+      {
+        text: botText,
+        sender: "bot",
+        time: new Date(),
+        isList: false,
+      },
+    ]);
+    setIsTyping(false);
   };
 
   const handleKeyDown = (e) => {
@@ -108,18 +149,10 @@ const SupportChatModal = ({ closeModal }) => {
         <div className="timestamp-display">
           {formatTime(time)} | {formatDateDisplay(time)}
         </div>
-        {msg.isList && msg.listItems ? (
-          <>
-            <p>{msg.text}</p>
-            <ul className="bot-features-list">
-              {msg.listItems.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </>
-        ) : (
-          msg.text.split("\n").map((line, i) => <p key={i}>{line}</p>)
-        )}
+        <div
+          className="message-content"
+          dangerouslySetInnerHTML={{ __html: marked.parse(msg.text) }}
+        />
       </div>
     );
   };
@@ -133,6 +166,8 @@ const SupportChatModal = ({ closeModal }) => {
         time: new Date(),
       };
       setMessages((prev) => [...prev, userMessage]);
+      // To send the image to OpenRouter, you would need to upload it somewhere and get a public URL,
+      // then call fetchOpenRouterResponse(inputValue, imageUrl)
     }
   };
 
@@ -169,6 +204,7 @@ const SupportChatModal = ({ closeModal }) => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               ref={inputRef}
+              autoComplete="off"
             />
 
             {/* Upload Icon */}

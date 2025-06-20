@@ -168,40 +168,22 @@ const UserNavbar = () => {
         </button>
         {activeDropdown === 'active' && (
           <div className="dropdown-content">
-            <NavLink
-              to="/user/active-tickets/all-active-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/active-tickets/all-active-tickets" onClick={() => setActiveDropdown(null)}>
               All Active Tickets
             </NavLink>
-            <NavLink
-              to="/user/active-tickets/new-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/active-tickets/new-tickets" onClick={() => setActiveDropdown(null)}>
               New Tickets
             </NavLink>
-            <NavLink
-              to="/user/active-tickets/open-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/active-tickets/open-tickets" onClick={() => setActiveDropdown(null)}>
               Open Tickets
             </NavLink>
-            <NavLink
-              to="/user/active-tickets/on-progress-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
-              On Progress Tickets
+            <NavLink to="/user/active-tickets/on-process-tickets" onClick={() => setActiveDropdown(null)}>
+              On Process Tickets
             </NavLink>
-            <NavLink
-              to="/user/active-tickets/on-hold-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/active-tickets/on-hold-tickets" onClick={() => setActiveDropdown(null)}>
               On Hold Tickets
             </NavLink>
-            <NavLink
-              to="/user/active-tickets/pending-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/active-tickets/pending-tickets" onClick={() => setActiveDropdown(null)}>
               Pending Tickets
             </NavLink>
           </div>
@@ -229,23 +211,17 @@ const UserNavbar = () => {
         </button>
         {activeDropdown === 'records' && (
           <div className="dropdown-content">
-            <NavLink
-              to="/user/ticket-records/all-ticket-records"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/ticket-records/all-ticket-records" onClick={() => setActiveDropdown(null)}>
               All Ticket Records
             </NavLink>
-            <NavLink
-              to="/user/ticket-records/closed-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/ticket-records/closed-tickets" onClick={() => setActiveDropdown(null)}>
               Closed Tickets
             </NavLink>
-            <NavLink
-              to="/user/ticket-records/rejected-tickets"
-              onClick={() => setActiveDropdown(null)}
-            >
+            <NavLink to="/user/ticket-records/rejected-tickets" onClick={() => setActiveDropdown(null)}>
               Rejected Tickets
+            </NavLink>
+            <NavLink to="/user/ticket-records/resolved-tickets" onClick={() => setActiveDropdown(null)}>
+              Resolved Tickets
             </NavLink>
           </div>
         )}
