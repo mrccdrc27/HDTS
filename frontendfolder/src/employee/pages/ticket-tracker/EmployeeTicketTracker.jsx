@@ -9,7 +9,8 @@ import Skeleton from '../../../shared/components/Skeleton/Skeleton';
 import EmployeeActiveTicketsWithdrawTicketModal from '../../components/modals/active-tickets/EmployeeActiveTicketsWithdrawTicketModal';
 import EmployeeActiveTicketsCloseTicketModal from '../../components/modals/active-tickets/EmployeeActiveTicketsCloseTicketModal';
 import TicketActivity from './TicketActivity';
-import TicketMessaging from './TicketMessaging';
+// import TicketMessaging from './TicketMessaging';
+import Messaging from './messaging';
 import ErrorBoundary from '../../../shared/components/ErrorBoundary';
 import Button from '../../../shared/components/Button';
 import ViewCard from '../../../shared/components/ViewCard';
@@ -1038,11 +1039,13 @@ export default function EmployeeTicketTracker() {
                 {activeTab === 'logs' ? (
                   <TicketActivity ticketLogs={ticketLogs} />
                 ) : (
-                  <TicketMessaging
-                    initialMessages={ticketMessages}
-                    ticketId={ticket.id || ticket.ticketId || ticket.ticket_id}
-                    ticketNumber={ticket.ticket_number || ticket.ticketNumber || number}
-                  />
+                  // <TicketMessaging
+                  //   initialMessages={ticketMessages}
+                  //   ticketId={ticket.id || ticket.ticketId || ticket.ticket_id}
+                  //   ticketNumber={ticket.ticket_number || ticket.ticketNumber || number}
+                  // />
+                  <Messaging ticket_id={ticket.ticket_number} />
+                  // <h1>Messaging Placeholder</h1>
                 )}
               </Tabs>
             </div>
